@@ -1,0 +1,50 @@
+
+; Ouput in reverse order the input string (en 32 lignes :)
+
+; We assume the we process a C like string (so terminate with #GA)
+LAST end
+
+; Read and potential ascent through zo
+:forward_zo
+PUMP GA
+LAST backward_zo
+PUMP BU
+LAST backward_zo
+BIRD ZO
+MOVE ZO
+
+; Read and potential ascent through meu
+PUMP GA
+LAST backward_meu
+PUMP BU
+LAST backward_meu
+BIRD MEU
+MOVE MEU
+JUMP forward_zo
+
+; Always descent through zo
+:rewind_zo
+MOVE ZO
+
+; Write at most two times
+:backward_zo
+ZERO BU, skip_zo
+DUMP BU
+:skip_zo
+DUMP GA
+HEAD MEU, rewind_meu
+JUMP end
+
+; Always descent through meu
+:rewind_meu
+MOVE MEU
+
+; Write at most two times
+:backward_meu
+ZERO BU, skip_meu
+DUMP BU
+:skip_meu
+DUMP GA
+HEAD ZO, rewind_zo
+
+:end

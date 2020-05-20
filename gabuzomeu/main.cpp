@@ -8,17 +8,120 @@
 
 #include "bnflite.h"
 
-enum class CellKind { Head, Body, Tail };
+typedef unsigned char byte;
+
+int lastCell = -1;
+int instructionCounter = 0;
+
+enum class CellKind { Head, Body, Tail }; // the Body is optional :)
+enum class CellId { ga, bu, zo, meu };
+
+// Base class ! All of them are... interpret time technically speaking :)
+class RuntimeException
+{};
+
+//TODO: ...
+class InvalidNumberException : public RuntimeException
+{
+public:
+    InvalidNumberException(const std::string value) {}
+};
+
+class InvalidCellKindException : public RuntimeException
+{};
+
+class LabelNotFoundException : public RuntimeException
+{};
+
+class NoMoreInputException : public RuntimeException
+{};
+
+class AlienException : public RuntimeException
+{};
+
+// Expect an upper cased string without the leading #
+// Raise an exception in case of conversion failure
+byte EvalBaseFourNumber(const std::string& value)
+{
+    if (value.size() < 2)
+    {
+        throw InvalidNumberException(value);
+    }
+
+    int power = 0;
+    int result = 0;
+    size_t pos = value.size();
+
+    while (pos > 1)
+    {
+        if (value.substr(pos - 2, 2) == "GA")
+        {
+            // result += 0 * pow(4, power);
+            pos -= 2;
+        }
+        else if (value.substr(pos - 2, 2) == "BU")
+        {
+            //result += 1 * pow(4, power);
+            result++;
+            pos -= 2;
+        }
+        else if (value.substr(pos - 2, 2) == "ZO")
+        {
+            result += 2 * ((int)pow(4, power));
+            pos -= 2;
+        }
+        else if (value.substr(pos - 3, 3) == "MEU")
+        {
+            result += 3 * ((int)pow(4, power));
+            pos -= 3;
+        }
+        else
+        {
+            throw InvalidNumberException(value);
+        }
+        power++;
+    }
+
+    if (pos == 1)
+    {
+        throw InvalidNumberException(value); // Never use new for exception object, catch with references... C# bad habit :(
+    }
+
+    return (byte)result;
+}
+
+byte EvalCellName(const std::string& value)
+{
+    if (value == "GA")
+    {
+        return (byte) CellId::ga;
+    }
+    else if (value == "BU")
+    {
+        return (byte) CellId::bu;
+    }
+    else if (value == "ZO")
+    {
+        return (byte) CellId::zo;
+    }
+    else if (value == "MEU")
+    {
+        return (byte) CellId::meu;
+    }
+
+    throw AlienException();
+}
 
 struct Cell
 {
-    int kind;
-    int content;
+    CellKind kind;
+    int content; //TODO: Use byte ? Anyway holds either the index of anoter bird or just a value
 };
 
 struct Bird
 {
-    Cell ga, bu, zo, meu;
+    //Cell ga, bu, zo, meu;
+    Cell cells[4];
 };
 
 std::vector<Bird> birds;
@@ -26,10 +129,12 @@ std::vector<Bird> birds;
 void ShowUsage()
 {
     std::cout << "Usage :" << std::endl;
-    std::cout << "gabuzomeu program_file_name \"input_string\"" << std::endl;
-    std::cout << "gabuzomeu \"program_source_code\" \"input_string\"" << std::endl;
+    std::cout << "gabuzomeu program_file_name.gbzm \"optional_input_string\"" << std::endl;
+    std::cout << "gabuzomeu \"program_source_code\" \"optional_input_string\"" << std::endl;
     exit(-1);
 }
+
+// Kind of visitors, called for each token
 
 static bool DoLast(const char* lexem, size_t len)
 {
@@ -97,9 +202,30 @@ static bool DoElse(const char* lexem, size_t len)
     return true;
 }
 
+static bool DoCalc(const char* lexem, size_t len)
+{
+    printf("Calc = : %.*s;\n", len, lexem);
+    return true;
+}
+
+// Needed for instructions that have two operands
+// We could also introduce DoLabel & DoEpression
+static bool DoCell(const char* lexem, size_t len)
+{
+    printf("Cell = : %.*s;\n", len, lexem);
+    lastCell = EvalCellName(std::string(lexem, len));
+    return true;
+}
+
 static bool DoInstruction(const char* lexem, size_t len)
 {
     printf("Instruction = : %.*s;\n", len, lexem);
+    return true;
+}
+
+static bool DoLabel(const char* lexem, size_t len)
+{
+    printf("Label = : %.*s;\n", len, lexem);
     return true;
 }
 
@@ -174,24 +300,24 @@ std::string RunInterpreter(const std::vector<std::string>& lines, const std::str
     
     bnf::Rule r_last = l_last + l_label + DoLast;
     bnf::Rule r_jump = l_jump + l_label + DoJump;
-    bnf::Rule r_dump = "DUMP" + l_cell + DoDump;
+    bnf::Rule r_dump = l_dump + l_cell + DoDump;
     bnf::Rule r_pump = l_pump + l_cell + DoPump;
     bnf::Rule r_free = l_free + l_cell + DoFree;
     bnf::Rule r_bird = l_bird + l_cell + DoBird;
     bnf::Rule r_move = l_move + l_cell + DoMove;
-    bnf::Rule r_head = l_head + l_cell + "," + l_label + DoHead;
-    bnf::Rule r_tail = l_tail + l_cell + "," + l_label + DoTail;
-    bnf::Rule r_zero = l_zero + l_cell + "," + l_label + DoZero;
-    bnf::Rule r_else = l_else + l_cell + "," + l_label + DoElse;
+    bnf::Rule r_head = l_head + l_cell + DoCell + "," + l_label + DoHead;
+    bnf::Rule r_tail = l_tail + l_cell + DoCell + "," + l_label + DoTail;
+    bnf::Rule r_zero = l_zero + l_cell + DoCell + "," + l_label + DoZero;
+    bnf::Rule r_else = l_else + l_cell + DoCell + "," + l_label + DoElse;
 
     bnf::Rule r_expression;
-    bnf::Rule r_calc = l_calc + l_cell + "," + r_expression;
+    bnf::Rule r_calc = l_calc + l_cell + DoCell + "," + r_expression + DoCalc;
     bnf::Rule r_factor = l_litteral | l_cell | "(" + r_expression + ")";
     bnf::Rule r_component = r_factor + *("*" | "/" + r_factor);
     r_expression = r_component + *("+" | "-" + r_component); // Recursion !
 
     bnf::Rule r_instruction = r_last | r_jump | r_dump | r_pump | r_free | r_bird | r_move | r_calc | r_head | r_tail | r_zero | r_else + DoInstruction;
-    bnf::Rule r_line = l_colon_label | l_colon_label + r_instruction | r_instruction + DoLine;
+    bnf::Rule r_line = l_colon_label + DoLabel | l_colon_label + DoLabel + r_instruction | r_instruction + DoLine;
     bnf::Rule r_program = *r_line + DoProgram;
 
     /*
@@ -222,11 +348,11 @@ std::string RunInterpreter(const std::vector<std::string>& lines, const std::str
     //const char helloWorld[] = "CALC GA, #BUZOZOGA\nDUMP GA\nCALC BU, #BUZOBUBU\nDUMP BU\nCALC ZO, #BUZOMEUGA\nDUMP ZO\nDUMP ZO\nCALC MEU, #BUZOMEUMEU\nDUMP MEU\nCALC GA, #ZOGAGA\nDUMP GA\nCALC BU, #BUMEUBUMEU\nDUMP BU\nDUMP MEU\nCALC BU, #BUMEUGAZO\nDUMP BU\nDUMP ZO\nCALC GA, #BUZOBUGA\nDUMP GA";
     //const char helloWorld[] = "CALCGA,#BUZOZOGADUMPGACALCBU,#BUZOBUBUDUMPBUCALCZO,#BUZOMEUGADUMPZODUMPZOCALCMEU,#BUZOMEUMEUDUMPMEUCALCGA,#ZOGAGADUMPGACALCBU,#BUMEUBUMEUDUMPBUDUMPMEUCALCBU,#BUMEUGAZODUMPBUDUMPZOCALCGA,#BUZOBUGADUMPGA";
     const char helloZob[] = "CALC GA, #BUZOZOGA DUMP GA CALC BU, #BUZOBUBU DUMP BU CALC ZOB"; // KO so OK :)
-    const char JustCalc[] = "CALCGA,#BUZOZOGA"; // KO
+    const char JustCalc[] = "CALC GA, #BUZOZOGA"; // OK
     const char JustMove[] = "MOVEGA"; // OK
     const char JustJump[] = "JUMPTOTO"; // OK
     const char JustDoubleJump[] = "JUMPTOTOJUMPTITI"; // OK
-    const char JustBirdWithSpace[] = "BIRD GA"; // 
+    const char JustBirdWithSpace[] = "BIRD GA"; // OK
     const char JustDoubleMove[] = "MOVEGAMOVEBU"; // OK
     const char JustBogusMove[] = "MOVEGO"; // KO so OK :)
     const char JustDoubleMoveWithSpaces[] = "MOVE GA MOVE MEU"; // OK
@@ -234,8 +360,9 @@ std::string RunInterpreter(const std::vector<std::string>& lines, const std::str
     const char JustLabel[] = ":TOTO"; // OK
     const char JustCell[] = "GA"; // KO so OK :)
     const char JustGarbage[] = "TGA"; // KO so OK :)
+    const char JustSomeLabels[] = ":TOTO :TITI MOVE GA :AHU"; // OK
 
-    int tst = bnf::Analyze(r_program, helloWorld, &tail);
+    int tst = bnf::Analyze(r_program, JustSomeLabels, &tail);
     if (tst > 0)
     {
         std::cout << "OK" << std::endl;
@@ -260,68 +387,9 @@ std::string RunInterpreter(const std::vector<std::string>& lines, const std::str
     return output;
 }
 
-typedef unsigned char byte;
-
-//TODO: ...
-class InvalidNumberException
-{
-public:
-    InvalidNumberException(const std::string value) {}
-};
-
-// Expect an upper cased string without the leading #
-// Raise an exception in case of conversion failure
-byte EvalBaseFourNumber(const std::string &value)
-{
-    if (value.size() < 2)
-    {
-        throw InvalidNumberException(value);
-    }
-
-    int power = 0;
-    int result = 0;
-    size_t pos = value.size();    
-
-    while (pos > 1)
-    {
-        if (value.substr(pos - 2, 2) == "GA")
-        {
-            // result += 0 * pow(4, power);
-            pos -= 2;
-        }
-        else if (value.substr(pos - 2, 2) == "BU")
-        {
-            //result += 1 * pow(4, power);
-            result++;
-            pos -= 2;
-        }
-        else if (value.substr(pos - 2, 2) == "ZO")
-        {
-            result += 2 * ((int) pow(4, power));
-            pos -= 2;
-        }
-        else if (value.substr(pos - 3, 3) == "MEU")
-        {
-            result += 3 * ((int) pow(4, power));
-            pos -= 3;
-        }
-        else
-        {
-            throw InvalidNumberException(value);
-        }
-        power++;
-    }
-
-    if (pos == 1)
-    {
-        throw InvalidNumberException(value);
-    }
-
-    return (byte) result;
-}
-
 int main(int argc, char *argv[])
 {
+    //TODO: To remove when done !
     std::vector<std::string> dummies;
     std::string dummy;
     RunInterpreter(dummies, dummy);

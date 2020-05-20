@@ -1,0 +1,70 @@
+
+!=====================================================================
+!     Welcome to the GABUZOMEU grammar (which is LL(1) on purpose)
+!
+! Yet another esoteric programming language created by Sam in May 2020
+!
+! Inspired by the VBScript work of Vladimir Morozov vmoroz@hotmail.com
+!
+! USE GOLD PARSER BUILDER VERSION 2.1 OR LATER TO COMPILE THIS GRAMMAR
+!=====================================================================
+
+!=====================================
+! General assumptions before parsing
+!
+! - Input stream will be uppercased
+! - End of line comment starts with //
+!=====================================
+
+"Start Symbol" = <Program>
+
+!==========
+! Terminals
+!==========
+
+label = ':' {Letter}+
+cell = 'GA' | 'BU' | 'ZO' | 'MEU'
+litteral = '#' ('GA' | 'BU' | 'ZO' | 'MEU')+
+  
+!======
+! Rulez
+!======
+
+<program> ::= <line_list>
+           
+<line_list> ::= <line> | <line> <line_list>
+
+<line> ::= <instruction> | label
+
+<instruction> ::= <last> | <jump> | <dump> | <pump> | <free> | <bird> | <move> | <calc> | <head> | <tail> | <zero> | <else>
+
+<last> ::= 'LAST' label
+
+<jump> ::= 'JUMP' label
+
+<dump> ::= 'DUMP' cell
+
+<pump> ::= 'PUMP' cell
+        
+<free> ::= 'FREE' cell
+
+<bird> ::= 'BIRD' cell
+
+<move> ::= 'MOVE' cell
+
+<calc> ::= 'CALC' cell ',' <expression>
+
+<head> ::= 'HEAD' cell ',' label
+
+<tail> ::= 'TAIL' cell ',' label
+
+<zero> ::= 'ZERO' cell ',' label
+
+<else> ::= 'ELSE' cell ',' label
+
+<expression> ::=  <term> '+' <expression> | <term> '-' <expression>  | <term> ! We don't care about the unary minus support...
+              
+<term> ::= <factor> '*' <term> | <factor> '/' <term> | <factor>
+
+<factor> ::= '(' <expression> ')' | litteral | cell
+

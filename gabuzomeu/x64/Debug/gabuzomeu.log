@@ -1,0 +1,60 @@
+﻿  main.cpp
+C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(339,9): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(353,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(389,1): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(391,1): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(396,48): warning C4244: '=': conversion from '__int64' to 'int', possible loss of data
+C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(447,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(460,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(495,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(141,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(141,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(147,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(147,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(153,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(153,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(159,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(159,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(165,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(165,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(171,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(171,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(177,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(177,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(183,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(183,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(189,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(189,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(195,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(195,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(201,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(201,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(207,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(207,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(215,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(215,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(222,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(222,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(228,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(228,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(234,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(234,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(241,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(241,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(585,1): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(583): message : while compiling class template member function 'std::pair<void *,int> bnf::_Parser<U>::_pre_call(void *)'
+          with
+          [
+              U=bnf::Interface<bool>
+          ]
+C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(658): message : see reference to class template instantiation 'bnf::_Parser<U>' being compiled
+          with
+          [
+              U=bnf::Interface<bool>
+          ]
+C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(667): message : see reference to function template instantiation 'int bnf::_Analyze<bnf::Interface<bool>>(bnf::_Tie &,U &,const char *(__cdecl *)(const char *))' being compiled
+          with
+          [
+              U=bnf::Interface<bool>
+          ]
+  gabuzomeu.vcxproj -> C:\laboratory\gabuzomeu\x64\Debug\gabuzomeu.exe
