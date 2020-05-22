@@ -297,7 +297,7 @@ Miscelleanous
 - After a TEST or COMP the JUMP instruction is a conditional one (same for LOOP ?)
 - One instruction per line in a file
 - Or take the first input string as program with ";" as separator and the second command line parameter is the data ==> Do we really need instruction separator ?
-==> byte stream in gabuzomeu notation ? #MEUBU#ZOZO ==> This allows to pass special characters :)
+==> byte stream in gabuzomeu notation (nibble based) ? #MEUBU#ZOZO ==> This allows to pass special characters :)
 Again Pascal syntax is as follow 'Hello,'#13#10'world!' So we can mix double quotes and #values if they are in one block :)
 - Case insensitive
 - Accept ";" as instruction separator. Allow single line program !-)

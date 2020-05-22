@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <stack>
 #include <cmath>
 #include <map>
 
@@ -23,7 +24,7 @@ bool numericOutput = false;
 bool firstPass = true;
 bool performJump = false;
 bool performSub = false;
-bool performDiv = false;
+bool performDiv = false; 
 //int lastCell = -1;
 std::string lastCell;
 std::string gotoLabel;
@@ -31,13 +32,14 @@ std::vector<byte> input;
 std::vector<byte> output;
 int charPointer = 0;
 
-int calcResult = 0;
-int exprResult = 1;
-//BUG : ISSUE WITH RECURSION EVALUATION ==> CHECK GOOGLE
-int compResult = 0;
-//int compResult1 = 1;
-//int factResult0 = 0;
-//int factResult1 = 0;
+//int calcResult = 0;
+int exprResult = 0;
+//int termResult = 1;
+//int termLeft = 0;
+//int factResult = 0;
+//int factLeft = 0;
+std::stack<int> operands; // Finally unavoidable !
+
 //int instructionCounter = 0;
 int instructionPointer = 0; // AKA IP
 int birdPointer = 0; // AKA current bird index in Birds (AKA BP)
@@ -111,13 +113,13 @@ byte EvalBaseFourNumber(const std::string& value)
     {
         if (value.substr(pos - 2, 2) == "GA")
         {
-            // result += 0 * pow(4, power);
+            // result += 0 * ((int) pow(4, power));
             pos -= 2;
         }
         else if (value.substr(pos - 2, 2) == "BU")
         {
-            //result += 1 * pow(4, power);
-            result++;
+            //result++;
+            result += 1 * ((int) pow(4, power));
             pos -= 2;
         }
         else if (value.substr(pos - 2, 2) == "ZO")
@@ -271,17 +273,45 @@ static bool OnElse(const char *lexem, size_t len)
     return true;
 }
 
-static bool OnAddSub(const char *lexem, size_t len)
+static bool CaptureAdd(const char *lexem, size_t len)
 {
-    printf("AddSub = : %.*s;\n", len, lexem);
-    performSub = (*lexem == '-');
+    printf("Add = : %.*s;\n", len, lexem);
+    performSub = false;
+    //termLeft = termResult;
+    //printf("termLeft = : %d;\n", termLeft);
     return true;
 }
 
-static bool OnMulDiv(const char *lexem, size_t len)
+static bool CaptureSub(const char* lexem, size_t len)
 {
-    printf("MulDiv = : %.*s;\n", len, lexem);
-    performDiv = (*lexem == '/');
+    printf("Sub = : %.*s;\n", len, lexem);
+    performSub = true;
+    //termLeft = termResult;
+    //printf("termLeft = : %d;\n", termLeft);
+    return true;
+}
+
+static bool CaptureMul(const char *lexem, size_t len)
+{
+    printf("Mul = : %.*s;\n", len, lexem);
+    if (!firstPass)
+    {
+        //factLeft = factResult;
+        //printf("factLeft = : %d;\n", factLeft);
+        performDiv = false;
+    }
+    return true;
+}
+
+static bool CaptureDiv(const char* lexem, size_t len)
+{
+    printf("Div = : %.*s;\n", len, lexem);
+    if (!firstPass)
+    {
+        //factLeft = factResult;
+        //printf("factLeft = : %d;\n", factLeft);
+        performDiv = true;
+    }
     return true;
 }
 
@@ -294,84 +324,250 @@ static bool OnCalc(const char *lexem, size_t len)
     }
     else
     {
-        //TODO: ?
+        //TODO: Anything ?
     }
     return true;
 }
 
-static bool OnExpression(const char* lexem, size_t len)
+static bool VisitExpression(const char* lexem, size_t len)
 {
-    printf("Expression = : %.*s;\n", len, lexem);
+    printf("VisitExpression = : %.*s;\n", len, lexem);
 
     if (!firstPass)
     {
+    }
+
+    return true;
+}
+
+static bool CaptureExpression(const char* lexem, size_t len)
+{
+    printf("CaptureExpression = : %.*s;\n", len, lexem);
+
+    if (!firstPass)
+    {
+        /*
         if (performSub)
         {
-            calcResult -= exprResult;
+            // exprResult -= termResult;
+            // exprResult = termLeft - termResult;
         }
         else
         {
-            calcResult += exprResult;
-        }
-        std::cout << "calcResult = " << calcResult << std::endl;
-    }
-
-    return true;
-}
-
-static bool OnComponent(const char* lexem, size_t len)
-{
-    printf("Component = : %.*s;\n", len, lexem);
-
-    if (!firstPass)
-    {
-        if (performDiv)
-        {
-            exprResult /= compResult;
-        }
-        else
-        {
-            exprResult *= compResult;
+            // exprResult += termResult;
+            //exprResult = termLeft + termResult;
+            //...
         }
         std::cout << "exprResult = " << exprResult << std::endl;
+        */
+
+        // Don't !!!
+        // factResult = exprResult;
+        //factResult = calcResult;
+        //std::cout << "factResult_expression = " << factResult << std::endl;
+
+        // Needed ?
+        //exprResult = operands.top(); operands.pop(); // Stack should be empty now :)
+        //std::cout << "pushed CaptureExpression exprResult =  " << exprResult << std::endl;
     }
 
     return true;
 }
 
-static bool OnFactor(const char* lexem, size_t len)
+static bool VisitTerm(const char* lexem, size_t len)
 {
-    printf("Factor = : %.*s;\n", len, lexem);
+    printf("VisitTerm = : %.*s;\n", len, lexem);
+
+    return true;
+}
+
+static bool CaptureTerm(const char* lexem, size_t len)
+{
+    printf("CaptureTerm = : %.*s;\n", len, lexem);
 
     if (!firstPass)
     {
-        if (*lexem == '#')
+        /*
+        if (performDiv)
         {
-            compResult = EvalBaseFourNumber(std::string(lexem + 1, len - 1));
+            // termResult /= factResult;
+            //termResult = factLeft / factResult;
         }
         else
         {
-            byte cellId = EvalCellName(instructions[instructionPointer].operand1);
-            if ((birds[birdPointer].cells[cellId].kind == CellKind::Head) or (birds[birdPointer].cells[cellId].kind == CellKind::Tail))
-            {
-                throw InvalidCellKindException();
-            }
-
-            compResult = birds[birdPointer].cells[cellId].content;
+            // termResult *= factResult;
+            //termResult = factLeft * factResult;
         }
-        std::cout << "compResult = " << compResult << std::endl;
+        */
     }
 
     return true;
 }
 
-// Needed for instructions that have two operands
-// We could also introduce DoEpression...
-static bool OnCell(const char* lexem, size_t len)
+static bool CaptureAddTermFollow(const char* lexem, size_t len)
+{
+    printf("CaptureAddTermFollow = : %.*s;\n", len, lexem);
+
+    if (!firstPass)
+    {
+        /*
+        exprResult = operands.top();
+        if (performSub)
+        {
+            exprResult -= termResult;
+        }
+        else
+        {
+            exprResult += termResult;
+        }
+        std::cout << "exprResult = " << exprResult << std::endl;
+        */
+        int op2 = operands.top(); operands.pop();
+        int op1 = operands.top(); operands.pop();
+        int value = op1 + op2;
+        operands.push(value);        
+        std::cout << "pushed(" << op1 << "+" << op2 << " = " << value << ")" << std::endl;
+    }
+
+    return true;
+}
+
+static bool CaptureSubTermFollow(const char* lexem, size_t len)
+{
+    printf("CaptureSubTermFollow = : %.*s;\n", len, lexem);
+
+    if (!firstPass)
+    {
+        /*
+        exprResult = operands.top();
+        if (performSub)
+        {
+            exprResult -= termResult;
+        }
+        else
+        {
+            exprResult += termResult;
+        }
+        std::cout << "exprResult = " << exprResult << std::endl;
+        */
+        int op2 = operands.top(); operands.pop();
+        int op1 = operands.top(); operands.pop();
+        int value = op1 - op2;
+        operands.push(value);
+        std::cout << "pushed(" << op1 << "-" << op2 << " = " << value << ")" << std::endl;
+    }
+
+    return true;
+}
+
+static bool CaptureLitteral(const char* lexem, size_t len)
+{
+    printf("Litteral = : %.*s;\n", len, lexem);
+
+    if (!firstPass)
+    {
+        exprResult = EvalBaseFourNumber(std::string(lexem + 1, len - 1));
+        std::cout << "pushed CaptureLitteral exprResult = " << exprResult << std::endl;
+        operands.push(exprResult);
+    }
+
+    return true;
+}
+
+static bool VisitFactor(const char* lexem, size_t len)
+{
+    printf("VisitFactor = : %.*s;\n", len, lexem);
+    return true;
+}
+
+static bool CaptureFactor(const char* lexem, size_t len)
+{
+    printf("CaptureFactor = : %.*s;\n", len, lexem);
+    if (!firstPass)
+    {
+        /*
+        if (performDiv)
+        {
+            termResult /= factResult;
+        }
+        else
+        {
+            termResult *= factResult;
+        }
+        std::cout << "termResult = " << termResult << std::endl;
+        */
+    }
+    return true;
+}
+
+static bool CaptureMulFactorFollow(const char* lexem, size_t len)
+{
+    printf("CaptureMulFactorFollow = : %.*s;\n", len, lexem);
+    if (!firstPass)
+    {
+        /*
+        if (performDiv)
+        {
+            termResult /= factResult;
+        }
+        else
+        {
+            termResult *= factResult;
+        }
+        std::cout << "termResult = " << termResult << std::endl;
+        */
+        int op2 = operands.top(); operands.pop();
+        int op1 = operands.top(); operands.pop();
+        int value = op1 * op2;
+        operands.push(value);
+        std::cout << "pushed(" << op1 << "*" << op2 << " = " << value << ")" << std::endl;
+    }
+    return true;
+}
+
+static bool CaptureDivFactorFollow(const char* lexem, size_t len)
+{
+    printf("CaptureDivFactorFollow = : %.*s;\n", len, lexem);
+    if (!firstPass)
+    {
+        /*
+        if (performDiv)
+        {
+            termResult /= factResult;
+        }
+        else
+        {
+            termResult *= factResult;
+        }
+        std::cout << "termResult = " << termResult << std::endl;
+        */
+        int op2 = operands.top(); operands.pop();
+        int op1 = operands.top(); operands.pop();
+        int value = op1 / op2;
+        operands.push(value);
+        std::cout << "pushed(" << op1 << "/" << op2 << " = " << value << ")" << std::endl;
+    }
+    return true;
+}
+
+static bool CaptureCell(const char* lexem, size_t len)
 {
     printf("Cell = : %.*s;\n", len, lexem);
     //lastCell = EvalCellName(std::string(lexem, len));
     lastCell = std::string(lexem, len);
+
+    if (!firstPass)
+    {
+        byte cellId = EvalCellName(instructions[instructionPointer].operand1);
+        if ((birds[birdPointer].cells[cellId].kind == CellKind::Head) or (birds[birdPointer].cells[cellId].kind == CellKind::Tail))
+        {
+            throw InvalidCellKindException();
+        }
+        exprResult = birds[birdPointer].cells[cellId].content;
+        std::cout << "pushed CaptureCell exprResult = " << exprResult << std::endl;
+        operands.push(exprResult);
+    }
+
     return true;
 }
 
@@ -503,8 +699,12 @@ bnf::Lexem l_label = 1 * t_alpha; // Or bnf::Series(1, t_alpha);
 bnf::Lexem l_cell = bnf::Lexem("GA") | bnf::Lexem("BU") | bnf::Lexem("ZO") | bnf::Lexem("MEU");
 //bnf::Lexem l_litteral = 1 * ("#" + t_litteral);
 
-bnf::Lexem l_addsub = bnf::Lexem("+") | bnf::Lexem("-");
-bnf::Lexem l_muldiv = bnf::Lexem("*") | bnf::Lexem("/");
+//bnf::Lexem l_addsub = bnf::Lexem("+") | bnf::Lexem("-");
+//bnf::Lexem l_muldiv = bnf::Lexem("*") | bnf::Lexem("/");
+bnf::Lexem l_add = bnf::Lexem("+");
+bnf::Lexem l_sub = bnf::Lexem("-");
+bnf::Lexem l_mul = bnf::Lexem("*");
+bnf::Lexem l_div = bnf::Lexem("/");
 
 // Lexemes more like Rules
 bnf::Lexem l_litteral = "#" + 1 * l_cell;
@@ -520,15 +720,17 @@ bnf::Rule r_pump = (l_pump + l_cell) + OnPump;
 bnf::Rule r_free = (l_free + l_cell) + OnFree;
 bnf::Rule r_bird = (l_bird + l_cell) + OnBird;
 bnf::Rule r_move = (l_move + l_cell) + OnMove;
-bnf::Rule r_head = (l_head + l_cell + OnCell + "," + l_label) + OnHead;
-bnf::Rule r_tail = (l_tail + l_cell + OnCell + "," + l_label) + OnTail;
-bnf::Rule r_zero = (l_zero + l_cell + OnCell + "," + l_label) + OnZero;
-bnf::Rule r_else = (l_else + l_cell + OnCell + "," + l_label) + OnElse;
+bnf::Rule r_head = (l_head + l_cell + CaptureCell + "," + l_label) + OnHead;
+bnf::Rule r_tail = (l_tail + l_cell + CaptureCell + "," + l_label) + OnTail;
+bnf::Rule r_zero = (l_zero + l_cell + CaptureCell + "," + l_label) + OnZero;
+bnf::Rule r_else = (l_else + l_cell + CaptureCell + "," + l_label) + OnElse;
 
 bnf::Rule r_expression; // Must be "alone"... Recursivity issue
-bnf::Rule r_calc = (l_calc + l_cell + OnCell + "," + r_expression) + OnCalc;
-bnf::Rule r_factor = (l_litteral | l_cell | "(" + r_expression + ")") + OnFactor;
-bnf::Rule r_component = (r_factor + *(l_muldiv + OnMulDiv + r_factor)) + OnComponent;
+bnf::Rule r_term; // Idem
+bnf::Rule r_factor; // Four convenience only :)
+//bnf::Rule r_factor = (l_litteral | l_cell | "(" + r_expression + ")") + OnFactor; //TODO: Add minus support ? http://homepage.divms.uiowa.edu/~jones/compiler/spring13/notes/10.shtml
+
+bnf::Rule r_calc = (l_calc + l_cell + CaptureCell + "," + r_expression) + OnCalc;
 
 bnf::Rule r_instruction = (r_last | r_jump | r_dump | r_pump | r_free | r_bird | r_move | r_calc | r_head | r_tail | r_zero | r_else) + OnInstruction;
 bnf::Rule r_line = (l_colon_label + OnLabel | r_instruction) + OnLine;
@@ -537,8 +739,11 @@ bnf::Rule r_line = (l_colon_label + OnLabel | r_instruction) + OnLine;
 //bnf::Rule r_line_list; // Idem
 //r_line_list = (r_line | r_line + r_line_list) + DoLineList; // Care...
 
-bnf::Rule r_line_list = (*r_line) + OnLineList;
-bnf::Rule r_program = r_line_list + OnProgram;
+//bnf::Rule r_line_list = (*r_line) + OnLineList;
+//bnf::Rule r_program = r_line_list + OnProgram;
+
+// Short way :p
+bnf::Rule r_program = (*r_line) + OnProgram;
 
 void DoLast()
 {
@@ -635,11 +840,15 @@ void DoCalc()
     }
 
     tailexpr = nullptr;
-    calcResult = 0;
-    exprResult = 1;
-    compResult = 0;
+    //calcResult = 0;
+    exprResult = 0;    
+    //termResult = 1; // Neutral for *
+    //termLeft = 0;
     //factResult = 0;
+    //factLeft = 0;
     bnf::Analyze(r_expression, instructions[instructionPointer].operand2.c_str(), &tailexpr);
+    exprResult = operands.top(); operands.pop();
+    std::cout << "exprResult = " << exprResult << std::endl;
     birds[birdPointer].cells[cellId].content = exprResult;
 }
 
@@ -777,14 +986,27 @@ std::string RunAnalyzers(const std::vector<std::string>& lines, const std::strin
     const char justGarbage[] = "TGA"; // KO so OK :)
     const char justSomeLabels[] = ":TOTO :TITI MOVE GA :AHU"; // OK
     const char justSameLabels[] = ":TOTO :TITI MOVE GA :TOTO"; // KO so OK :)
-    const char justSimpleExpression[] = "CALC MEU, #ZO * #BU";
-    const char justBiggerExpression[] = "CALC MEU, #MEU * #BU + #GA / #BU - (#ZO * #ZO)";
+    const char justParenthesis[] = "CALC MEU, (#BUBU)"; // = 5 OK
+    const char justAssignementThenCalc[] = "CALC MEU, #BUZO CALC ZO, (MEU * #BUZO) * #BU + #ZO"; // 36 OK
+    const char justSimpleExpression[] = "CALC MEU, #BUBU * #BUZO / #BUMEU"; // AKA 5 * 6 / 7 = 4 (Nice we support left to right evaluation :)
+    const char justSimpleExpressionLeft[] = "CALC MEU, (#BUBU * #BUZO) / #BUMEU"; // = 4 OK
+    const char justSimpleExpressionRight[] = "CALC MEU, #BUBU * (#BUZO / #BUMEU)"; // = 0 OK
+    const char justBiggerExpression[] = "CALC MEU, #MEU * #BU + #GA / #BU - (#ZO * #ZO)"; // AKA 3 * 1 + 0 / 1 - (2 * 2) = -1 OK
 
     InitP1();
 
-    //TODO: Add two events to catch the operator lexem (+ & -) and (* & /)
-    r_expression = (r_component + *(l_addsub + OnAddSub + r_component)) + OnExpression; // Recursion !
-    int tst = bnf::Analyze(r_program, justSimpleExpression, &tailexpr);
+    // Not good
+    //r_term = (r_factor + "*" + +OnMul + r_term | r_factor + "/" + OnDiv + r_term | r_factor) + OnTerm; // Right recursion !
+    //r_expression = (r_term + "+" + OnAdd + r_expression | r_term + "-" + OnSub + r_expression | r_term) + OnExpression;  // Idem + longest first
+    
+    // Good ?-) Notice the usage of simple lexemes (bypass C++ operator issues)
+    r_expression = (r_term + CaptureTerm + *(l_add + CaptureAdd + r_term + CaptureAddTermFollow | l_sub + CaptureSub + r_term + CaptureSubTermFollow)) + VisitExpression;
+    //r_term_follow = "+" + OnAdd + r_term;
+    r_term = (r_factor + CaptureFactor + *(l_mul + CaptureMul + r_factor + CaptureMulFactorFollow | l_div + CaptureDiv + r_factor + CaptureDivFactorFollow)) + VisitTerm; // Right recursion & longest first !
+    //r_fact_follow = ...
+    r_factor = (l_litteral + CaptureLitteral | l_cell + CaptureCell | "(" + r_expression + CaptureExpression + ")") + VisitFactor; // Only one recursion
+ 
+    int tst = bnf::Analyze(r_program, justAssignementThenCalc, &tailexpr);
     if (tst > 0)
     {
         std::cout << "OK" << std::endl;
@@ -812,9 +1034,9 @@ std::string RunAnalyzers(const std::vector<std::string>& lines, const std::strin
     //tst = bnf::Analyze(r_program, justHelloWorld, &tail);
     RunInterpreter(); // May call Analyze again...
 
-    // Disjoin Rule recursion to safe rule removal
+    // Disjoin recursive rules for safe removal
     r_expression = bnf::Null();
-    //r_line_list = bnf::Null();
+    r_term = bnf::Null();
 
     exit(0); //TODO: Remove this when done
 

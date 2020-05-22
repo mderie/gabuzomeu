@@ -1,6 +1,6 @@
 
 !=====================================================================
-!     Welcome to the GABUZOMEU grammar (which is LL(1) on purpose)
+! Welcome to the GABUZOMEU grammar which is right-recursive on purpose
 !
 ! Yet another esoteric programming language created by Sam in May 2020
 !
