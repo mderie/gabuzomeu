@@ -7,34 +7,46 @@ C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(396,48): warning C4244: '=': convers
 C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(447,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(460,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(495,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(157,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(157,12): message : this argument is used as a precision
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(163,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(163,12): message : this argument is used as a precision
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(169,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(169,12): message : this argument is used as a precision
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(175,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(175,12): message : this argument is used as a precision
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(181,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(181,12): message : this argument is used as a precision
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(187,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(187,12): message : this argument is used as a precision
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(193,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(193,12): message : this argument is used as a precision
 C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(199,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
 C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(199,12): message : this argument is used as a precision
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(205,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(205,12): message : this argument is used as a precision
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(211,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(211,12): message : this argument is used as a precision
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(217,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(217,12): message : this argument is used as a precision
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(223,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(223,12): message : this argument is used as a precision
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(231,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(231,12): message : this argument is used as a precision
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(259,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(259,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(206,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(206,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(213,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(213,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(220,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(220,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(227,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(227,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(234,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(234,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(241,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(241,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(248,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(248,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(255,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(255,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(262,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(262,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(269,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(269,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(276,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(276,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(283,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(283,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(290,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(290,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(304,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(304,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(324,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(324,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(344,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(344,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(372,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(372,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(401,12): warning C4477: 'printf' : format string '%.*s' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(401,12): message : this argument is used as a precision
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(406,42): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(608,60): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
 C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(585,1): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
 C:\laboratory\gabuzomeu\gabuzomeu\bnflite.h(583): message : while compiling class template member function 'std::pair<void *,int> bnf::_Parser<U>::_pre_call(void *)'
           with
