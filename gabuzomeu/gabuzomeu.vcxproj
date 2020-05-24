@@ -154,7 +154,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bnflite.h" />
+    <ClInclude Include="bnflite.hpp" />
+    <ClInclude Include="cxxopts.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -20,7 +20,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bnflite.h">
+    <ClInclude Include="cxxopts.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bnflite.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -32,7 +32,13 @@
 *.app
 
 # VS Garbage
+*.ilk
+*.idb
+*.pdb
 *.ipch
 *.VC.db
 /x64
 /.vs
+/*.tlog
+*.user
+*.filters

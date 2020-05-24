@@ -1,4 +1,8 @@
 
+----------------------------------------------------
+Yet Another Esoteric Programming Language (YEAPL !-)
+----------------------------------------------------
+
 Source of inspirations
 **********************
 
@@ -49,7 +53,7 @@ DICE (or RAND) ==> DICE appartment // Put a random value from 0 to 255 into the 
 2) CALC (or EVAL) ==> appartment, expression // The only instruction that takes an math runtime expression !!! (classical operator & appartment combinations)
 
 3) BIRD ==> BIRD appartment, appartment // Create a new bird and link the current one from GA to MEU (may raise exception)... Or from GA to GA ??? Save one operand :)
-4) FREE (or KILL) ==> FREE appartment // Destroy recursively the bird up linked to the given appartment
+4) FREE (or KILL) ==> FREE appartment // Destroy recursively the bird up or down linked to the given appartment
 
 5) PUMP ==> PUMP appartment // Replace peak ? or read ?-)
 6) DUMP (or BUMP) ==> DUMP appartment (add support for DUMP constant ?) // Replace write !-)
@@ -174,6 +178,10 @@ LOVE
 PAIN
 BUFF Idea bidi tmp storage ?
 SKIP
+CIAO (it means both hello & goodbye)
+FILE
+CODE
+TEXT
 
 Gross !
 *******
@@ -293,7 +301,8 @@ Miscelleanous
 - After a TEST or COMP the JUMP instruction is a conditional one (same for LOOP ?)
 - One instruction per line in a file
 - Or take the first input string as program with ";" as separator and the second command line parameter is the data ==> Do we really need instruction separator ?
-==> byte stream in gabuzomeu notation ? #MEUBU#ZOZO
+==> byte stream in gabuzomeu notation (nibble based) ? #MEUBU#ZOZO ==> This allows to pass special characters :)
+Again Pascal syntax is as follow 'Hello,'#13#10'world!' So we can mix double quotes and #values if they are in one block :)
 - Case insensitive
 - Accept ";" as instruction separator. Allow single line program !-)
 - byte and char are exchangeable
@@ -316,4 +325,12 @@ getconf ARG_MAX
 Under all the Windows...
 https://stackoverflow.com/questions/3205027/maximum-length-of-command-line-string
 
-That's all folks ! [10 of May 2020 + 11 for the HelloWorld2 + 12 for the restrictions :]
+Greetings
+*********
+
+- Jarro2783 for the cxxopts library (https://github.com/jarro2783/cxxopts)
+- R35382 for the bnflite library (https://github.com/r35382/bnflite)
+- ...
+All demosceners, ...
+
+That's all folks ! [Project started the ten of May 2020]
