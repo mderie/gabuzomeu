@@ -9,13 +9,14 @@ Source of inspirations
 - Le cerveau Shadok a quatre cases !
 https://www.youtube.com/watch?v=DuJDPqb0nvE
 
-Homage a Jacques Rouxel
+- Homage a Jacques Rouxel
 https://fr.wikipedia.org/wiki/Les_Shadoks
 
-// Litteral number converter :)
+- Litteral number converter :)
 https://www.dcode.fr/shadoks-numeral-system
 
 - Turing machine
+https://rosettacode.org/wiki/Universal_Turing_machine
 
 - The Pascal programming language (for the "#" usage)
 
@@ -52,7 +53,7 @@ SEEK ==> SEEK expression or maybe SEEK appartment ? Or finally SEEK literal // M
 DICE (or RAND) ==> DICE appartment // Put a random value from 0 to 255 into the MEU register [Optional]
 2) CALC (or EVAL) ==> appartment, expression // The only instruction that takes an math runtime expression !!! (classical operator & appartment combinations)
 
-3) BIRD ==> BIRD appartment, appartment // Create a new bird and link the current one from GA to MEU (may raise exception)... Or from GA to GA ??? Save one operand :)
+3) BIRD ==> BIRD appartment // Create a new bird and link the current one from MEU to MEU (may raise exception)... Or from GA to GA ??? Save one operand :)
 4) FREE (or KILL) ==> FREE appartment // Destroy recursively the bird up or down linked to the given appartment
 
 5) PUMP ==> PUMP appartment // Replace peak ? or read ?-)
@@ -208,17 +209,17 @@ Comments
 ********
 
 C/C++ like : // at the end of line or /* & */ for line block
-Or just ";" ?
+Or just ";" ? ==> Yes
 
-Charset
-*******
+Charset (finally it is a platform concern)
+******************************************
 
 ISO-8859-1 (https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
 
 label (used for JUMP)
 *********************
 
-Preceded by a colon ==> ":loop"
+Preceded by a colon ==> ":loop" for the declaration and without colon for the definition (usage)
 
 Exceptions
 **********
@@ -227,6 +228,7 @@ Illegal "stack" operations
 Illegal literal
 Missing label
 Seek out of bound
+...
 
 Termination
 ***********
@@ -299,13 +301,13 @@ Miscelleanous
 - Each appartement could be either a single character storage or an appartment arrow
 - Input pointer / output pointer (both with or without overwritting ?)
 - After a TEST or COMP the JUMP instruction is a conditional one (same for LOOP ?)
-- One instruction per line in a file
+- One instruction per line in a file ==> No ! The grammar is strong :)
 - Or take the first input string as program with ";" as separator and the second command line parameter is the data ==> Do we really need instruction separator ?
-==> byte stream in gabuzomeu notation (nibble based) ? #MEUBU#ZOZO ==> This allows to pass special characters :)
+==> byte stream in gabuzomeu notation (nibble based) ? #MEUBU#ZOZO ==> This allows to pass non printable characters :)
 Again Pascal syntax is as follow 'Hello,'#13#10'world!' So we can mix double quotes and #values if they are in one block :)
 - Case insensitive
 - Accept ";" as instruction separator. Allow single line program !-)
-- byte and char are exchangeable
+- byte and char are exchangeable (but char is for the ouside world and (big) number is the only rule)
 - When the progam starts there is only one bird and all of its appartments hold zero (as any new bird)
 - input string can be empty !-)
 
@@ -330,6 +332,7 @@ Greetings
 
 - Jarro2783 for the cxxopts library (https://github.com/jarro2783/cxxopts)
 - R35382 for the bnflite library (https://github.com/r35382/bnflite)
+- Sercantutar for the infint library (https://github.com/sercantutar/infint)
 - ...
 All demosceners, ...
 

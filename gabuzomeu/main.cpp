@@ -12,14 +12,19 @@
 // Arhg : the getopt POSIX standard for parsing the command line is missing !
 // #include <unistd.h>
 
-#include "bnflite.hpp"
-#include "cxxopts.hpp"
+// Third party
+#include "..\Common\bnflite.hpp"
+#include "..\Common\cxxopts.hpp"
+#include "..\Common\infint.hpp"
 
-typedef unsigned char byte; //TODO: Get rid of this ?
+// Home made
+#include "..\Common\RuntimeExceptions.hpp"
+#include "..\Common\ConverterTools.hpp"
+#include "..\..\Common\StringTools.hpp"
 
-//////////////////////////////////////////////////////////////////////////
-// Global variables part one (TODO: put all this into a class, one day ?-)
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+// Global variables part one (TODO: [future] put all this into a class, one day ?-)
+///////////////////////////////////////////////////////////////////////////////////
 
 bool analysis = false;
 bool interpret = false;
@@ -31,25 +36,26 @@ const char* tailexpr = nullptr; // Remember, it must be read in reverse : a poin
 bool firstPass = true;
 bool performSub = false;
 bool performDiv = false;
-//int lastCell = -1;
+
 std::string lastCell;
 std::string gotoLabel;
-std::vector<byte> inputs;
-std::vector<byte> outputs;
+std::vector<InfInt> inputs;
+std::vector<InfInt> outputs;
+
 int charPointer = 0; //TODO: Rename it CP ?
 
 //int calcResult = 0;
-int exprResult = 0;
+InfInt exprResult = 0;
 //int termResult = 1;
 //int termLeft = 0;
 //int factResult = 0;
 //int factLeft = 0;
-std::stack<int> operands; // Finally unavoidable !
+std::stack<InfInt> operands; // Finally unavoidable !
 
-//int instructionCounter = 0;
-int instructionPointer = 0; // AKA IP
-int birdPointer = 0; // AKA current bird index in Birds (AKA BP)
-std::map<std::string, int> labels;
+size_t instructionPointer = 0; // AKA IP
+size_t birdPointer = 0; // AKA current bird index in Birds (AKA BP)
+size_t totalBirdCounder = 1; // There is always one default bird
+std::map<std::string, size_t> labels;
 
 // Unable to get the number of elementsinside an enum
 // https://stackoverflow.com/questions/712463/number-of-elements-in-an-enum
@@ -66,193 +72,8 @@ struct Instruction
 std::vector<Instruction> instructions;
 
 enum class CellKind { Body, Head, Tail }; // the Body is optional :)
-enum class CellId { ga, bu, zo, meu, last_item };
-const std::string CellIds[(int) (CellId::last_item)] = { "GA", "BU", "ZO", "MEU" };
 
-/////////////
-// Exceptions
-/////////////
-
-// Base class ! All of them are... interpret time technically speaking :)
-class RuntimeException
-{};
-
-//TODO: ...
-class InvalidNumberException : public RuntimeException
-{
-public:
-    InvalidNumberException(const std::string value) {}
-};
-
-class InvalidCellKindException : public RuntimeException
-{};
-
-class LabelNotFoundException : public RuntimeException
-{};
-
-class NoMoreInputException : public RuntimeException
-{};
-
-class InvalidInputException : public RuntimeException
-{};
-
-class AlienException : public RuntimeException
-{};
-
-class FileNotFoundException : public RuntimeException
-{};
-
-/////////////
-// Converters
-/////////////
-
-std::string StringUpper(const std::string &s)
-{
-    std::string result(s.size(), 0);
-    std::transform(s.begin(), s.end(), result.begin(), [](unsigned char c) { return toupper(c); }); // Yes a lambda :)
-
-    return result;
-}
-
-// Not a half byte here but a base 4 number in GABUZOMEU style :)
-std::string NibbleToString(byte value)
-{    
-    std::string result;
-    int index;
-    while (value > 0)
-    {
-        index = value & 3; // Get the two rightmos bits
-        std::cout << "value = " << (int) value << " & index = " << index << std::endl;
-        result = CellIds[index] + result;
-        value = value >> 2; // Shift twice to the right
-    }
-
-    return "#" + result + "#";
-}
-
-// Expect an upper cased string without the leading #
-// Raise an exception in case of conversion failure
-// Called either from the input string parsing either from the interpreter
-byte StringToNibble(const std::string& value)
-{    
-    if (value.size() < 2)
-    {
-        throw InvalidNumberException(value);
-    }
-
-    int power = 0;
-    int result = 0;
-    size_t pos = value.size();
-
-    while (pos > 1)
-    {
-        if (value.substr(pos - 2, 2) == "GA")
-        {
-            // result += 0 * ((int) pow(4, power));
-            pos -= 2;
-        }
-        else if (value.substr(pos - 2, 2) == "BU")
-        {
-            //result++;
-            result += 1 * ((int) pow(4, power));
-            pos -= 2;
-        }
-        else if (value.substr(pos - 2, 2) == "ZO")
-        {
-            result += 2 * ((int) pow(4, power));
-            pos -= 2;
-        }
-        else if (value.substr(pos - 3, 3) == "MEU")
-        {
-            result += 3 * ((int) pow(4, power));
-            pos -= 3;
-        }
-        else
-        {
-            throw InvalidNumberException(value);
-        }
-        power++;
-    }
-
-    if (pos == 1)
-    {
-        throw InvalidNumberException(value); // Never use new for exception object, catch with references... C# bad habit :(
-    }
-
-    return (byte)result;
-}
-
-std::vector<byte> FromPascalString(const std::string &s)
-{
-    std::vector<byte> result;
-    std::string tmp;
-    int state = 0; // (in string or in number)
-    int pos = 0;
-    int len = s.size();
-    std::cout << "pos = " << pos << " , len = " << len << " & s = " << s << std::endl;
-
-    while (pos < len)
-    {
-        std::cout << "pos = " << pos << " & s[pos] = " << s[pos] << std::endl;
-        switch (s[pos])
-        {
-        case '#':
-        {
-            if (state == 0)
-            {
-                state = 1;
-                std::cout << "state = 1" << std::endl;
-            }
-            else // then (state == 1)
-            {
-                std::cout << "tmp0 = " << tmp << std::endl;
-                result.push_back(StringToNibble(tmp)); // emplace_back(StringToNibble(tmp));
-                tmp = "";
-                state = 0;
-            }
-
-            break;
-        }
-
-        default:
-        {            
-            if (state == 0)
-            {
-                std::cout << "s[pos] = " << s[pos] << std::endl;
-                result.push_back((byte) s[pos]); // emplace_back((byte) s[pos]);                
-            }
-            else // Then (state == 1)
-            {
-                tmp += s[pos];
-                std::cout << "tmp1 = " << tmp << std::endl;
-            }
-        }
-        } // switch
-
-        pos++;
-    } // while
-
-    return result;
-}
-
-std::string ToPascalString(const std::vector<byte> &v)
-{
-    std::string result;
-    for (const auto& it : v)
-    {
-        if (it < 32) // ASCII limitation (avoid non printable characters)
-        {
-            result += NibbleToString(it);
-        }
-        else
-        {
-            result += (char)it;
-        }
-    }
-
-    return result;
-}
-
+//TODO: [future] Make use the CellIds array... No generic mapping from string "enum" array and enum value :(
 byte EvalCellName(const std::string &value)
 {
     if (value == "GA")
@@ -278,7 +99,7 @@ byte EvalCellName(const std::string &value)
 struct Cell
 {
     CellKind kind;
-    int content; //TODO: Use byte ? Anyway holds either the index of anoter bird or just a value (so rename it value ?-)
+    InfInt value; // Anyway holds either the index of anoter bird or just a number
 };
 
 struct Bird
@@ -291,7 +112,7 @@ struct Bird
         for (auto &i : cells)
         {
             i.kind = CellKind::Body;
-            i.content = 0;
+            i.value = 0;
         }
     }
 };
@@ -301,9 +122,10 @@ std::vector<Bird> birds;
 // Trace filters
 ////////////////
 
-//TODO: We could easily redirect those to files
+//TODO: [future] We could easily redirect those to files
+//TODO: Finalize anyway the basic filter implementation
 
-void AnalysisFilter(const std::string& value)
+void AnalysisFilter(const std::string &value)
 {
     if (analysis)
     {
@@ -311,7 +133,7 @@ void AnalysisFilter(const std::string& value)
     }
 }
 
-void InterpretFilter(const std::string& value)
+void InterpretFilter(const std::string &value)
 {
     if (interpret)
     {
@@ -325,84 +147,84 @@ void InterpretFilter(const std::string& value)
 
 static bool OnLast(const char *lexem, size_t len)
 {
-    printf("Last = : %.*s;\n", len, lexem);
+    //printf("Last = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::last, std::string(lexem, len), ""));
     return true;
 }
 
 static bool OnJump(const char *lexem, size_t len)
 {
-    printf("Jump = : %.*s;\n", len, lexem);
+    //printf("Jump = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::jump, std::string(lexem, len), ""));
     return true;
 }
 
 static bool OnDump(const char *lexem, size_t len)
 {
-    printf("Dump = : %.*s;\n", len, lexem);
+    //printf("Dump = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::dump, std::string(lexem, len), ""));
     return true;
 }
 
 static bool OnPump(const char *lexem, size_t len)
 {
-    printf("Pump = : %.*s;\n", len, lexem);
+    //printf("Pump = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::pump, std::string(lexem, len), ""));
     return true;
 }
 
 static bool OnFree(const char *lexem, size_t len)
 {
-    printf("Free = : %.*s;\n", len, lexem);
+    //printf("Free = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::free, std::string(lexem, len), ""));
     return true;
 }
 
 static bool OnBird(const char *lexem, size_t len)
 {
-    printf("Bird = : %.*s;\n", len, lexem);
+    //printf("Bird = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::bird, std::string(lexem, len), ""));
     return true;
 }
 
 static bool OnMove(const char *lexem, size_t len)
 {
-    printf("Move = : %.*s;\n", len, lexem);
+    //printf("Move = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::move, std::string(lexem, len), ""));
     return true;
 }
 
 static bool OnHead(const char *lexem, size_t len)
 {
-    printf("Head = : %.*s;\n", len, lexem);
+    //printf("Head = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::head, lastCell, std::string(lexem, len)));
     return true;
 }
 
 static bool OnTail(const char *lexem, size_t len)
 {
-    printf("Tail = : %.*s;\n", len, lexem);
+    //printf("Tail = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::tail, lastCell, std::string(lexem, len)));
     return true;
 }
 
 static bool OnZero(const char *lexem, size_t len)
 {
-    printf("Zero = : %.*s;\n", len, lexem);
+    //printf("Zero = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::zero, lastCell, std::string(lexem, len)));
     return true;
 }
 
 static bool OnElse(const char *lexem, size_t len)
 {
-    printf("Else = : %.*s;\n", len, lexem);
+    //printf("Else = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::else_, lastCell, std::string(lexem, len)));
     return true;
 }
 
 static bool CaptureAdd(const char *lexem, size_t len)
 {
-    printf("Add = : %.*s;\n", len, lexem);
+    //printf("Add = : %.*s;\n", len, lexem);
     performSub = false;
     //termLeft = termResult;
     //printf("termLeft = : %d;\n", termLeft);
@@ -411,7 +233,7 @@ static bool CaptureAdd(const char *lexem, size_t len)
 
 static bool CaptureSub(const char* lexem, size_t len)
 {
-    printf("Sub = : %.*s;\n", len, lexem);
+    //printf("Sub = : %.*s;\n", len, lexem);
     performSub = true;
     //termLeft = termResult;
     //printf("termLeft = : %d;\n", termLeft);
@@ -420,7 +242,7 @@ static bool CaptureSub(const char* lexem, size_t len)
 
 static bool CaptureMul(const char *lexem, size_t len)
 {
-    printf("Mul = : %.*s;\n", len, lexem);
+    //printf("Mul = : %.*s;\n", len, lexem);
     if (!firstPass)
     {
         //factLeft = factResult;
@@ -432,7 +254,7 @@ static bool CaptureMul(const char *lexem, size_t len)
 
 static bool CaptureDiv(const char* lexem, size_t len)
 {
-    printf("Div = : %.*s;\n", len, lexem);
+    //printf("Div = : %.*s;\n", len, lexem);
     if (!firstPass)
     {
         //factLeft = factResult;
@@ -444,21 +266,21 @@ static bool CaptureDiv(const char* lexem, size_t len)
 
 static bool OnCalc(const char *lexem, size_t len)
 {
-    printf("Calc = : %.*s;\n", len, lexem);
+    //printf("Calc = : %.*s;\n", len, lexem);
     if (firstPass)
     {
         instructions.emplace_back(Instruction(OpCode::calc, lastCell, std::string(lexem, len)));
     }
     else
     {
-        //TODO: Anything ?
+        //TODO: Anything to do ?
     }
     return true;
 }
 
 static bool VisitExpression(const char* lexem, size_t len)
 {
-    printf("VisitExpression = : %.*s;\n", len, lexem);
+    //printf("VisitExpression = : %.*s;\n", len, lexem);
 
     if (!firstPass)
     {
@@ -469,7 +291,7 @@ static bool VisitExpression(const char* lexem, size_t len)
 
 static bool CaptureExpression(const char* lexem, size_t len)
 {
-    printf("CaptureExpression = : %.*s;\n", len, lexem);
+    //printf("CaptureExpression = : %.*s;\n", len, lexem);
 
     if (!firstPass)
     {
@@ -503,14 +325,14 @@ static bool CaptureExpression(const char* lexem, size_t len)
 
 static bool VisitTerm(const char* lexem, size_t len)
 {
-    printf("VisitTerm = : %.*s;\n", len, lexem);
+    //printf("VisitTerm = : %.*s;\n", len, lexem);
 
     return true;
 }
 
 static bool CaptureTerm(const char* lexem, size_t len)
 {
-    printf("CaptureTerm = : %.*s;\n", len, lexem);
+    //printf("CaptureTerm = : %.*s;\n", len, lexem);
 
     if (!firstPass)
     {
@@ -533,7 +355,7 @@ static bool CaptureTerm(const char* lexem, size_t len)
 
 static bool CaptureAddTermFollow(const char* lexem, size_t len)
 {
-    printf("CaptureAddTermFollow = : %.*s;\n", len, lexem);
+    //printf("CaptureAddTermFollow = : %.*s;\n", len, lexem);
 
     if (!firstPass)
     {
@@ -549,11 +371,11 @@ static bool CaptureAddTermFollow(const char* lexem, size_t len)
         }
         std::cout << "exprResult = " << exprResult << std::endl;
         */
-        int op2 = operands.top(); operands.pop();
-        int op1 = operands.top(); operands.pop();
-        int value = op1 + op2;
+        InfInt op2 = operands.top(); operands.pop();
+        InfInt op1 = operands.top(); operands.pop();
+        InfInt value = op1 + op2;
         operands.push(value);        
-        std::cout << "pushed(" << op1 << "+" << op2 << " = " << value << ")" << std::endl;
+        //std::cout << "pushed(" << op1 << "+" << op2 << " = " << value << ")" << std::endl;
     }
 
     return true;
@@ -561,7 +383,7 @@ static bool CaptureAddTermFollow(const char* lexem, size_t len)
 
 static bool CaptureSubTermFollow(const char* lexem, size_t len)
 {
-    printf("CaptureSubTermFollow = : %.*s;\n", len, lexem);
+    //printf("CaptureSubTermFollow = : %.*s;\n", len, lexem);
 
     if (!firstPass)
     {
@@ -577,11 +399,11 @@ static bool CaptureSubTermFollow(const char* lexem, size_t len)
         }
         std::cout << "exprResult = " << exprResult << std::endl;
         */
-        int op2 = operands.top(); operands.pop();
-        int op1 = operands.top(); operands.pop();
-        int value = op1 - op2;
+        InfInt op2 = operands.top(); operands.pop();
+        InfInt op1 = operands.top(); operands.pop();
+        InfInt value = op1 - op2;
         operands.push(value);
-        std::cout << "pushed(" << op1 << "-" << op2 << " = " << value << ")" << std::endl;
+        //std::cout << "pushed(" << op1 << "-" << op2 << " = " << value << ")" << std::endl;
     }
 
     return true;
@@ -589,12 +411,12 @@ static bool CaptureSubTermFollow(const char* lexem, size_t len)
 
 static bool CaptureLitteral(const char* lexem, size_t len)
 {
-    printf("Litteral = : %.*s;\n", len, lexem);
+    //printf("Litteral = : %.*s;\n", len, lexem);
 
     if (!firstPass)
     {
-        exprResult = StringToNibble(std::string(lexem + 1, len - 1));
-        std::cout << "pushed CaptureLitteral exprResult = " << exprResult << std::endl;
+        exprResult = NibbleToNumber(std::string(lexem + 1, len - 1));
+        //std::cout << "pushed CaptureLitteral exprResult = " << exprResult << std::endl;
         operands.push(exprResult);
     }
 
@@ -603,13 +425,13 @@ static bool CaptureLitteral(const char* lexem, size_t len)
 
 static bool VisitFactor(const char* lexem, size_t len)
 {
-    printf("VisitFactor = : %.*s;\n", len, lexem);
+    //printf("VisitFactor = : %.*s;\n", len, lexem);
     return true;
 }
 
 static bool CaptureFactor(const char* lexem, size_t len)
 {
-    printf("CaptureFactor = : %.*s;\n", len, lexem);
+    //printf("CaptureFactor = : %.*s;\n", len, lexem);
     if (!firstPass)
     {
         /*
@@ -629,7 +451,7 @@ static bool CaptureFactor(const char* lexem, size_t len)
 
 static bool CaptureMulFactorFollow(const char* lexem, size_t len)
 {
-    printf("CaptureMulFactorFollow = : %.*s;\n", len, lexem);
+    //printf("CaptureMulFactorFollow = : %.*s;\n", len, lexem);
     if (!firstPass)
     {
         /*
@@ -643,9 +465,9 @@ static bool CaptureMulFactorFollow(const char* lexem, size_t len)
         }
         std::cout << "termResult = " << termResult << std::endl;
         */
-        int op2 = operands.top(); operands.pop();
-        int op1 = operands.top(); operands.pop();
-        int value = op1 * op2;
+        InfInt op2 = operands.top(); operands.pop();
+        InfInt op1 = operands.top(); operands.pop();
+        InfInt value = op1 * op2;
         operands.push(value);
         std::cout << "pushed(" << op1 << "*" << op2 << " = " << value << ")" << std::endl;
     }
@@ -654,7 +476,7 @@ static bool CaptureMulFactorFollow(const char* lexem, size_t len)
 
 static bool CaptureDivFactorFollow(const char* lexem, size_t len)
 {
-    printf("CaptureDivFactorFollow = : %.*s;\n", len, lexem);
+    //printf("CaptureDivFactorFollow = : %.*s;\n", len, lexem);
     if (!firstPass)
     {
         /*
@@ -668,18 +490,18 @@ static bool CaptureDivFactorFollow(const char* lexem, size_t len)
         }
         std::cout << "termResult = " << termResult << std::endl;
         */
-        int op2 = operands.top(); operands.pop();
-        int op1 = operands.top(); operands.pop();
-        int value = op1 / op2;
+        InfInt op2 = operands.top(); operands.pop();
+        InfInt op1 = operands.top(); operands.pop();
+        InfInt value = op1 / op2;
         operands.push(value);
-        std::cout << "pushed(" << op1 << "/" << op2 << " = " << value << ")" << std::endl;
+        //std::cout << "pushed(" << op1 << "/" << op2 << " = " << value << ")" << std::endl;
     }
     return true;
 }
 
 static bool CaptureCell(const char* lexem, size_t len)
 {
-    printf("Cell = : %.*s;\n", len, lexem);
+    //printf("Cell = : %.*s;\n", len, lexem);
     //lastCell = EvalCellName(std::string(lexem, len));
     lastCell = std::string(lexem, len);
 
@@ -690,8 +512,8 @@ static bool CaptureCell(const char* lexem, size_t len)
         {
             throw InvalidCellKindException();
         }
-        exprResult = birds[birdPointer].cells[cellId].content;
-        std::cout << "pushed CaptureCell exprResult = " << exprResult << std::endl;
+        exprResult = birds[birdPointer].cells[cellId].value;
+        //std::cout << "pushed CaptureCell exprResult = " << exprResult << std::endl;
         operands.push(exprResult);
     }
 
@@ -720,7 +542,7 @@ static bool OnLabel(const char* lexem, size_t len)
         return true;
     }
 
-    printf("Label = : %.*s;\n", len, lexem);
+    //printf("Label = : %.*s;\n", len, lexem);
     std::string key = std::string(lexem + 1, len -1); // Remove the colon
         
     if (labels.find(key) == labels.end())
@@ -730,6 +552,7 @@ static bool OnLabel(const char* lexem, size_t len)
     else
     {
         std::cout << "Duplicate label : " << key << std::endl;
+        //TODO: [future] Raise exception ? But we are not at runtime...
         return false;
     }
 
@@ -801,10 +624,10 @@ bnf::Lexem l_else("ELSE");
 
 // Tokens
 // It seems that the lib consider token as building blocks for lexemes... So character set operators
-bnf::Token t_alpha('A', 'Z');
+bnf::Token t_alpha('A', 'Z'); // We can't add here support for "_" :(
 
 /*
-bnf::Token t_label = ""; //TODO: Add support for "_" ?
+bnf::Token t_label = "";
 t_label.Add('A', 'Z');
 bnf::Token t_litteral = "";
 t_litteral.Add("GA");
@@ -873,9 +696,9 @@ bnf::Rule r_program = (*r_line) + OnProgram;
 
 void preludeExpression()
 {
-    tailexpr = nullptr;
-    //calcResult = 0;
+    tailexpr = nullptr;    
     exprResult = 0;
+    //calcResult = 0;
     //termResult = 1; // Neutral for *
     //termLeft = 0;
     //factResult = 0;
@@ -905,8 +728,8 @@ void DoLast()
 {
     if (charPointer == inputs.size())
     {
-        std::cout << "charPointer = " << charPointer << " & inputs.size() = " << inputs.size() << std::endl;
-        std::cout << "instructionPointer = " << instructionPointer << " & instructions[instructionPointer].operand1 = " << instructions[instructionPointer].operand1 << std::endl;
+        //std::cout << "charPointer = " << charPointer << " & inputs.size() = " << inputs.size() << std::endl;
+        //std::cout << "instructionPointer = " << instructionPointer << " & instructions[instructionPointer].operand1 = " << instructions[instructionPointer].operand1 << std::endl;
         gotoLabel = instructions[instructionPointer].operand1;
     }
 }
@@ -928,7 +751,8 @@ void DoPump()
     {
         throw NoMoreInputException();
     }
-    birds[birdPointer].cells[cellId].content = inputs[charPointer++];
+
+    birds[birdPointer].cells[cellId].value = inputs[charPointer++];
 }
 
 void DoDump()
@@ -939,7 +763,7 @@ void DoDump()
         throw InvalidCellKindException();
     }
 
-    outputs.emplace_back(birds[birdPointer].cells[cellId].content);
+    outputs.emplace_back(birds[birdPointer].cells[cellId].value);
 }
 
 // Care : recursive ! Or not... We can leave everything as is and not recycle birds
@@ -955,10 +779,10 @@ void DoFree()
     {
         throw InvalidCellKindException();
     }
-    Free(birds[birdPointer].cells[cellId].content);
+    Free(birds[birdPointer].cells[cellId].value.toInt());
 
     birds[birdPointer].cells[cellId].kind = CellKind::Body;
-    birds[birdPointer].cells[cellId].content = 0;
+    birds[birdPointer].cells[cellId].value = 0;
 }
 
 void DoBird()
@@ -970,12 +794,14 @@ void DoBird()
     }
 
     birds[birdPointer].cells[cellId].kind = CellKind::Tail;
-    birds[birdPointer].cells[cellId].content = birds.size();
+    birds[birdPointer].cells[cellId].value = birds.size();
 
     Bird bird;
     bird.cells[cellId].kind = CellKind::Head;
-    bird.cells[cellId].content = birdPointer;
+    bird.cells[cellId].value = birdPointer;
     birds.emplace_back(bird);
+
+    totalBirdCounder++;
 }
 
 void DoMove()
@@ -983,7 +809,7 @@ void DoMove()
     byte cellId = EvalCellName(instructions[instructionPointer].operand1);
     if ((birds[birdPointer].cells[cellId].kind == CellKind::Head) or (birds[birdPointer].cells[cellId].kind == CellKind::Tail))
     {
-        birdPointer = birds[birdPointer].cells[cellId].content;
+        birdPointer = birds[birdPointer].cells[cellId].value.toInt();
     }
     else
     {
@@ -1003,8 +829,8 @@ void DoCalc()
     bnf::Analyze(r_expression, instructions[instructionPointer].operand2.c_str(), &tailexpr);
     postludeExpression();
     exprResult = operands.top(); operands.pop();
-    std::cout << "exprResult = " << exprResult << std::endl;
-    birds[birdPointer].cells[cellId].content = exprResult;
+    //std::cout << "exprResult = " << exprResult << std::endl;
+    birds[birdPointer].cells[cellId].value = exprResult;
 }
 
 void DoHead()
@@ -1033,7 +859,7 @@ void DoZero()
         throw InvalidCellKindException();
     }
 
-    if (birds[birdPointer].cells[cellId].content == 0)
+    if (birds[birdPointer].cells[cellId].value == 0)
     {
         gotoLabel = instructions[instructionPointer].operand2;
     }
@@ -1047,7 +873,7 @@ void DoElse()
         throw InvalidCellKindException();
     }
 
-    if (birds[birdPointer].cells[cellId].content != 0)
+    if (birds[birdPointer].cells[cellId].value != 0)
     {
         gotoLabel = instructions[instructionPointer].operand2;
     }    
@@ -1058,7 +884,7 @@ void RunInterpreter()
     gotoLabel = "";
     while (instructionPointer < (int) instructions.size())
     {
-        std::cout << "instructionPointer = " << instructionPointer << std::endl;
+        //std::cout << "instructionPointer = " << instructionPointer << std::endl;
         InterpretFilter(OpCodes[(int) instructions[instructionPointer].opCode]);
 
         switch (instructions[instructionPointer].opCode)
@@ -1081,7 +907,7 @@ void RunInterpreter()
 
         if (gotoLabel != "")
         {
-            std::cout << "labels[gotoLabel] = " << labels[gotoLabel] << ", gotoLabel = " << gotoLabel << " & instructionPointer = " << instructionPointer << std::endl;
+            //std::cout << "labels[gotoLabel] = " << labels[gotoLabel] << ", gotoLabel = " << gotoLabel << " & instructionPointer = " << instructionPointer << std::endl;
             instructionPointer = labels[gotoLabel];            
             gotoLabel = "";
         }
@@ -1092,13 +918,13 @@ void RunInterpreter()
     } // while not end of program
 }
 
-std::string RunAnalyzers(const std::vector<std::string> &lines)
+void RunAnalyzers(const std::vector<std::string> &lines)
 {
     // charset
     // Needed ?
     // bnf::Token value(1, 255);
 
-    int pos;
+    size_t pos;
     std::string line;
     for (const auto &it : lines)
     {
@@ -1156,7 +982,7 @@ std::string RunAnalyzers(const std::vector<std::string> &lines)
 
     if (tst > 0)
     {
-        std::cout << "Analyse OK" << std::endl;
+        //std::cout << "Analyse OK" << std::endl;
     }
     else
     {
@@ -1174,22 +1000,28 @@ std::string RunAnalyzers(const std::vector<std::string> &lines)
         exit(-8);
     }
 
+    /*
     std::cout << "instructions.size() = " << instructions.size() << " & labels.size() = " << labels.size() << std::endl;
     for (const auto kvm : labels)
     {
         std::cout << "key = " << kvm.first << " & value = " << kvm.second << std::endl;
     }
+    */
 }
 
 void ShowUsage()
 {
     std::cout << "Usage :" << std::endl;    
     std::cout << "gabuzomeu (--file=\"file_name.gbzm\" | --program=\"text\") (--source=\"file_name\" | --data=\"value\")" << std::endl;
-    std::cout << "          [--target=\"file_name\"] [(-i | --interpret)] [(-a | --analysis)]" << std::endl;
-    std::cout << "Where the program or the text must be provided, the same goes for the source or the data" << std::endl;
+    std::cout << "          [--target=\"file_name\"] [(-i | --interpret)] [(-a | --analysis)] [(-b | --big)]" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Where the file or the program must be provided, the same goes for the source or the data" << std::endl;
     std::cout << "Strings can't contain double quote, screen data in input or output may hold " << std::endl; 
-    std::cout << "#numeric_nibbles# in gabuzomeu base four to replace the non printable characters" << std::endl; // The nibble value for the # (35) is #ZOGAMEU and for " (34) it is #ZOGAZO
-    std::cout << "On the other hand, file data always holds bytes" << std::endl;
+    std::cout << "#numeric_nibbles# in gabuzomeu base four in order to replace the non printable characters" << std::endl; // The nibble value for the # (35) is #ZOGAMEU and for " (34) it is #ZOGAZO
+    std::cout << "On the other hand, file data are treated as stream of bytes" << std::endl;
+    std::cout << "The optional target is to redirect the output toward a file instead of the screen as default" << std::endl;
+    std::cout << "The two optional interpret and analysis flags are there for tracing purpose" << std::endl;
+    std::cout << "Finally the optional big flag allows the support of number bigger than a byte" << std::endl;
 }
 
 void Run(const std::vector<std::string> &lines)
@@ -1197,7 +1029,7 @@ void Run(const std::vector<std::string> &lines)
     t_alpha.Add('_'); // Becoze we are kind :)
     InitP1();
     RunAnalyzers(lines); // Raise exception in debug mode... In string dtor
-    std::cout << "P1 done , about to start P2" << std::endl;
+    //std::cout << "P1 done , about to start P2" << std::endl;
     InitP2();
     RunInterpreter(); // May call Analyze(...) again for CALC instructions
 }
@@ -1212,10 +1044,13 @@ int main(int argc, char *argv[])
     // Grab the command line parameters
     ///////////////////////////////////
 
+    // Code
     std::string file;
     std::string program;
+    // Input
     std::string source;
     std::string data;
+    // The default output is the screen
     std::string target;
 
     try
@@ -1229,7 +1064,8 @@ int main(int argc, char *argv[])
             ("d,data", "", cxxopts::value<std::string>()->default_value(""))
             ("t,target", "", cxxopts::value<std::string>()->default_value(""))
             ("a,analysis", "", cxxopts::value<bool>()->default_value("false"))
-            ("i,interpret", "", cxxopts::value<bool>()->default_value("false"));            
+            ("i,interpret", "", cxxopts::value<bool>()->default_value("false"))
+            ("b,big", "", cxxopts::value<bool>()->default_value("false"));            
 
         auto parameters = options.parse(argc, argv);
         file = parameters["file"].as<std::string>();
@@ -1239,6 +1075,7 @@ int main(int argc, char *argv[])
         target = parameters["target"].as<std::string>();
         analysis = parameters["analysis"].as<bool>();
         interpret = parameters["interpret"].as<bool>();
+        big = parameters["big"].as<bool>();
 
         // Nice (shows the additional help strings), but incomplete syntax (ie for the "=")
         // std::cout << options.help() << std::endl;
@@ -1253,7 +1090,7 @@ int main(int argc, char *argv[])
     }
 
     // The lib kindly removes the double quote for key="value" arguments !
-    std::cout << "Debug : file = " << file << ", program = " << program << ", source = " << source << ", data = " << data << " & target = " << target << std::endl;
+    //std::cout << "Debug : file = " << file << ", program = " << program << ", source = " << source << ", data = " << data << " & target = " << target << std::endl;
 
     if ((file == "" and program == "") or (file != "" and program != "") or (source != "" and data != ""))
     {
@@ -1265,13 +1102,12 @@ int main(int argc, char *argv[])
     // Validate it
     //////////////
 
+    // Input...
     if (source == "")
     {
         try
         {
-            std::cout << "Bing ?" << std::endl;
-            inputs = FromPascalString(data);
-            std::cout << "Bong !" << std::endl;
+            inputs = CompositeStringToNumbers(data);
         }
         catch (...)
         {            
@@ -1287,23 +1123,36 @@ int main(int argc, char *argv[])
             {
                 throw FileNotFoundException();
             }
-            inputs.resize(std::filesystem::file_size(source));
+            std::vector<byte> bytes;
+            bytes.resize(std::filesystem::file_size(source));
             std::ifstream ifs(source, std::ios::binary);
-            ifs.read((char*) inputs.data(), std::filesystem::file_size(source));
+            ifs.read((char *) bytes.data(), std::filesystem::file_size(source));
             ifs.close();
+
+            inputs.resize(std::filesystem::file_size(source));
+            std::copy(bytes.begin(), bytes.end(), inputs.begin());
+
+            //TODO: [future] Review this in order to support for big int coded as non printable character here ?
+            /*
+            if (big)
+            {
+
+            }
+            */            
         }
-        catch (const FileNotFoundException& fnf)
+        catch (const FileNotFoundException &fnf)
         {
             std::cout << "Data file not found :(" << std::endl;
             return -4;
         }
-        catch (const std::ifstream::failure& e)
+        catch (const std::ifstream::failure &e)
         {
             std::cout << "Unable to read the data file :(" << std::endl;
             return -5;
         }
     }
 
+    // Code...
     std::vector<std::string> lines;
     //if ((program.size() > 1) and (program.front() == '"') and (program.back() == '"'))
     if (file == "")
@@ -1351,21 +1200,25 @@ int main(int argc, char *argv[])
     {
         Run(lines);
 
+        std::cout << totalBirdCounder << " bird" << (totalBirdCounder > 1 ? "s say" : " says") << " : ";
         if (target != "")
         {
             std::ofstream ofs(target, std::ios::out | std::ios::binary);
-            ofs.write((const char*) outputs.data(), outputs.size());
+            std::vector<byte> bytes = NumbersToByteStream(outputs);
+            ofs.write((const char*) bytes.data(), bytes.size());
             ofs.close();
+
+            std::cout << target << " file created" << std::endl;
         }
         else
-        {
-            std::cout << ToPascalString(outputs) << std::endl;
-        }        
+        {            
+            std::cout << NumbersToCompositeString(outputs) << std::endl;
+        }
     }
     catch (...)
     {
         std::cout << "Ouch !" << std::endl;
-        //TODO: Any message ?
+        //TODO: [future] Anything else ?
     }
 
     return 0;

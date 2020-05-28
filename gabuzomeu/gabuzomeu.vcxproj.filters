@@ -18,12 +18,30 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\ConverterTools.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\StringTools.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\RuntimeExceptions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cxxopts.hpp">
+    <ClInclude Include="..\Common\ConverterTools.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bnflite.hpp">
+    <ClInclude Include="InfInt.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\RuntimeExceptions.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\bnflite.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\cxxopts.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

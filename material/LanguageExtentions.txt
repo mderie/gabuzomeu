@@ -1,0 +1,18 @@
+
+About the command line parameters
+*********************************
+
+- Support big number (we are still ASCII dependant for the "view") :
+Allow the input and the output to be bigger than the 255 value, by default we take the 256 modulus
+==> False by default
+==> Influence instructions PUMP & DUMP
+==> Not symmetrical : input as cmdline ok & file ko and output screen ok (still with encoding for np characters) & file ok (no encoding)
+==> Anyway the language only know numeric values, not characters !
+
+TODO ?
+- Force nibble encoding for NP characters (code between 0 & 31) for input & output files :
+Allow file content to be similar as command line
+==> False by default
+==> Influence instructions PUMP & DUMP
+
+- 
