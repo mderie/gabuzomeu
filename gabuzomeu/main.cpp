@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <cstdarg>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -38,6 +39,7 @@ bool performSub = false;
 bool performDiv = false;
 
 std::string lastCell;
+std::string targetCell;
 std::string gotoLabel;
 std::vector<InfInt> inputs;
 std::vector<InfInt> outputs;
@@ -123,22 +125,40 @@ std::vector<Bird> birds;
 ////////////////
 
 //TODO: [future] We could easily redirect those to files
-//TODO: Finalize anyway the basic filter implementation
+//TODO: Finalize anyway the basic filter implementation + Logger ?
+
+void AnalysisFilter(const char* format, ...)
+{
+    if (!analysis)
+    {
+        return;
+    }
+
+    char s[512]; // Is there a safer way ?
+    va_list args;
+    va_start(args, format);
+    vsnprintf(s, sizeof(s), format, args);    
+    va_end(args);
+
+    std::cout << s << std::endl;
+}
 
 void AnalysisFilter(const std::string &value)
 {
-    if (analysis)
+    if (!analysis)
     {
-        std::cout << value << std::endl;
+        return;
     }
+    std::cout << value << std::endl;
 }
 
 void InterpretFilter(const std::string &value)
 {
-    if (interpret)
+    if (!interpret)
     {
-        std::cout << value << std::endl;
+        return;
     }
+    std::cout << value << std::endl;
 }
 
 //////////////////////////////////////////
@@ -147,21 +167,21 @@ void InterpretFilter(const std::string &value)
 
 static bool OnLast(const char *lexem, size_t len)
 {
-    //printf("Last = : %.*s;\n", len, lexem);
+    AnalysisFilter("Last = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::last, std::string(lexem, len), ""));
     return true;
 }
 
 static bool OnJump(const char *lexem, size_t len)
 {
-    //printf("Jump = : %.*s;\n", len, lexem);
+    AnalysisFilter("Jump = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::jump, std::string(lexem, len), ""));
     return true;
 }
 
 static bool OnDump(const char *lexem, size_t len)
 {
-    //printf("Dump = : %.*s;\n", len, lexem);
+    AnalysisFilter("Dump = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::dump, std::string(lexem, len), ""));
     return true;
 }
@@ -175,56 +195,57 @@ static bool OnPump(const char *lexem, size_t len)
 
 static bool OnFree(const char *lexem, size_t len)
 {
-    //printf("Free = : %.*s;\n", len, lexem);
+    AnalysisFilter("Free = : %.*s;\n", len, lexem);
+    //AnalysisFilter("FREE = " + std::string(len, lexem));
     instructions.emplace_back(Instruction(OpCode::free, std::string(lexem, len), ""));
     return true;
 }
 
 static bool OnBird(const char *lexem, size_t len)
 {
-    //printf("Bird = : %.*s;\n", len, lexem);
+    AnalysisFilter("Bird = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::bird, std::string(lexem, len), ""));
     return true;
 }
 
 static bool OnMove(const char *lexem, size_t len)
 {
-    //printf("Move = : %.*s;\n", len, lexem);
+    AnalysisFilter("Move = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::move, std::string(lexem, len), ""));
     return true;
 }
 
 static bool OnHead(const char *lexem, size_t len)
 {
-    //printf("Head = : %.*s;\n", len, lexem);
+    AnalysisFilter("Head = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::head, lastCell, std::string(lexem, len)));
     return true;
 }
 
 static bool OnTail(const char *lexem, size_t len)
 {
-    //printf("Tail = : %.*s;\n", len, lexem);
+    AnalysisFilter("Tail = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::tail, lastCell, std::string(lexem, len)));
     return true;
 }
 
 static bool OnZero(const char *lexem, size_t len)
 {
-    //printf("Zero = : %.*s;\n", len, lexem);
+    AnalysisFilter("Zero = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::zero, lastCell, std::string(lexem, len)));
     return true;
 }
 
 static bool OnElse(const char *lexem, size_t len)
 {
-    //printf("Else = : %.*s;\n", len, lexem);
+    AnalysisFilter("Else = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::else_, lastCell, std::string(lexem, len)));
     return true;
 }
 
 static bool CaptureAdd(const char *lexem, size_t len)
 {
-    //printf("Add = : %.*s;\n", len, lexem);
+    //AnalysisFilter("Add = : %.*s;\n", len, lexem);
     performSub = false;
     //termLeft = termResult;
     //printf("termLeft = : %d;\n", termLeft);
@@ -233,7 +254,7 @@ static bool CaptureAdd(const char *lexem, size_t len)
 
 static bool CaptureSub(const char* lexem, size_t len)
 {
-    //printf("Sub = : %.*s;\n", len, lexem);
+    //AnalysisFilter("Sub = : %.*s;\n", len, lexem);
     performSub = true;
     //termLeft = termResult;
     //printf("termLeft = : %d;\n", termLeft);
@@ -242,7 +263,7 @@ static bool CaptureSub(const char* lexem, size_t len)
 
 static bool CaptureMul(const char *lexem, size_t len)
 {
-    //printf("Mul = : %.*s;\n", len, lexem);
+    //AnalysisFilter("Mul = : %.*s;\n", len, lexem);
     if (!firstPass)
     {
         //factLeft = factResult;
@@ -266,10 +287,11 @@ static bool CaptureDiv(const char* lexem, size_t len)
 
 static bool OnCalc(const char *lexem, size_t len)
 {
-    //printf("Calc = : %.*s;\n", len, lexem);
+    AnalysisFilter("Calc = : %.*s;\n", len, lexem);
     if (firstPass)
     {
-        instructions.emplace_back(Instruction(OpCode::calc, lastCell, std::string(lexem, len)));
+        instructions.emplace_back(Instruction(OpCode::calc, targetCell, std::string(lexem, len)));
+        //std::cout << "OnCalc : targetCell = " << targetCell << " & lexem =  " << std::string(lexem, len) << std::endl;
     }
     else
     {
@@ -411,7 +433,7 @@ static bool CaptureSubTermFollow(const char* lexem, size_t len)
 
 static bool CaptureLitteral(const char* lexem, size_t len)
 {
-    //printf("Litteral = : %.*s;\n", len, lexem);
+    AnalysisFilter("Litteral = : %.*s;\n", len, lexem);
 
     if (!firstPass)
     {
@@ -469,7 +491,7 @@ static bool CaptureMulFactorFollow(const char* lexem, size_t len)
         InfInt op1 = operands.top(); operands.pop();
         InfInt value = op1 * op2;
         operands.push(value);
-        std::cout << "pushed(" << op1 << "*" << op2 << " = " << value << ")" << std::endl;
+        //std::cout << "pushed(" << op1 << "*" << op2 << " = " << value << ")" << std::endl;
     }
     return true;
 }
@@ -502,8 +524,32 @@ static bool CaptureDivFactorFollow(const char* lexem, size_t len)
 static bool CaptureCell(const char* lexem, size_t len)
 {
     //printf("Cell = : %.*s;\n", len, lexem);
+    AnalysisFilter("Cell = : %.*s;\n", len, lexem);
     //lastCell = EvalCellName(std::string(lexem, len));
     lastCell = std::string(lexem, len);
+
+    if (!firstPass)
+    {
+        byte cellId = EvalCellName(lastCell);
+        if ((birds[birdPointer].cells[cellId].kind == CellKind::Head) or (birds[birdPointer].cells[cellId].kind == CellKind::Tail))
+        {
+            throw InvalidCellKindException();
+        }
+        exprResult = birds[birdPointer].cells[cellId].value;
+        //std::cout << "pushed CaptureCell exprResult = " << exprResult << " , cellId = " << (int) cellId << std::endl;
+        operands.push(exprResult);
+    }
+
+    return true;
+}
+
+// Needed for CALC since cell appears as target AND MAY some appear as part of the expression !
+static bool CaptureTargetCell(const char* lexem, size_t len)
+{
+    //printf("TargetCell = : %.*s;\n", len, lexem);
+    AnalysisFilter("TargetCell = : %.*s;\n", len, lexem);
+    //lastCell = EvalCellName(std::string(lexem, len));
+    targetCell = std::string(lexem, len);
 
     if (!firstPass)
     {
@@ -513,7 +559,7 @@ static bool CaptureCell(const char* lexem, size_t len)
             throw InvalidCellKindException();
         }
         exprResult = birds[birdPointer].cells[cellId].value;
-        //std::cout << "pushed CaptureCell exprResult = " << exprResult << std::endl;
+        //std::cout << "pushed TargetCell exprResult = " << exprResult << std::endl;
         operands.push(exprResult);
     }
 
@@ -599,7 +645,7 @@ void InitP2()
     //instructionCounter = 0; //TODO: Or -1 ?
     instructionPointer = 0; // Idem
     birdPointer = 0;
-    lastCell = -1;
+    //lastCell = -1;
     birds.clear();
     birds.emplace_back(Bird());
 }
@@ -679,7 +725,7 @@ bnf::Rule r_term; // Idem
 bnf::Rule r_factor; // Four convenience only :)
 //bnf::Rule r_factor = (l_litteral | l_cell | "(" + r_expression + ")") + OnFactor; //TODO: Add minus support ? http://homepage.divms.uiowa.edu/~jones/compiler/spring13/notes/10.shtml
 
-bnf::Rule r_calc = (l_calc + l_cell + CaptureCell + "," + r_expression) + OnCalc;
+bnf::Rule r_calc = (l_calc + l_cell + CaptureTargetCell + "," + r_expression) + OnCalc;
 
 bnf::Rule r_instruction = (r_last | r_jump | r_dump | r_pump | r_free | r_bird | r_move | r_calc | r_head | r_tail | r_zero | r_else) + OnInstruction;
 bnf::Rule r_line = (l_colon_label + OnLabel | r_instruction) + OnLine;
@@ -758,12 +804,17 @@ void DoPump()
 void DoDump()
 {
     byte cellId = EvalCellName(instructions[instructionPointer].operand1);
+    //std::cout << "Debug 0 : cellId = " << (int) cellId << std::endl;
     if ((birds[birdPointer].cells[cellId].kind == CellKind::Head) or (birds[birdPointer].cells[cellId].kind == CellKind::Tail))
     {
+        //std::cout << "BOUM" << std::endl;
         throw InvalidCellKindException();
     }
 
+    //std::cout << "birdPointer = " << birdPointer << " & DUMP = " << birds[birdPointer].cells[cellId].value << std::endl;
+    //std::cout << "size before = " << outputs.size() << std::endl;
     outputs.emplace_back(birds[birdPointer].cells[cellId].value);
+    //std::cout << "size after = " << outputs.size() << " & outputs[0] = " << outputs[0] << std::endl;
 }
 
 // Care : recursive ! Or not... We can leave everything as is and not recycle birds
@@ -825,12 +876,17 @@ void DoCalc()
         throw InvalidCellKindException();
     }
 
+    //std::cout << "Debug 0" << std::endl;
     preludeExpression();
+    //std::cout << "Debug 1 expr = " << instructions[instructionPointer].operand2 << std::endl;
     bnf::Analyze(r_expression, instructions[instructionPointer].operand2.c_str(), &tailexpr);
+    //std::cout << "Debug 2" << std::endl;
     postludeExpression();
+    //std::cout << "Debug 3" << std::endl;
     exprResult = operands.top(); operands.pop();
-    //std::cout << "exprResult = " << exprResult << std::endl;
+    //std::cout << "DoCalc ==> exprResult = " << exprResult << std::endl;
     birds[birdPointer].cells[cellId].value = exprResult;
+    //std::cout << "DoCalc ==> birdPointer = " << birdPointer << ", cellId = " << (int) cellId << " & CALC = " << birds[birdPointer].cells[cellId].value << std::endl;
 }
 
 void DoHead()
@@ -884,7 +940,7 @@ void RunInterpreter()
     gotoLabel = "";
     while (instructionPointer < (int) instructions.size())
     {
-        //std::cout << "instructionPointer = " << instructionPointer << std::endl;
+        //std::cout << "OpCode = " << OpCodes[(int) instructions[instructionPointer].opCode] << ", operand1 = " << instructions[instructionPointer].operand1  << " & operand2 = " << instructions[instructionPointer].operand2 << std::endl;
         InterpretFilter(OpCodes[(int) instructions[instructionPointer].opCode]);
 
         switch (instructions[instructionPointer].opCode)
@@ -1080,7 +1136,7 @@ int main(int argc, char *argv[])
         // Nice (shows the additional help strings), but incomplete syntax (ie for the "=")
         // std::cout << options.help() << std::endl;
     }
-    catch (std::exception& e)
+    catch (const std::exception& e)
     {
         //TODO: Remove this when done
         std::cout << "Exception : " << e.what() << std::endl;

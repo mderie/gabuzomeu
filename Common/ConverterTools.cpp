@@ -11,12 +11,12 @@ std::string NumberToNibble(const InfInt &n)
     InfInt shift = n;
     while (shift > 0)
     {
-        index = shift.toInt() & 3; // Get the two rightmost bits
+        index = (shift % 4).toInt(); // Get the two rightmost bits
         //std::cout << "value = " << (int)value << " & index = " << index << std::endl;
         result = CellIds[index] + result;
-        shift /= 4; // No bit operator support
+        shift /= 4; // No bit operator support :(
     }
-    return "#" + result + "#";
+    return "#" + result; // + "#";
 }
 
 // We assume here that value is > 0
@@ -49,6 +49,7 @@ InfInt pow(const InfInt &base, const InfInt &expo)
 //TODO: [future] Make use the CellIds array ?
 InfInt NibbleToNumber(const std::string& s)
 {
+    //std::cout << "NibbleToNumber input = " << s << std::endl;
     if (s.size() < 2)
     {
         throw InvalidNumberException(); // (value);
@@ -103,9 +104,12 @@ InfInt NibbleToNumber(const std::string& s)
         throw InvalidNumberException(); // (value); 
     }
 
-    if (result > 255 & !big)
+    //std::cout << "big = " << big << std::endl;
+    if ((result > 255) and !big)
     {
-        throw InvalidNumberException(); // (value);
+        //std::cout << "throw" << std::endl;
+        //throw 0;
+        throw OverflowException();
     }
 
     return result;
@@ -166,11 +170,13 @@ std::vector<InfInt> CompositeStringToNumbers(const std::string& s)
 
 std::string NumbersToCompositeString(const std::vector<InfInt> &v)
 {
-    //std::cout << "v.size() = " << v.size() << " & v[0].toString() = " << v[0].toString() << std::endl;
-
     std::string result;
+
+    //std::cout << "NumbersToCompositeString ==> initial result = " << result << std::endl;
+
     for (const auto &it : v)
     {
+        //std::cout << "NumbersToCompositeString it = " << it << std::endl;
         if (it < 32) // ASCII limitation (avoid non printable characters)
         {
             result += NumberToNibble((byte) it.toInt());
@@ -178,8 +184,7 @@ std::string NumbersToCompositeString(const std::vector<InfInt> &v)
         else if (it > 255)
         {
             if (big)
-            {
-                //std::cout << "NumbersToCompositeString" << std::endl;
+            {                
                 std::vector<byte> bytes = NumberToByteStream(it);
                 for (const auto &it2 : bytes)
                 {
@@ -202,22 +207,27 @@ std::string NumbersToCompositeString(const std::vector<InfInt> &v)
         {
             result += (char) it.toInt();
         }
+        //std::cout << "NumbersToCompositeString loop result = " << result << std::endl;
     }
-
+    
+    //std::cout << "NumbersToCompositeString ==> final result = " << result << std::endl;
     return result;
 }
 
+//TODO: [future] Can be shorter with do ... while !
 std::vector<byte> NumberToByteStream(const InfInt &n)
 {
+
     std::vector<byte> result;
     byte mod = (byte) (n % 256).toInt();
-    //std::cout << "mod =  " << (int) mod << std::endl;
+    //std::cout << "n = " << n << " & mod =  " << (int) mod << std::endl;
     InfInt div = n / 256;
     while (div > 0)
     {
         //std::cout << "div =  " << div.toString() << std::endl;
         result.emplace(result.begin(), mod);
         mod = (byte) (div % 256).toInt();
+        //std::cout << "mod = " << (int) mod << std::endl;
         div = div / 256;
     }
     result.emplace(result.begin(), mod);
@@ -228,10 +238,31 @@ std::vector<byte> NumbersToByteStream(const std::vector<InfInt>& v)
 {
     std::vector<byte> result;
     std::vector<byte> tmp;
+    //std::cout << "NumbersToByteStream v.size() = " << v.size() << std::endl;
     for (const auto &it : v)
     {
+        //std::cout << "NumbersToByteStream it = " << it << std::endl;
         tmp = NumberToByteStream(it); // This is not a recursion :)
         result.insert(std::end(result), std::begin(tmp), std::end(tmp));
     }
+    return result;
+}
+
+InfInt ByteStreamToNumber(const std::vector<byte>& v)
+{
+    if (v.size() == 0)
+    {
+        throw EmptyContainer();
+    }
+
+    InfInt result = 0;
+    InfInt power = v.size() - 1;
+    for (const auto& it : v)
+    {
+        //std::cout << "it = " << (int) it << " & power = " << power << std::endl;
+        result += InfInt(it) * pow(256, power--);
+        //std::cout << "result = " << result << std::endl;
+    }
+
     return result;
 }

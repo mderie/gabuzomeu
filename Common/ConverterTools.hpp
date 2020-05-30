@@ -19,8 +19,8 @@ InfInt NibbleToNumber(const std::string &s);
 std::vector<InfInt> CompositeStringToNumbers(const std::string &s);
 std::string NumbersToCompositeString(const std::vector<InfInt> &v);
 std::vector<byte> NumberToByteStream(const InfInt &n);
-std::vector<byte> NumbersToByteStream(const std::vector<InfInt>& v);
+std::vector<byte> NumbersToByteStream(const std::vector<InfInt> &v);
+InfInt ByteStreamToNumber(const std::vector<byte> &v);
 //TODO: Needed ?
-//... ByteStreamToNibble(...));
 //... ByteStreamToNumbers(...)
 #endif // CONVERTER_TOOLS

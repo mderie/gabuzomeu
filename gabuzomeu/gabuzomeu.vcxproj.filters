@@ -32,9 +32,6 @@
     <ClInclude Include="..\Common\ConverterTools.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InfInt.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\RuntimeExceptions.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -42,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\cxxopts.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\InfInt.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

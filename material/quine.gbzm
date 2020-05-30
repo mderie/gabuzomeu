@@ -1,0 +1,24 @@
+
+; C version (78 characters !-)
+
+; main(){char *c="main(){char *c=%c%s%c;printf(c,34,c,34);}";printf(c,34,c,34);}
+; 0   4   8   2   6   0   4   8   2   6   0   4   8   2   6   0   4   8   2   6
+;             1   1   2   2   2   3   3   4   4   4   5   5   6   6   6   7   7     
+
+;  0-> 6 (M) 'main(){'
+;  7->14 (C) 'char *c='
+; 15->15 (Q) '"'
+; 16->22 (M) 'main(){'
+; 23->30 (C) 'char *c='
+; 31->36 (F) '%c%s%c'
+; 37->56 (P) ';printf(c,34,c,34);}'
+; 57->57 (Q) '"'
+; 58->77 (P) ';printf(c,34,c,34);}'
+
+; So our "algorithm" is as follow :
+
+; Generate some data
+; CALC x, #BIG_NUMBER
+; Print it
+; DUMP x
+; Obviously BIG_NUMBER... ?

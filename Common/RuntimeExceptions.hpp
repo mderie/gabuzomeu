@@ -4,6 +4,8 @@
 
 #include <string>
 
+// CARE : in VS 2019 Enable C++ must be set to No !!!
+
 // Base class ! All of them are... interpret time technically speaking :)
 class RuntimeException
 {};
@@ -16,6 +18,9 @@ public:
     InvalidNumberException(const std::string value) {}
 };
 */
+
+class OverflowException : public RuntimeException
+{};
 
 class InvalidCellKindException : public RuntimeException
 {};
@@ -33,6 +38,9 @@ class AlienException : public RuntimeException
 {};
 
 class FileNotFoundException : public RuntimeException
+{};
+
+class EmptyContainer : public RuntimeException
 {};
 
 #endif // RUNTIME_EXCEPTIONS
