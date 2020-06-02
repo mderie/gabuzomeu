@@ -23,9 +23,9 @@
 #include "..\Common\ConverterTools.hpp"
 #include "..\..\Common\StringTools.hpp"
 
-///////////////////////////////////////////////////////////////////////////////////
-// Global variables part one (TODO: [future] put all this into a class, one day ?-)
-///////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+// Global variables part one (TODO: [future] put all this into a class, one day ?-) //
+//////////////////////////////////////////////////////////////////////////////////////
 
 bool analysis = false;
 bool interpret = false;
@@ -35,34 +35,38 @@ const char* tailexpr = nullptr; // Remember, it must be read in reverse : a poin
 // to the potential forward jumps to code region not yet spotted.
 // Actually the second pass is used only for the expression evaluation
 bool firstPass = true;
-bool performSub = false;
-bool performDiv = false;
+//bool performSub = false;
+//bool performDiv = false;
 
 std::string lastCell;
 std::string targetCell;
-std::string gotoLabel;
+//std::string gotoLabel;
+
+// Needed since the context is created lately in initP2
 std::vector<InfInt> inputs;
 std::vector<InfInt> outputs;
 
-int charPointer = 0; //TODO: Rename it CP ?
-
 //int calcResult = 0;
-InfInt exprResult = 0;
+//InfInt exprResult = 0;
 //int termResult = 1;
 //int termLeft = 0;
 //int factResult = 0;
 //int factLeft = 0;
-std::stack<InfInt> operands; // Finally unavoidable !
 
+// No need to put it in the context, we can't have expression referring to GBZM
+std::stack<InfInt> operands; // Finally unavoidable for CALC expression, since it is a recursive evaluation !
+
+/*
 size_t instructionPointer = 0; // AKA IP
-size_t birdPointer = 0; // AKA current bird index in Birds (AKA BP)
+size_t birdPointer = 0;
+*/
 size_t totalBirdCounder = 1; // There is always one default bird
 std::map<std::string, size_t> labels;
 
 // Unable to get the number of elementsinside an enum
 // https://stackoverflow.com/questions/712463/number-of-elements-in-an-enum
-enum class OpCode { last, jump, pump, dump, free, bird, move, calc, head, tail, zero, else_, last_item }; // Care of the else keyword !
-const std::string OpCodes[(int) (OpCode::last_item)] = { "LAST", "JUMP", "PUMP", "DUMP", "FREE", "BIRD", "MOVE", "CALC", "HEAD", "TAIL", "ZERO", "ELSE" };
+enum class OpCode { last, jump, pump, dump, free, bird, move, calc, head, tail, zero, else_, gbzm, last_item }; // Care of the else keyword !
+const std::string OpCodes[(int) (OpCode::last_item)] = { "LAST", "JUMP", "PUMP", "DUMP", "FREE", "BIRD", "MOVE", "CALC", "HEAD", "TAIL", "ZERO", "ELSE", "GBZM" };
 
 struct Instruction
 {
@@ -71,11 +75,11 @@ struct Instruction
     std::string operand2;
     Instruction(OpCode opc, const std::string &op1, const std::string &op2) : opCode(opc), operand1(op1), operand2(op2) {}
 };
-std::vector<Instruction> instructions;
+std::vector<Instruction> instructions; // Not in the context :)
 
 enum class CellKind { Body, Head, Tail }; // the Body is optional :)
 
-//TODO: [future] Make use the CellIds array... No generic mapping from string "enum" array and enum value :(
+/*
 byte EvalCellName(const std::string &value)
 {
     if (value == "GA")
@@ -95,8 +99,9 @@ byte EvalCellName(const std::string &value)
         return (byte) CellId::meu;
     }
 
-    throw AlienException(); // Since the lexical analysis should have done its job
+    throw AlienException(value); // Since the lexical analysis should have done its job
 }
+*/
 
 struct Cell
 {
@@ -118,11 +123,38 @@ struct Bird
         }
     }
 };
-std::vector<Bird> birds;
+//std::vector<Bird> birds;
 
-////////////////
-// Trace filters
-////////////////
+struct Context
+{
+    size_t instructionPointer; // AKA IP
+    size_t birdPointer; // AKA current bird index in Birds (AKA BP)
+    size_t charPointer; //TODO: Rename it CP !
+    InfInt exprResult; //TODO: Check if needed here !
+    std::string gotoLabel;
+    std::vector<InfInt> inputs;
+    std::vector<InfInt> outputs;
+    std::vector<Bird> birds;
+
+    Context()
+    {
+        Clear();
+    }
+
+    void Clear()
+    {
+        exprResult = 0;
+        instructionPointer = 0;
+        birdPointer = 0;
+        charPointer = 0;
+        birds.emplace_back(Bird());
+    }
+};
+std::stack<Context> contexts;
+
+///////////////////
+// Trace filters //
+///////////////////
 
 //TODO: [future] We could easily redirect those to files
 //TODO: Finalize anyway the basic filter implementation + Logger ?
@@ -161,9 +193,9 @@ void InterpretFilter(const std::string &value)
     std::cout << value << std::endl;
 }
 
-//////////////////////////////////////////
-// Kind of visitors, called for each token
-//////////////////////////////////////////
+///////////////////////////////////////////
+// Event handlers, called for each token //
+///////////////////////////////////////////
 
 static bool OnLast(const char *lexem, size_t len)
 {
@@ -243,10 +275,21 @@ static bool OnElse(const char *lexem, size_t len)
     return true;
 }
 
+static bool OnGbzm(const char* lexem, size_t len)
+{
+    AnalysisFilter("Gbzm = : %.*s;\n", len, lexem);
+    instructions.emplace_back(Instruction(OpCode::gbzm, lastCell, std::string(lexem, len)));
+    return true;
+}
+
+//////////////
+// Catchers //
+//////////////
+
 static bool CaptureAdd(const char *lexem, size_t len)
 {
     //AnalysisFilter("Add = : %.*s;\n", len, lexem);
-    performSub = false;
+    //performSub = false;
     //termLeft = termResult;
     //printf("termLeft = : %d;\n", termLeft);
     return true;
@@ -255,7 +298,7 @@ static bool CaptureAdd(const char *lexem, size_t len)
 static bool CaptureSub(const char* lexem, size_t len)
 {
     //AnalysisFilter("Sub = : %.*s;\n", len, lexem);
-    performSub = true;
+    //performSub = true;
     //termLeft = termResult;
     //printf("termLeft = : %d;\n", termLeft);
     return true;
@@ -268,7 +311,7 @@ static bool CaptureMul(const char *lexem, size_t len)
     {
         //factLeft = factResult;
         //printf("factLeft = : %d;\n", factLeft);
-        performDiv = false;
+        //performDiv = false;
     }
     return true;
 }
@@ -280,7 +323,7 @@ static bool CaptureDiv(const char* lexem, size_t len)
     {
         //factLeft = factResult;
         //printf("factLeft = : %d;\n", factLeft);
-        performDiv = true;
+        //performDiv = true;
     }
     return true;
 }
@@ -299,6 +342,10 @@ static bool OnCalc(const char *lexem, size_t len)
     }
     return true;
 }
+
+//////////////////////
+// Kind of visitors //
+//////////////////////
 
 static bool VisitExpression(const char* lexem, size_t len)
 {
@@ -352,6 +399,13 @@ static bool VisitTerm(const char* lexem, size_t len)
     return true;
 }
 
+static bool VisitPower(const char* lexem, size_t len)
+{
+    AnalysisFilter("VisitPower = : %.*s;\n", len, lexem);
+
+    return true;
+}
+
 static bool CaptureTerm(const char* lexem, size_t len)
 {
     //printf("CaptureTerm = : %.*s;\n", len, lexem);
@@ -370,6 +424,32 @@ static bool CaptureTerm(const char* lexem, size_t len)
             //termResult = factLeft * factResult;
         }
         */
+    }
+
+    return true;
+}
+
+static bool CapturePow(const char* lexem, size_t len)
+{
+    AnalysisFilter("CapturePow = : %.*s;\n", len, lexem);
+
+    if (!firstPass)
+    {
+    }
+
+    return true;
+}
+
+static bool CapturePowFactorFollow(const char* lexem, size_t len)
+{
+    AnalysisFilter("CapturePowFactorFollow = : %.*s;\n", len, lexem);
+
+    if (!firstPass)
+    {
+        InfInt op2 = operands.top(); operands.pop();
+        InfInt op1 = operands.top(); operands.pop();
+        InfInt value = pow(op1, op2);
+        operands.push(value);
     }
 
     return true;
@@ -437,9 +517,9 @@ static bool CaptureLitteral(const char* lexem, size_t len)
 
     if (!firstPass)
     {
-        exprResult = NibbleToNumber(std::string(lexem + 1, len - 1));
+        contexts.top().exprResult = NibbleToNumber(std::string(lexem + 1, len - 1));
         //std::cout << "pushed CaptureLitteral exprResult = " << exprResult << std::endl;
-        operands.push(exprResult);
+        operands.push(contexts.top().exprResult);
     }
 
     return true;
@@ -471,9 +551,9 @@ static bool CaptureFactor(const char* lexem, size_t len)
     return true;
 }
 
-static bool CaptureMulFactorFollow(const char* lexem, size_t len)
+static bool CaptureMulPowerFollow(const char* lexem, size_t len)
 {
-    //printf("CaptureMulFactorFollow = : %.*s;\n", len, lexem);
+    //printf("CaptureMulPowerFollow = : %.*s;\n", len, lexem);
     if (!firstPass)
     {
         /*
@@ -496,9 +576,9 @@ static bool CaptureMulFactorFollow(const char* lexem, size_t len)
     return true;
 }
 
-static bool CaptureDivFactorFollow(const char* lexem, size_t len)
+static bool CaptureDivPowerFollow(const char* lexem, size_t len)
 {
-    //printf("CaptureDivFactorFollow = : %.*s;\n", len, lexem);
+    //printf("CaptureDivPowerFollow = : %.*s;\n", len, lexem);
     if (!firstPass)
     {
         /*
@@ -530,14 +610,14 @@ static bool CaptureCell(const char* lexem, size_t len)
 
     if (!firstPass)
     {
-        byte cellId = EvalCellName(lastCell);
-        if ((birds[birdPointer].cells[cellId].kind == CellKind::Head) or (birds[birdPointer].cells[cellId].kind == CellKind::Tail))
+        byte cellId = GetCellId(lastCell);
+        if ((contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Head) or (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Tail))
         {
-            throw InvalidCellKindException();
+            throw InvalidCellKindException("CaptureCell " + CellIds[cellId]);
         }
-        exprResult = birds[birdPointer].cells[cellId].value;
-        //std::cout << "pushed CaptureCell exprResult = " << exprResult << " , cellId = " << (int) cellId << std::endl;
-        operands.push(exprResult);
+        contexts.top().exprResult = contexts.top().birds[contexts.top().birdPointer].cells[cellId].value;
+        std::cout << "pushed CaptureCell exprResult = " << contexts.top().exprResult << " , cellId = " << (int) cellId << std::endl;
+        operands.push(contexts.top().exprResult);
     }
 
     return true;
@@ -553,14 +633,14 @@ static bool CaptureTargetCell(const char* lexem, size_t len)
 
     if (!firstPass)
     {
-        byte cellId = EvalCellName(instructions[instructionPointer].operand1);
-        if ((birds[birdPointer].cells[cellId].kind == CellKind::Head) or (birds[birdPointer].cells[cellId].kind == CellKind::Tail))
+        byte cellId = GetCellId(instructions[contexts.top().instructionPointer].operand1);
+        if ((contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Head) or (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Tail))
         {
-            throw InvalidCellKindException();
+            throw InvalidCellKindException("CaptureTargetCell " + CellIds[cellId]);
         }
-        exprResult = birds[birdPointer].cells[cellId].value;
+        contexts.top().exprResult = contexts.top().birds[contexts.top().birdPointer].cells[cellId].value;
         //std::cout << "pushed TargetCell exprResult = " << exprResult << std::endl;
-        operands.push(exprResult);
+        operands.push(contexts.top().exprResult);
     }
 
     return true;
@@ -624,6 +704,10 @@ static bool OnProgram(const char* lexem, size_t len)
     return true;
 }
 
+////////////////////////
+// Phase initializers //
+////////////////////////
+
 void InitP1()
 {    
     firstPass = true;
@@ -642,17 +726,15 @@ void InitP2()
     firstPass = false;
     //instructions.clear();
     //labels.clear();
-    //instructionCounter = 0; //TODO: Or -1 ?
-    instructionPointer = 0; // Idem
-    birdPointer = 0;
+    //instructionCounter = 0; //TODO: Or -1 ?    
+    contexts.top().inputs = inputs;
     //lastCell = -1;
-    birds.clear();
-    birds.emplace_back(Bird());
+    //birds.emplace_back(Bird());
 }
 
-//////////////////////////////////////
-// Global variables part two (miam !-)
-//////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+// Global variables part two (miam !-) : language defitions items //
+////////////////////////////////////////////////////////////////////
 
 // Keywords (it seems that we can't hardcode them as string into the production rules :(
 bnf::Lexem l_last("LAST");
@@ -667,6 +749,7 @@ bnf::Lexem l_head("HEAD");
 bnf::Lexem l_tail("TAIL");
 bnf::Lexem l_zero("ZERO");
 bnf::Lexem l_else("ELSE");
+bnf::Lexem l_gbzm("GBZM"); // Judas !
 
 // Tokens
 // It seems that the lib consider token as building blocks for lexemes... So character set operators
@@ -700,6 +783,7 @@ bnf::Lexem l_add = bnf::Lexem("+");
 bnf::Lexem l_sub = bnf::Lexem("-");
 bnf::Lexem l_mul = bnf::Lexem("*");
 bnf::Lexem l_div = bnf::Lexem("/");
+bnf::Lexem l_pow = bnf::Lexem("^");
 
 // Lexemes more like Rules
 bnf::Lexem l_litteral = "#" + 1 * l_cell;
@@ -719,15 +803,17 @@ bnf::Rule r_head = (l_head + l_cell + CaptureCell + "," + l_label) + OnHead;
 bnf::Rule r_tail = (l_tail + l_cell + CaptureCell + "," + l_label) + OnTail;
 bnf::Rule r_zero = (l_zero + l_cell + CaptureCell + "," + l_label) + OnZero;
 bnf::Rule r_else = (l_else + l_cell + CaptureCell + "," + l_label) + OnElse;
+bnf::Rule r_gbzm = (l_gbzm + l_cell + CaptureCell + "," + l_cell) + OnGbzm;
 
 bnf::Rule r_expression; // Must be "alone"... Recursivity issue
-bnf::Rule r_term; // Idem
-bnf::Rule r_factor; // Four convenience only :)
+bnf::Rule r_term;
+bnf::Rule r_power;
+bnf::Rule r_factor;
 //bnf::Rule r_factor = (l_litteral | l_cell | "(" + r_expression + ")") + OnFactor; //TODO: Add minus support ? http://homepage.divms.uiowa.edu/~jones/compiler/spring13/notes/10.shtml
 
 bnf::Rule r_calc = (l_calc + l_cell + CaptureTargetCell + "," + r_expression) + OnCalc;
 
-bnf::Rule r_instruction = (r_last | r_jump | r_dump | r_pump | r_free | r_bird | r_move | r_calc | r_head | r_tail | r_zero | r_else) + OnInstruction;
+bnf::Rule r_instruction = (r_last | r_jump | r_dump | r_pump | r_free | r_bird | r_move | r_calc | r_head | r_tail | r_zero | r_else | r_gbzm) + OnInstruction;
 bnf::Rule r_line = (l_colon_label + OnLabel | r_instruction) + OnLine;
 
 // This was ok but raises strange duplicate lines !
@@ -740,10 +826,14 @@ bnf::Rule r_line = (l_colon_label + OnLabel | r_instruction) + OnLine;
 // Short way :p
 bnf::Rule r_program = (*r_line) + OnProgram;
 
+////////////////////////
+// Express yourself ! //
+////////////////////////
+
 void preludeExpression()
 {
     tailexpr = nullptr;    
-    exprResult = 0;
+    contexts.top().exprResult = 0;
     //calcResult = 0;
     //termResult = 1; // Neutral for *
     //termLeft = 0;
@@ -757,8 +847,9 @@ void preludeExpression()
     // Good ?-) Notice the usage of simple lexemes (bypass C++ operator issues)
     r_expression = (r_term + CaptureTerm + *(l_add + CaptureAdd + r_term + CaptureAddTermFollow | l_sub + CaptureSub + r_term + CaptureSubTermFollow)) + VisitExpression;
     //r_term_follow = "+" + OnAdd + r_term;
-    r_term = (r_factor + CaptureFactor + *(l_mul + CaptureMul + r_factor + CaptureMulFactorFollow | l_div + CaptureDiv + r_factor + CaptureDivFactorFollow)) + VisitTerm; // Right recursion & longest first !
+    r_term = (r_power + CapturePow + *(l_mul + CaptureMul + r_power + CaptureMulPowerFollow | l_div + CaptureDiv + r_power + CaptureDivPowerFollow)) + VisitTerm; // Right recursion & longest first !
     //r_fact_follow = ...
+    r_power = (r_factor + CaptureFactor + *(l_pow + CapturePow + r_factor + CapturePowFactorFollow)) + VisitPower;
     r_factor = (l_litteral + CaptureLitteral | l_cell + CaptureCell | "(" + r_expression + CaptureExpression + ")") + VisitFactor; // Only one recursion
 }
 
@@ -767,53 +858,58 @@ void postludeExpression()
     // Disjoin recursive rules for safe removal
     r_expression = bnf::Null();
     r_term = bnf::Null();
+    r_power = bnf::Null();
     r_factor = bnf::Null();
 }
 
+////////////////////
+// Do something ! // 
+////////////////////
+
 void DoLast()
 {
-    if (charPointer == inputs.size())
+    if (contexts.top().charPointer == contexts.top().inputs.size())
     {
         //std::cout << "charPointer = " << charPointer << " & inputs.size() = " << inputs.size() << std::endl;
         //std::cout << "instructionPointer = " << instructionPointer << " & instructions[instructionPointer].operand1 = " << instructions[instructionPointer].operand1 << std::endl;
-        gotoLabel = instructions[instructionPointer].operand1;
+        contexts.top().gotoLabel = instructions[contexts.top().instructionPointer].operand1;
     }
 }
 
 void DoJump()
 {
-    gotoLabel = instructions[instructionPointer].operand1;
+    contexts.top().gotoLabel = instructions[contexts.top().instructionPointer].operand1;
 }
 
 void DoPump()
 {
-    byte cellId = EvalCellName(instructions[instructionPointer].operand1);
-    if ((birds[birdPointer].cells[cellId].kind == CellKind::Head) or (birds[birdPointer].cells[cellId].kind == CellKind::Tail))
+    byte cellId = GetCellId(instructions[contexts.top().instructionPointer].operand1);
+    if ((contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Head) or (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Tail))
     {
-        throw InvalidCellKindException();
+        throw InvalidCellKindException("DoPump " + CellIds[cellId]);
     }
 
-    if (charPointer >= inputs.size())
+    if (contexts.top().charPointer >= contexts.top().inputs.size())
     {
-        throw NoMoreInputException();
+        throw NoMoreInputException("DoPump");
     }
 
-    birds[birdPointer].cells[cellId].value = inputs[charPointer++];
+    contexts.top().birds[contexts.top().birdPointer].cells[cellId].value = contexts.top().inputs[contexts.top().charPointer++];
 }
 
 void DoDump()
 {
-    byte cellId = EvalCellName(instructions[instructionPointer].operand1);
+    byte cellId = GetCellId(instructions[contexts.top().instructionPointer].operand1);
     //std::cout << "Debug 0 : cellId = " << (int) cellId << std::endl;
-    if ((birds[birdPointer].cells[cellId].kind == CellKind::Head) or (birds[birdPointer].cells[cellId].kind == CellKind::Tail))
+    if ((contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Head) or (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Tail))
     {
-        //std::cout << "BOUM" << std::endl;
-        throw InvalidCellKindException();
+        throw InvalidCellKindException("DoDump " + CellIds[cellId]);
     }
 
     //std::cout << "birdPointer = " << birdPointer << " & DUMP = " << birds[birdPointer].cells[cellId].value << std::endl;
     //std::cout << "size before = " << outputs.size() << std::endl;
-    outputs.emplace_back(birds[birdPointer].cells[cellId].value);
+    std::cout << "DoDump ==> value = " << contexts.top().birds[contexts.top().birdPointer].cells[cellId].value << std::endl;
+    contexts.top().outputs.emplace_back(contexts.top().birds[contexts.top().birdPointer].cells[cellId].value);
     //std::cout << "size after = " << outputs.size() << " & outputs[0] = " << outputs[0] << std::endl;
 }
 
@@ -825,125 +921,162 @@ void Free(int birdIndex)
 
 void DoFree()
 {
-    byte cellId = EvalCellName(instructions[instructionPointer].operand1);
-    if ((birds[birdPointer].cells[cellId].kind != CellKind::Head) and (birds[birdPointer].cells[cellId].kind != CellKind::Tail))
+    byte cellId = GetCellId(instructions[contexts.top().instructionPointer].operand1);
+    if ((contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind != CellKind::Head) and (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind != CellKind::Tail))
     {
-        throw InvalidCellKindException();
+        throw InvalidCellKindException("DoFree " + CellIds[cellId]);
     }
-    Free(birds[birdPointer].cells[cellId].value.toInt());
+    Free(contexts.top().birds[contexts.top().birdPointer].cells[cellId].value.toInt());
 
-    birds[birdPointer].cells[cellId].kind = CellKind::Body;
-    birds[birdPointer].cells[cellId].value = 0;
+    contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind = CellKind::Body;
+    contexts.top().birds[contexts.top().birdPointer].cells[cellId].value = 0;
 }
 
 void DoBird()
 {
-    byte cellId = EvalCellName(instructions[instructionPointer].operand1);
-    if ((birds[birdPointer].cells[cellId].kind == CellKind::Head) or (birds[birdPointer].cells[cellId].kind == CellKind::Tail))
+    byte cellId = GetCellId(instructions[contexts.top().instructionPointer].operand1);
+    if ((contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Head) or (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Tail))
     {
-        throw InvalidCellKindException();
+        throw InvalidCellKindException("DoBird " + CellIds[cellId]);
     }
 
-    birds[birdPointer].cells[cellId].kind = CellKind::Tail;
-    birds[birdPointer].cells[cellId].value = birds.size();
+    contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind = CellKind::Tail;
+    contexts.top().birds[contexts.top().birdPointer].cells[cellId].value = contexts.top().birds.size();
 
     Bird bird;
     bird.cells[cellId].kind = CellKind::Head;
-    bird.cells[cellId].value = birdPointer;
-    birds.emplace_back(bird);
+    bird.cells[cellId].value = contexts.top().birdPointer;
+    contexts.top().birds.emplace_back(bird);
 
     totalBirdCounder++;
 }
 
 void DoMove()
 {
-    byte cellId = EvalCellName(instructions[instructionPointer].operand1);
-    if ((birds[birdPointer].cells[cellId].kind == CellKind::Head) or (birds[birdPointer].cells[cellId].kind == CellKind::Tail))
+    byte cellId = GetCellId(instructions[contexts.top().instructionPointer].operand1);
+    if ((contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Head) or (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Tail))
     {
-        birdPointer = birds[birdPointer].cells[cellId].value.toInt();
+        contexts.top().birdPointer = contexts.top().birds[contexts.top().birdPointer].cells[cellId].value.toInt();
     }
     else
     {
-        throw InvalidCellKindException();
+        throw InvalidCellKindException("DoMove " + CellIds[cellId]);
     }
 }
 
 void DoCalc()
 {
-    byte cellId = EvalCellName(instructions[instructionPointer].operand1);
-    if ((birds[birdPointer].cells[cellId].kind == CellKind::Head) or (birds[birdPointer].cells[cellId].kind == CellKind::Tail))
+    byte cellId = GetCellId(instructions[contexts.top().instructionPointer].operand1);
+    if ((contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Head) or (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Tail))
     {
-        throw InvalidCellKindException();
+        throw InvalidCellKindException("DoCalc " + CellIds[cellId]);
     }
 
     //std::cout << "Debug 0" << std::endl;
     preludeExpression();
     //std::cout << "Debug 1 expr = " << instructions[instructionPointer].operand2 << std::endl;
-    bnf::Analyze(r_expression, instructions[instructionPointer].operand2.c_str(), &tailexpr);
+    bnf::Analyze(r_expression, instructions[contexts.top().instructionPointer].operand2.c_str(), &tailexpr);
     //std::cout << "Debug 2" << std::endl;
     postludeExpression();
     //std::cout << "Debug 3" << std::endl;
-    exprResult = operands.top(); operands.pop();
-    //std::cout << "DoCalc ==> exprResult = " << exprResult << std::endl;
-    birds[birdPointer].cells[cellId].value = exprResult;
+    contexts.top().exprResult = operands.top(); operands.pop();
+    std::cout << "DoCalc ==> contexts.top().exprResult = " << contexts.top().exprResult << std::endl;
+    contexts.top().birds[contexts.top().birdPointer].cells[cellId].value = contexts.top().exprResult;
     //std::cout << "DoCalc ==> birdPointer = " << birdPointer << ", cellId = " << (int) cellId << " & CALC = " << birds[birdPointer].cells[cellId].value << std::endl;
 }
 
 void DoHead()
 {
-    byte cellId = EvalCellName(instructions[instructionPointer].operand1);
-    if (birds[birdPointer].cells[cellId].kind == CellKind::Head)
+    byte cellId = GetCellId(instructions[contexts.top().instructionPointer].operand1);
+    if (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Head)
     {
-        gotoLabel = instructions[instructionPointer].operand2;
+        contexts.top().gotoLabel = instructions[contexts.top().instructionPointer].operand2;
     }
 }
 
 void DoTail()
 {
-    byte cellId = EvalCellName(instructions[instructionPointer].operand1);
-    if (birds[birdPointer].cells[cellId].kind != CellKind::Tail)
+    byte cellId = GetCellId(instructions[contexts.top().instructionPointer].operand1);
+    if (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind != CellKind::Tail)
     {
-        gotoLabel = instructions[instructionPointer].operand2;
+        contexts.top().gotoLabel = instructions[contexts.top().instructionPointer].operand2;
     }
 }
 
 void DoZero()
 {
-    byte cellId = EvalCellName(instructions[instructionPointer].operand1);
-    if ((birds[birdPointer].cells[cellId].kind == CellKind::Head) or (birds[birdPointer].cells[cellId].kind == CellKind::Tail))
+    byte cellId = GetCellId(instructions[contexts.top().instructionPointer].operand1);
+    if ((contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Head) or (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Tail))
     {
-        throw InvalidCellKindException();
+        throw InvalidCellKindException("DoZero " + CellIds[cellId]);
     }
 
-    if (birds[birdPointer].cells[cellId].value == 0)
+    if (contexts.top().birds[contexts.top().birdPointer].cells[cellId].value == 0)
     {
-        gotoLabel = instructions[instructionPointer].operand2;
+        contexts.top().gotoLabel = instructions[contexts.top().instructionPointer].operand2;
     }
 }
 
 void DoElse()
 {
-    byte cellId = EvalCellName(instructions[instructionPointer].operand1);
-    if ((birds[birdPointer].cells[cellId].kind == CellKind::Head) or (birds[birdPointer].cells[cellId].kind == CellKind::Tail))
+    byte cellId = GetCellId(instructions[contexts.top().instructionPointer].operand1);
+    if ((contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Head) or (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Tail))
     {
-        throw InvalidCellKindException();
+        throw InvalidCellKindException("DoElse " + CellIds[cellId]);
     }
 
-    if (birds[birdPointer].cells[cellId].value != 0)
+    if (contexts.top().birds[contexts.top().birdPointer].cells[cellId].value != 0)
     {
-        gotoLabel = instructions[instructionPointer].operand2;
+        contexts.top().gotoLabel = instructions[contexts.top().instructionPointer].operand2;
     }    
 }
 
+void DoGbzm()
+{
+    void RunInterpreter(); // Good old forward decl !-)
+
+    byte cellId = GetCellId(instructions[contexts.top().instructionPointer].operand1);
+    if ((contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Head) or (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Tail))
+    {
+        throw InvalidCellKindException("DoElse " + CellIds[cellId]);
+    }    
+
+    // Prepare the inputs for the "new interpreter instance" !
+    std::vector<byte> bytes = NumberToByteStream(contexts.top().birds[contexts.top().birdPointer].cells[cellId].value);
+    inputs.clear();
+    inputs.resize(bytes.size());
+    std::copy(bytes.begin(), bytes.end(), inputs.begin());
+
+    // Prepare a new context
+    contexts.push(contexts.top()); // push inputs, outputs, instruction pointer, ...
+    contexts.top().Clear();
+    InitP2(); // init inputs, outputs, instruction pointer, ...
+    RunInterpreter(); // In RunInterpreter when current program is finished, check context stack content... Needed ?
+
+    // Retrieve the ouputs for the "old interpreter instance" !
+    outputs = contexts.top().outputs;
+
+    // Restore the old context
+    contexts.pop(); // if not empty, pop inputs, outputs, instruction pointer, ...
+    cellId = GetCellId(instructions[contexts.top().instructionPointer].operand2);
+    contexts.top().birds[contexts.top().birdPointer].cells[cellId].value = ByteStreamToNumber(NumbersToByteStream(outputs));
+    std::cout << "DoGbzm ==> cellId = " << (int) cellId  << " & Return value = " << contexts.top().birds[contexts.top().birdPointer].cells[cellId].value << std::endl;
+}
+
+/////////
+// Run // 
+/////////
+
 void RunInterpreter()
 {
-    gotoLabel = "";
-    while (instructionPointer < (int) instructions.size())
+    contexts.top().gotoLabel = "";
+    while (contexts.top().instructionPointer < (int) instructions.size())
     {
-        //std::cout << "OpCode = " << OpCodes[(int) instructions[instructionPointer].opCode] << ", operand1 = " << instructions[instructionPointer].operand1  << " & operand2 = " << instructions[instructionPointer].operand2 << std::endl;
-        InterpretFilter(OpCodes[(int) instructions[instructionPointer].opCode]);
+        std::cout << "Stack level = " << contexts.size() << ", OpCode = " << OpCodes[(int)instructions[contexts.top().instructionPointer].opCode]
+                  << ", operand1 = '" << instructions[contexts.top().instructionPointer].operand1  << "' & operand2 = '" << instructions[contexts.top().instructionPointer].operand2 << "'" << std::endl;
+        InterpretFilter(OpCodes[(int) instructions[contexts.top().instructionPointer].opCode]);
 
-        switch (instructions[instructionPointer].opCode)
+        switch (instructions[contexts.top().instructionPointer].opCode)
         {
         case OpCode::last: { DoLast(); break; }
         case OpCode::jump: { DoJump(); break; }
@@ -957,19 +1090,20 @@ void RunInterpreter()
         case OpCode::tail: { DoTail(); break; }
         case OpCode::zero: { DoZero(); break; }
         case OpCode::else_: { DoElse(); break; }
+        case OpCode::gbzm: { DoGbzm(); break; }
 
-        default: { throw AlienException(); }
+        default: { throw AlienException("Line = " + std::to_string(contexts.top().instructionPointer)); }
         } // switch
 
-        if (gotoLabel != "")
+        if (contexts.top().gotoLabel != "")
         {
             //std::cout << "labels[gotoLabel] = " << labels[gotoLabel] << ", gotoLabel = " << gotoLabel << " & instructionPointer = " << instructionPointer << std::endl;
-            instructionPointer = labels[gotoLabel];            
-            gotoLabel = "";
+            contexts.top().instructionPointer = labels[contexts.top().gotoLabel];
+            contexts.top().gotoLabel = "";
         }
         else
         {
-            instructionPointer++;
+            contexts.top().instructionPointer++;
         }
     } // while not end of program
 }
@@ -1090,9 +1224,9 @@ void Run(const std::vector<std::string> &lines)
     RunInterpreter(); // May call Analyze(...) again for CALC instructions
 }
 
-///////////////////////
-// The main (of) course
-///////////////////////
+//////////////////////////
+// The main (of) course //
+//////////////////////////
 
 int main(int argc, char *argv[])
 {
@@ -1177,7 +1311,7 @@ int main(int argc, char *argv[])
         {
             if (!std::filesystem::exists(source))
             {
-                throw FileNotFoundException();
+                throw FileNotFoundException(source);
             }
             std::vector<byte> bytes;
             bytes.resize(std::filesystem::file_size(source));
@@ -1222,7 +1356,7 @@ int main(int argc, char *argv[])
         {
             if (!std::filesystem::exists(file))
             {
-                throw FileNotFoundException();
+                throw FileNotFoundException(file);
             }
 
             std::ifstream ifs;
@@ -1254,13 +1388,14 @@ int main(int argc, char *argv[])
 
     try
     {
+        contexts.push(Context());
         Run(lines);
 
         std::cout << totalBirdCounder << " bird" << (totalBirdCounder > 1 ? "s say" : " says") << " : ";
         if (target != "")
         {
             std::ofstream ofs(target, std::ios::out | std::ios::binary);
-            std::vector<byte> bytes = NumbersToByteStream(outputs);
+            std::vector<byte> bytes = NumbersToByteStream(contexts.top().outputs);
             ofs.write((const char*) bytes.data(), bytes.size());
             ofs.close();
 
@@ -1268,12 +1403,12 @@ int main(int argc, char *argv[])
         }
         else
         {            
-            std::cout << NumbersToCompositeString(outputs) << std::endl;
+            std::cout << NumbersToCompositeString(contexts.top().outputs) << std::endl;
         }
     }
-    catch (...)
+    catch (const RuntimeException &re)
     {
-        std::cout << "Ouch !" << std::endl;
+        std::cout << "Ouch ! " << re.Message() << std::endl;
         //TODO: [future] Anything else ?
     }
 

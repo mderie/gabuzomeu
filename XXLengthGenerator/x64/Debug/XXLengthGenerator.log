@@ -1,0 +1,20 @@
+﻿  ConverterTools.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.26.28801\include\ostream(376,1): warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.26.28801\include\ostream(369): message : while compiling class template member function 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(unsigned __int64)'
+C:\laboratory\gabuzomeu\Common\infint.hpp(989): message : see reference to function template instantiation 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(unsigned __int64)' being compiled
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.26.28801\include\ostream(642): message : see reference to class template instantiation 'std::basic_ostream<char,std::char_traits<char>>' being compiled
+  main.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.26.28801\include\ostream(535,1): warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.26.28801\include\ostream(528): message : while compiling class template member function 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::write(const _Elem *,std::streamsize)'
+          with
+          [
+              _Elem=char
+          ]
+C:\laboratory\gabuzomeu\XXLengthGenerator\main.cpp(29): message : see reference to function template instantiation 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::write(const _Elem *,std::streamsize)' being compiled
+          with
+          [
+              _Elem=char
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.26.28801\include\ostream(642): message : see reference to class template instantiation 'std::basic_ostream<char,std::char_traits<char>>' being compiled
+  Generating Code...
+  XXLengthGenerator.vcxproj -> C:\laboratory\gabuzomeu\x64\Debug\XXLengthGenerator.exe

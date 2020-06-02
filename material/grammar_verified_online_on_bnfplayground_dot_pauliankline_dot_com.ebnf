@@ -1,3 +1,12 @@
+; In order to play with a specific part of the grammar
+; Just put this optional rule on this site :
+; https://bnfplayground.pauliankline.com/
+<totest> ::= <expression>
+
+
+
+
+
 
 <label> ::= [A-Z]+
 <cell> ::= "GA" | "BU" | "ZO" | "MEU"
@@ -21,6 +30,7 @@
 <else> ::= "ELSE" <cell> "," <label>
 
 <calc> ::= "CALC" <cell> "," <expression>
-<expression> ::= <component> (("+" | "-") <component>)*
-<component> ::= <factor> (("*" | "/") <factor>)*
+<expression> ::= <term> (("+" | "-") <term>)*
+<term> ::= <power> (("*" | "/") <power>)*
+<power> ::= <factor> ("^" <factor>)*
 <factor> ::=  <litteral> | <cell> | "(" <expression> ")"

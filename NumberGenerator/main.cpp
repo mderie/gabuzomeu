@@ -64,8 +64,7 @@ int main(int argc, char *argv[])
 	{
 		if (!std::filesystem::exists(source))
 		{
-			//std::cout << "Pff";
-			throw FileNotFoundException();
+			throw FileNotFoundException(source);
 		}
 
 		input.resize(std::filesystem::file_size(source), '\0');
@@ -95,7 +94,11 @@ int main(int argc, char *argv[])
 
 	//std::cout << "input = " << input << std::endl;
 	std::vector<byte> output(input.begin(), input.end());
-	std::cout << "CALC MEU, " << NumberToNibble(ByteStreamToNumber(output)) << std::endl << "DUMP MEU";
+	InfInt bn = ByteStreamToNumber(output);
+	//std::cout << "CALC MEU," << std::endl << NumberToNibble(bn) << std::endl << "DUMP MEU" << std::endl;
+	std::cout << "CALCBU," << NumberToNibble(bn) << "DUMPBUDUMPBU";
+	//std::cout << "bn.numberOfDigits() = " << bn.numberOfDigits() << " & bn = " << bn.toString() << std::endl;
+	//std::cout << "Which is equal to in power of prime numbers = " << PowerOfPrime(bn) << std::endl;
 
     return 0;
 }

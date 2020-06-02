@@ -87,8 +87,7 @@ TURN (aka rotate) ==> TURN GA ? // Needed ?
 UP (Find a four letter word here ? https://wordfinder.yourdictionary.com/letter-words/4/)
 COUNT ? // Returns the total number of brains/birds
 PUSH ==> PUSH MEU // Create a new brain/bird from current MEU (and jump to it ?)
-PLOP ==> PLOP MEU // Destroy the brain/bird link associated to the MEU register (recursively)
-or FLOP ?
+PLOP (FLOP ?) ==> PLOP MEU // Destroy the brain/bird link associated to the MEU register (recursively)
 INCR ==> INCR [GA] // Set the Zero flag if overflow ;)
 DECR ==> DECR [MEU] // Set the Zero flag
 TEST ==> TEST [BU] ? // Is the BU register holding a brain/bird
@@ -109,7 +108,7 @@ BALL
 MALL
 NULL
 BOIL
-CELL
+CELL (care largely used in source code)
 LIST
 FEED
 FOOD
@@ -183,6 +182,12 @@ CIAO (it means both hello & goodbye)
 FILE
 CODE
 TEXT
+DONE
+TONE
+BYTE Idea : Flip io to byte mode
+CHAR Idea : Reverse of above
+STAR
+TEAR
 
 Gross !
 *******
@@ -209,7 +214,7 @@ Comments
 ********
 
 C/C++ like : // at the end of line or /* & */ for line block
-Or just ";" ? ==> Yes
+Or just ";" ? ==> Yes !
 
 Charset (finally it is a platform concern)
 ******************************************
@@ -326,6 +331,13 @@ getconf ARG_MAX
 
 Under all the Windows...
 https://stackoverflow.com/questions/3205027/maximum-length-of-command-line-string
+
+In C/C++ the program entry point is as follow :
+int main(int argc; char *argv[])
+
+A Gabuzomeu program does not have input parameters nor return values
+but it can read input value(s) and write output value(s). Those values
+may be provided from / to file or from / to the console. See the GBZM "special" instruction [02/06/2020]
 
 Greetings
 *********

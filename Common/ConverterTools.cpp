@@ -3,6 +3,18 @@
 
 bool big = false;
 
+// This should be a template :)
+// No generic mapping from string "enum" array and enum value :(
+byte GetCellId(const std::string& value)
+{
+    const auto &it = std::find(std::begin(CellIds), std::end(CellIds), value);
+    if (it == std::end(CellIds))
+    {
+        throw AlienException(value); // Since the lexical analysis should have done its job
+    }
+    return (byte) (it - std::begin(CellIds));
+}
+
 // Not an half byte here but a base 4 number in GABUZOMEU style, so surrounded by # :)
 std::string NumberToNibble(const InfInt &n)
 {
@@ -12,7 +24,7 @@ std::string NumberToNibble(const InfInt &n)
     while (shift > 0)
     {
         index = (shift % 4).toInt(); // Get the two rightmost bits
-        //std::cout << "value = " << (int)value << " & index = " << index << std::endl;
+        //std::cout << "shift = " << shift.toString() << " & index = " << index << std::endl;
         result = CellIds[index] + result;
         shift /= 4; // No bit operator support :(
     }
@@ -24,7 +36,7 @@ InfInt pow(const InfInt &base, const InfInt &expo)
 {
     if ((base == 0) and (expo == 0))
     {
-        throw InvalidNumberException(); // NAN
+        throw InvalidNumberException("NAN");
     }
     if (base == 0)
     {
@@ -43,6 +55,22 @@ InfInt pow(const InfInt &base, const InfInt &expo)
     return result;
 }
 
+/*
+bool IsPrime(const InfInt& value)
+{
+    bool result = false;
+
+    return result;
+}
+
+std::string PowerOfPrime(const InfInt &value)
+{
+    std::string result;
+
+    return result;
+}
+*/
+
 // Expect an upper cased string without the leading #
 // Raise an exception in case of conversion failure
 // Called either from the input string parsing either from the interpreter
@@ -52,7 +80,7 @@ InfInt NibbleToNumber(const std::string& s)
     //std::cout << "NibbleToNumber input = " << s << std::endl;
     if (s.size() < 2)
     {
-        throw InvalidNumberException(); // (value);
+        throw InvalidNumberException(s); // (value);
     }
 
     /*
@@ -92,7 +120,7 @@ InfInt NibbleToNumber(const std::string& s)
         }
         else
         {
-            throw InvalidNumberException(); //(value);
+            throw InvalidNumberException(s);
         }
         power += 1;
         //std::cout << "result = " << result.toString() << std::endl;
@@ -101,7 +129,7 @@ InfInt NibbleToNumber(const std::string& s)
     if (pos == 1)
     {
         // Never use new for exception object, catch with references... C# bad habit :(
-        throw InvalidNumberException(); // (value); 
+        throw InvalidNumberException(s);
     }
 
     //std::cout << "big = " << big << std::endl;
@@ -109,12 +137,13 @@ InfInt NibbleToNumber(const std::string& s)
     {
         //std::cout << "throw" << std::endl;
         //throw 0;
-        throw OverflowException();
+        throw OverflowException(s);
     }
 
     return result;
 }
 
+// Care : we expect numbers here surrounded by # Since the input data can be anything
 std::vector<InfInt> CompositeStringToNumbers(const std::string& s)
 {
     std::vector<InfInt> result;
@@ -179,32 +208,37 @@ std::string NumbersToCompositeString(const std::vector<InfInt> &v)
         //std::cout << "NumbersToCompositeString it = " << it << std::endl;
         if (it < 32) // ASCII limitation (avoid non printable characters)
         {
+            //std::cout << " < 32 " << std::endl;
             result += NumberToNibble((byte) it.toInt());
         }
         else if (it > 255)
         {
             if (big)
             {                
+                //std::cout << " big " << std::endl;
                 std::vector<byte> bytes = NumberToByteStream(it);
                 for (const auto &it2 : bytes)
                 {
                     if (it2 < 32)
                     {
+                        //std::cout << " < 32 (2)" << std::endl;
                         result += NumberToNibble(it2);
                     }
                     else
                     {
+                        //std::cout << " std (2) " << std::endl;
                         result += (char) it2;
                     }
                 }
             }
             else
             {
-                throw InvalidNumberException(); // (it);
+                throw InvalidNumberException("NumbersToCompositeString");
             }
         }
         else
         {
+            //std::cout << " std " << std::endl;
             result += (char) it.toInt();
         }
         //std::cout << "NumbersToCompositeString loop result = " << result << std::endl;
@@ -252,7 +286,7 @@ InfInt ByteStreamToNumber(const std::vector<byte>& v)
 {
     if (v.size() == 0)
     {
-        throw EmptyContainer();
+        throw EmptyContainer("ByteStreamToNumber");
     }
 
     InfInt result = 0;

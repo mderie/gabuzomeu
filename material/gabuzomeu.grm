@@ -66,5 +66,7 @@ litteral = '#' ('GA' | 'BU' | 'ZO' | 'MEU')+
               
 <term> ::= <factor> '*' <term> | <factor> '/' <term> | <factor>
 
+<power> ::= <factor> | <factor> '^' <power>
+
 <factor> ::= '(' <expression> ')' | litteral | cell
 
