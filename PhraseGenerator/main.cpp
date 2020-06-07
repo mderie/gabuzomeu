@@ -37,7 +37,7 @@ void RunString(const std::string& s)
 		
 	for (size_t i=1; i<=s.size(); i++)
 	{
-		result += " CALC " + CellIds[cellIdToNextChar] + ", " + NumberToNibble(InfInt(s[i]));
+		result += " CALC " + CellIds[cellIdToNextChar] + ", " + NumberToNibble(Base::default_, InfInt(s[i]));
 		play += "";
 		back += "";
 

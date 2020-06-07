@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 	{
 		InfInt bn = pow(InfInt(i), InfInt(i));
 		v = NumberToByteStream(bn);
-		output = "i = " + std::to_string(i) + ", nibble = " + NumberToNibble(InfInt(i)) + ", v.size() = " + std::to_string(v.size()) + ", bn.numberOfDigits() = " + std::to_string(bn.numberOfDigits()) + " & bn.value = " + bn.toString() + "\n";
+		output = "i = " + std::to_string(i) + ", nibble = " + NumberToNibble(Base::default_, InfInt(i)) + ", v.size() = " + std::to_string(v.size()) + ", bn.numberOfDigits() = " + std::to_string(bn.numberOfDigits()) + " & bn.value = " + bn.toString() + "\n";
 		osf.write(output.c_str(), output.size());
 	}
 	osf.close();

@@ -253,8 +253,8 @@ Command line based program that takes two arguments : a text file (*.gbzm) and a
 between double quotes. The runtime loads the text file and provides the input string to the running gabuzomeu program.
 Finally the "collected" string output is shown at the end
 
-literals
-********
+literals (numbers in the language)
+**********************************
 
 Characters : Enclosed in single quote ==> Finally not supported (voluntary obfuscation)
 Numbers : Using the base four notation (GA BU ZO MEU related), preceded with ² or surrounded by """ but then the command line failed :(
@@ -286,6 +286,16 @@ or with one (maybe two #)
 104 = #BUZOZOGA = 'h'
 
 or only gabuzomeu litteral between single quotes (to ease the command line ?)
+
+Numbers from / to the outside
+*****************************
+
+The supported bases are 2, 4, 10, 16, 64 & 256 Where the later actually means make use of the ascii code for representing them.
+Obviously numbers below ascii code 32 are not printable. They are shown as using gabuzomeu base 4 notation between #
+For the others bases, since we don't know in advance their length, they must be enclosed as well by #
+In order to please the padawan programmers, the default base is the fourth one for the code and 256 for the I/O
+The BASE keyword allow a base change for further I/O operations Big numbers (arbitray long positive integers)
+support can be set by using the -b or --big parameter else the default number size is the byte
 
 Allowed bird links
 ******************

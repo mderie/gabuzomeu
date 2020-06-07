@@ -12,6 +12,7 @@ class RuntimeException
 protected:
     std::string m_className;
     std::string m_message;
+    std::string m_location; //TODO: Finalize this :)
 public:
     std::string Message() const { return m_className + (m_message != "" ? (" : " + m_message) : ""); }
 };
@@ -106,6 +107,16 @@ public:
     {
         m_message = message;
         m_className = "Empty container";
+    }
+};
+
+class BaseNotSupported : public RuntimeException
+{
+public:
+    BaseNotSupported(const std::string &message)
+    {
+        m_message = message;
+        m_className = "Base not supported";
     }
 };
 

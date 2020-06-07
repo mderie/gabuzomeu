@@ -7,11 +7,12 @@ C:\laboratory\gabuzomeu\Common\bnflite.hpp(396,48): warning C4244: '=': conversi
 C:\laboratory\gabuzomeu\Common\bnflite.hpp(447,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 C:\laboratory\gabuzomeu\Common\bnflite.hpp(460,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 C:\laboratory\gabuzomeu\Common\bnflite.hpp(495,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1247,5): warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1333,45): warning C4101: 'fnf': unreferenced local variable
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1338,46): warning C4101: 'e': unreferenced local variable
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1373,45): warning C4101: 'fnf': unreferenced local variable
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1378,46): warning C4101: 'e': unreferenced local variable
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1306,5): warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1361,40): warning C4101: 're': unreferenced local variable
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1388,45): warning C4101: 'fnf': unreferenced local variable
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1393,46): warning C4101: 'e': unreferenced local variable
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1428,45): warning C4101: 'fnf': unreferenced local variable
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1433,46): warning C4101: 'e': unreferenced local variable
 C:\laboratory\gabuzomeu\Common\bnflite.hpp(585,1): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
 C:\laboratory\gabuzomeu\Common\bnflite.hpp(583): message : while compiling class template member function 'std::pair<void *,int> bnf::_Parser<U>::_pre_call(void *)'
           with

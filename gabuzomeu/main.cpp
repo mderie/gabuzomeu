@@ -8,6 +8,7 @@
 #include <stack>
 #include <cmath>
 #include <map>
+#include <tuple>
 #include <filesystem> // Finally present :)
 
 // Arhg : the getopt POSIX standard for parsing the command line is missing !
@@ -42,12 +43,16 @@ std::string lastCell;
 std::string targetCell;
 //std::string gotoLabel;
 
-// Needed since the context is created lately in initP2
-std::vector<InfInt> inputs;
-std::vector<InfInt> outputs;
+// I/O vectors needed since the context is created lately in initP2
+// Using tuple because the base of numbers in the various I/O operation may change
+// We need to store them either as string (base = 0 meaning unknown) or as InfInt
+// with the current base, the string is empty then !
+//typedef std::tuple<byte, std::string, InfInt> BSBI; // Base - String - Big Integer use get<x> to access the xth element of the tuple :)
+std::vector<BSII> inputs;
+std::vector<BSII> outputs;
 
 //int calcResult = 0;
-//InfInt exprResult = 0;
+InfInt exprResult = 0; // Always one at time !
 //int termResult = 1;
 //int termLeft = 0;
 //int factResult = 0;
@@ -65,8 +70,8 @@ std::map<std::string, size_t> labels;
 
 // Unable to get the number of elementsinside an enum
 // https://stackoverflow.com/questions/712463/number-of-elements-in-an-enum
-enum class OpCode { last, jump, pump, dump, free, bird, move, calc, head, tail, zero, else_, gbzm, last_item }; // Care of the else keyword !
-const std::string OpCodes[(int) (OpCode::last_item)] = { "LAST", "JUMP", "PUMP", "DUMP", "FREE", "BIRD", "MOVE", "CALC", "HEAD", "TAIL", "ZERO", "ELSE", "GBZM" };
+enum class OpCode { last, jump, pump, dump, free, bird, move, calc, head, tail, zero, else_, gbzm, base, last_item }; // Care of the else keyword !
+const std::string OpCodes[(int) (OpCode::last_item)] = { "LAST", "JUMP", "PUMP", "DUMP", "FREE", "BIRD", "MOVE", "CALC", "HEAD", "TAIL", "ZERO", "ELSE", "GBZM", "BASE" };
 
 struct Instruction
 {
@@ -129,11 +134,11 @@ struct Context
 {
     size_t instructionPointer; // AKA IP
     size_t birdPointer; // AKA current bird index in Birds (AKA BP)
-    size_t charPointer; //TODO: Rename it CP !
-    InfInt exprResult; //TODO: Check if needed here !
+    size_t pumpPointer; //TODO: AKA PP ?
+    Base ioBase;
     std::string gotoLabel;
-    std::vector<InfInt> inputs;
-    std::vector<InfInt> outputs;
+    std::vector<BSII> inputs;
+    std::vector<BSII> outputs;
     std::vector<Bird> birds;
 
     Context()
@@ -143,10 +148,11 @@ struct Context
 
     void Clear()
     {
-        exprResult = 0;
+        //exprResult = 0;
+        ioBase = Base::default_;
         instructionPointer = 0;
         birdPointer = 0;
-        charPointer = 0;
+        pumpPointer = 0;
         birds.emplace_back(Bird());
     }
 };
@@ -279,6 +285,13 @@ static bool OnGbzm(const char* lexem, size_t len)
 {
     AnalysisFilter("Gbzm = : %.*s;\n", len, lexem);
     instructions.emplace_back(Instruction(OpCode::gbzm, lastCell, std::string(lexem, len)));
+    return true;
+}
+
+static bool OnBase(const char* lexem, size_t len)
+{
+    AnalysisFilter("Base = : %.*s;\n", len, lexem);
+    instructions.emplace_back(Instruction(OpCode::base, std::string(lexem, len), ""));
     return true;
 }
 
@@ -517,9 +530,9 @@ static bool CaptureLitteral(const char* lexem, size_t len)
 
     if (!firstPass)
     {
-        contexts.top().exprResult = NibbleToNumber(std::string(lexem + 1, len - 1));
+        exprResult = LexerNibbleToNumber(std::string(lexem + 1, len - 1));
         //std::cout << "pushed CaptureLitteral exprResult = " << exprResult << std::endl;
-        operands.push(contexts.top().exprResult);
+        operands.push(exprResult);
     }
 
     return true;
@@ -615,9 +628,9 @@ static bool CaptureCell(const char* lexem, size_t len)
         {
             throw InvalidCellKindException("CaptureCell " + CellIds[cellId]);
         }
-        contexts.top().exprResult = contexts.top().birds[contexts.top().birdPointer].cells[cellId].value;
-        std::cout << "pushed CaptureCell exprResult = " << contexts.top().exprResult << " , cellId = " << (int) cellId << std::endl;
-        operands.push(contexts.top().exprResult);
+        exprResult = contexts.top().birds[contexts.top().birdPointer].cells[cellId].value;
+        //std::cout << "pushed CaptureCell exprResult = " << exprResult << " , cellId = " << (int) cellId << std::endl;
+        operands.push(exprResult);
     }
 
     return true;
@@ -638,9 +651,9 @@ static bool CaptureTargetCell(const char* lexem, size_t len)
         {
             throw InvalidCellKindException("CaptureTargetCell " + CellIds[cellId]);
         }
-        contexts.top().exprResult = contexts.top().birds[contexts.top().birdPointer].cells[cellId].value;
+        exprResult = contexts.top().birds[contexts.top().birdPointer].cells[cellId].value;
         //std::cout << "pushed TargetCell exprResult = " << exprResult << std::endl;
-        operands.push(contexts.top().exprResult);
+        operands.push(exprResult);
     }
 
     return true;
@@ -750,6 +763,7 @@ bnf::Lexem l_tail("TAIL");
 bnf::Lexem l_zero("ZERO");
 bnf::Lexem l_else("ELSE");
 bnf::Lexem l_gbzm("GBZM"); // Judas !
+bnf::Lexem l_base(OpCodes[(int) OpCode::base].c_str()); // OK as well but a bit long :)
 
 // Tokens
 // It seems that the lib consider token as building blocks for lexemes... So character set operators
@@ -804,6 +818,7 @@ bnf::Rule r_tail = (l_tail + l_cell + CaptureCell + "," + l_label) + OnTail;
 bnf::Rule r_zero = (l_zero + l_cell + CaptureCell + "," + l_label) + OnZero;
 bnf::Rule r_else = (l_else + l_cell + CaptureCell + "," + l_label) + OnElse;
 bnf::Rule r_gbzm = (l_gbzm + l_cell + CaptureCell + "," + l_cell) + OnGbzm;
+bnf::Rule r_base = (l_base + (l_litteral | l_cell)) + OnBase; // Exception : we authorize the usage of an immediate value ! Else we should use dedicated keywords (BYTE or CHAR, HEXA, FOUR, DEC & BIT) ?
 
 bnf::Rule r_expression; // Must be "alone"... Recursivity issue
 bnf::Rule r_term;
@@ -813,7 +828,7 @@ bnf::Rule r_factor;
 
 bnf::Rule r_calc = (l_calc + l_cell + CaptureTargetCell + "," + r_expression) + OnCalc;
 
-bnf::Rule r_instruction = (r_last | r_jump | r_dump | r_pump | r_free | r_bird | r_move | r_calc | r_head | r_tail | r_zero | r_else | r_gbzm) + OnInstruction;
+bnf::Rule r_instruction = (r_last | r_jump | r_dump | r_pump | r_free | r_bird | r_move | r_calc | r_head | r_tail | r_zero | r_else | r_gbzm | r_base) + OnInstruction;
 bnf::Rule r_line = (l_colon_label + OnLabel | r_instruction) + OnLine;
 
 // This was ok but raises strange duplicate lines !
@@ -833,7 +848,7 @@ bnf::Rule r_program = (*r_line) + OnProgram;
 void preludeExpression()
 {
     tailexpr = nullptr;    
-    contexts.top().exprResult = 0;
+    exprResult = 0;
     //calcResult = 0;
     //termResult = 1; // Neutral for *
     //termLeft = 0;
@@ -868,7 +883,7 @@ void postludeExpression()
 
 void DoLast()
 {
-    if (contexts.top().charPointer == contexts.top().inputs.size())
+    if (contexts.top().pumpPointer == contexts.top().inputs.size())
     {
         //std::cout << "charPointer = " << charPointer << " & inputs.size() = " << inputs.size() << std::endl;
         //std::cout << "instructionPointer = " << instructionPointer << " & instructions[instructionPointer].operand1 = " << instructions[instructionPointer].operand1 << std::endl;
@@ -889,12 +904,20 @@ void DoPump()
         throw InvalidCellKindException("DoPump " + CellIds[cellId]);
     }
 
-    if (contexts.top().charPointer >= contexts.top().inputs.size())
+    if (contexts.top().pumpPointer >= contexts.top().inputs.size())
     {
         throw NoMoreInputException("DoPump");
     }
 
-    contexts.top().birds[contexts.top().birdPointer].cells[cellId].value = contexts.top().inputs[contexts.top().charPointer++];
+    if (contexts.top().inputs[contexts.top().pumpPointer].b == Base::Unknown)
+    {
+        contexts.top().birds[contexts.top().birdPointer].cells[cellId].value = NibbleToNumber(contexts.top().ioBase, contexts.top().inputs[contexts.top().pumpPointer].s);
+    }
+    else
+    {
+        contexts.top().birds[contexts.top().birdPointer].cells[cellId].value = contexts.top().inputs[contexts.top().pumpPointer].ii;
+    }
+    contexts.top().pumpPointer++;
 }
 
 void DoDump()
@@ -907,10 +930,10 @@ void DoDump()
     }
 
     //std::cout << "birdPointer = " << birdPointer << " & DUMP = " << birds[birdPointer].cells[cellId].value << std::endl;
-    //std::cout << "size before = " << outputs.size() << std::endl;
-    std::cout << "DoDump ==> value = " << contexts.top().birds[contexts.top().birdPointer].cells[cellId].value << std::endl;
-    contexts.top().outputs.emplace_back(contexts.top().birds[contexts.top().birdPointer].cells[cellId].value);
-    //std::cout << "size after = " << outputs.size() << " & outputs[0] = " << outputs[0] << std::endl;
+    //std::cout << "size before = " << contexts.top().outputs.size() << std::endl;
+    //std::cout << "DoDump ==> value = " << contexts.top().birds[contexts.top().birdPointer].cells[cellId].value << std::endl;
+    contexts.top().outputs.emplace_back(BSII(contexts.top().ioBase, contexts.top().birds[contexts.top().birdPointer].cells[cellId].value));
+    //std::cout << "size after = " << contexts.top().outputs.size() << std::endl;
 }
 
 // Care : recursive ! Or not... We can leave everything as is and not recycle birds
@@ -979,9 +1002,9 @@ void DoCalc()
     //std::cout << "Debug 2" << std::endl;
     postludeExpression();
     //std::cout << "Debug 3" << std::endl;
-    contexts.top().exprResult = operands.top(); operands.pop();
-    std::cout << "DoCalc ==> contexts.top().exprResult = " << contexts.top().exprResult << std::endl;
-    contexts.top().birds[contexts.top().birdPointer].cells[cellId].value = contexts.top().exprResult;
+    exprResult = operands.top(); operands.pop();
+    //std::cout << "DoCalc ==> contexts.top().exprResult = " << exprResult << std::endl;
+    contexts.top().birds[contexts.top().birdPointer].cells[cellId].value = exprResult;
     //std::cout << "DoCalc ==> birdPointer = " << birdPointer << ", cellId = " << (int) cellId << " & CALC = " << birds[birdPointer].cells[cellId].value << std::endl;
 }
 
@@ -1044,8 +1067,12 @@ void DoGbzm()
     // Prepare the inputs for the "new interpreter instance" !
     std::vector<byte> bytes = NumberToByteStream(contexts.top().birds[contexts.top().birdPointer].cells[cellId].value);
     inputs.clear();
-    inputs.resize(bytes.size());
-    std::copy(bytes.begin(), bytes.end(), inputs.begin());
+    inputs.resize(bytes.size()); // Care ! https://stackoverflow.com/questions/29920394/vector-of-class-without-default-constructor
+    //std::copy(bytes.begin(), bytes.end(), inputs.begin());
+    for (int i=0; i < bytes.size(); i++)
+    {
+        inputs[i] = BSII(Base::default_, bytes[i]);
+    }
 
     // Prepare a new context
     contexts.push(contexts.top()); // push inputs, outputs, instruction pointer, ...
@@ -1060,7 +1087,30 @@ void DoGbzm()
     contexts.pop(); // if not empty, pop inputs, outputs, instruction pointer, ...
     cellId = GetCellId(instructions[contexts.top().instructionPointer].operand2);
     contexts.top().birds[contexts.top().birdPointer].cells[cellId].value = ByteStreamToNumber(NumbersToByteStream(outputs));
-    std::cout << "DoGbzm ==> cellId = " << (int) cellId  << " & Return value = " << contexts.top().birds[contexts.top().birdPointer].cells[cellId].value << std::endl;
+    //std::cout << "DoGbzm ==> cellId = " << (int) cellId  << " & Return value = " << contexts.top().birds[contexts.top().birdPointer].cells[cellId].value << std::endl;
+}
+
+// We support the following bases (no need for octal yet) :
+// 2 (#ZO), 4 (#BUGA still using GA BU ZO MEU obviously !-), 10 (#ZOZO), 16 (#BUGAGA), 64 (#BUGAGAGA) & 256 (#BUGAGAGAGA) 
+void DoBase()
+{
+    std::string operand = instructions[contexts.top().instructionPointer].operand1;
+    InfInt base;
+    if (operand[0] == '#')
+    {
+        base = LexerNibbleToNumber(operand.substr(1, operand.size() - 1));
+    }
+    else
+    {
+        base = contexts.top().birds[contexts.top().birdPointer].cells[GetCellId(operand)].value;
+    }
+    //TODO: Use the Base enum ?
+    if ((base != 2) and (base != 4) and (base != 10) and (base != 16) and (base != 64) and (base != 256))
+    {
+        throw BaseNotSupported(base.toString());
+    }
+    
+    contexts.top().ioBase = (Base) base.toInt();
 }
 
 /////////
@@ -1070,10 +1120,11 @@ void DoGbzm()
 void RunInterpreter()
 {
     contexts.top().gotoLabel = "";
+    //std::cout << "contexts.top().instructionPointer = " << contexts.top().instructionPointer << " & instructions.size() = " << instructions.size() << std::endl;
     while (contexts.top().instructionPointer < (int) instructions.size())
     {
-        std::cout << "Stack level = " << contexts.size() << ", OpCode = " << OpCodes[(int)instructions[contexts.top().instructionPointer].opCode]
-                  << ", operand1 = '" << instructions[contexts.top().instructionPointer].operand1  << "' & operand2 = '" << instructions[contexts.top().instructionPointer].operand2 << "'" << std::endl;
+        //std::cout << "Stack level = " << contexts.size() << ", OpCode = " << OpCodes[(int)instructions[contexts.top().instructionPointer].opCode]
+        //          << ", operand1 = '" << instructions[contexts.top().instructionPointer].operand1  << "' & operand2 = '" << instructions[contexts.top().instructionPointer].operand2 << "'" << std::endl;
         InterpretFilter(OpCodes[(int) instructions[contexts.top().instructionPointer].opCode]);
 
         switch (instructions[contexts.top().instructionPointer].opCode)
@@ -1091,6 +1142,7 @@ void RunInterpreter()
         case OpCode::zero: { DoZero(); break; }
         case OpCode::else_: { DoElse(); break; }
         case OpCode::gbzm: { DoGbzm(); break; }
+        case OpCode::base: { DoBase(); break; }
 
         default: { throw AlienException("Line = " + std::to_string(contexts.top().instructionPointer)); }
         } // switch
@@ -1176,6 +1228,7 @@ void RunAnalyzers(const std::vector<std::string> &lines)
     }
     else
     {
+        //TODO: Replace the following by a nice error message...
         printf("Failed, stopped at=%.40s\n status = 0x%0X,  flg = %s%s%s%s%s%s%s%s\n",
             tailexpr ? tailexpr : "", tst,
             tst & bnf::eOk ? "eOk" : "Not",
@@ -1220,8 +1273,16 @@ void Run(const std::vector<std::string> &lines)
     InitP1();
     RunAnalyzers(lines); // Raise exception in debug mode... In string dtor
     //std::cout << "P1 done , about to start P2" << std::endl;
-    InitP2();
-    RunInterpreter(); // May call Analyze(...) again for CALC instructions
+
+    if (instructions.size() == 0)
+    {
+        std::cout << "No instruction no babble..." << std::endl;
+    }
+    else
+    {
+        InitP2();
+        RunInterpreter(); // May call Analyze(...) again for CALC instructions
+    }
 }
 
 //////////////////////////
@@ -1297,9 +1358,9 @@ int main(int argc, char *argv[])
     {
         try
         {
-            inputs = CompositeStringToNumbers(data);
+            inputs = CompositeStringToNumbers(data); // In return, base 0 means unknow yet base 
         }
-        catch (...)
+        catch (const RuntimeException& re)
         {            
             std::cout << "Unable to parse the data string :(" << std::endl;
             return -3;
@@ -1320,15 +1381,11 @@ int main(int argc, char *argv[])
             ifs.close();
 
             inputs.resize(std::filesystem::file_size(source));
-            std::copy(bytes.begin(), bytes.end(), inputs.begin());
-
-            //TODO: [future] Review this in order to support for big int coded as non printable character here ?
-            /*
-            if (big)
+            //std::copy(bytes.begin(), bytes.end(), inputs.begin());
+            for (int i = 0; i < bytes.size(); i++)
             {
-
+                inputs[i] = BSII(Base::default_, bytes[i]);
             }
-            */            
         }
         catch (const FileNotFoundException &fnf)
         {
@@ -1391,19 +1448,26 @@ int main(int argc, char *argv[])
         contexts.push(Context());
         Run(lines);
 
-        std::cout << totalBirdCounder << " bird" << (totalBirdCounder > 1 ? "s say" : " says") << " : ";
-        if (target != "")
+        if (contexts.top().outputs.size() > 0)
         {
-            std::ofstream ofs(target, std::ios::out | std::ios::binary);
-            std::vector<byte> bytes = NumbersToByteStream(contexts.top().outputs);
-            ofs.write((const char*) bytes.data(), bytes.size());
-            ofs.close();
+            std::cout << totalBirdCounder << " bird" << (totalBirdCounder > 1 ? "s say" : " says") << " : ";
+            if (target != "")
+            {
+                std::ofstream ofs(target, std::ios::out | std::ios::binary);
+                std::vector<byte> bytes = NumbersToByteStream(contexts.top().outputs);
+                ofs.write((const char*) bytes.data(), bytes.size());
+                ofs.close();
 
-            std::cout << target << " file created" << std::endl;
+                std::cout << target << " file created" << std::endl;
+            }
+            else
+            {            
+                std::cout << NumbersToCompositeString(contexts.top().outputs) << std::endl;
+            }
         }
         else
-        {            
-            std::cout << NumbersToCompositeString(contexts.top().outputs) << std::endl;
+        {
+            std::cout << "No output no chocolate..." << std::endl;
         }
     }
     catch (const RuntimeException &re)
