@@ -31,7 +31,16 @@
 bool analysis = false;
 bool interpret = false;
 
-const char* tailexpr = nullptr; // Remember, it must be read in reverse : a pointer to a const char
+// Change the immediate rule in order to enforce a trailing #
+// We need this in order to not change the nibble I/O, so when working with other bases than the default one
+// The situation is more on the reading from file or from the command line ie : #BUGA
+// could be read as #BU in B4 followed by GA in B256 or as #BUGA in B4
+// So in Quine mode we explicitely ask the parser to enforce a trailing # for the immediate in
+// order to dump them as usual nibbles so with a trailing # as well...
+bool Quine = false;
+
+const char *tailExpr = nullptr; // Remember, it must be read in reverse : a pointer to a const char
+const char *tailProg = nullptr;
 // We need two passes even though the language is interpreted (this is due
 // to the potential forward jumps to code region not yet spotted.
 // Actually the second pass is used only for the expression evaluation
@@ -754,15 +763,16 @@ bnf::Lexem l_last("LAST");
 bnf::Lexem l_jump("JUMP");
 bnf::Lexem l_dump("DUMP");
 bnf::Lexem l_pump("PUMP");
-bnf::Lexem l_free("FREE");
-bnf::Lexem l_bird("BIRD");
-bnf::Lexem l_move("MOVE");
+bnf::Lexem l_free("FREE"); // Hum...
+bnf::Lexem l_bird("BIRD"); // Hum...
+bnf::Lexem l_move("MOVE"); // Hum...
 bnf::Lexem l_calc("CALC");
-bnf::Lexem l_head("HEAD");
-bnf::Lexem l_tail("TAIL");
+bnf::Lexem l_head("HEAD"); // Hum...
+bnf::Lexem l_tail("TAIL"); // Hum...
 bnf::Lexem l_zero("ZERO");
 bnf::Lexem l_else("ELSE");
 bnf::Lexem l_gbzm("GBZM"); // Judas !
+bnf::Lexem l_size("SIZE"); // define it as CALC math operator ? Or use it empty [] to get the size (and set the size ?)
 bnf::Lexem l_base(OpCodes[(int) OpCode::base].c_str()); // OK as well but a bit long :)
 
 // Tokens
@@ -847,7 +857,7 @@ bnf::Rule r_program = (*r_line) + OnProgram;
 
 void preludeExpression()
 {
-    tailexpr = nullptr;    
+    tailExpr = nullptr;    
     exprResult = 0;
     //calcResult = 0;
     //termResult = 1; // Neutral for *
@@ -978,8 +988,9 @@ void DoMove()
 {
     byte cellId = GetCellId(instructions[contexts.top().instructionPointer].operand1);
     if ((contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Head) or (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Tail))
-    {
+    {        
         contexts.top().birdPointer = contexts.top().birds[contexts.top().birdPointer].cells[cellId].value.toInt();
+        //std::cout << "DoMove ==> contexts.top().birdPointer = " << contexts.top().birdPointer << std::endl;
     }
     else
     {
@@ -998,7 +1009,10 @@ void DoCalc()
     //std::cout << "Debug 0" << std::endl;
     preludeExpression();
     //std::cout << "Debug 1 expr = " << instructions[instructionPointer].operand2 << std::endl;
-    bnf::Analyze(r_expression, instructions[contexts.top().instructionPointer].operand2.c_str(), &tailexpr);
+    bnf::Analyze(r_expression, instructions[contexts.top().instructionPointer].operand2.c_str(), &tailExpr);
+    
+    //TODO: Introduce if (!...) ???
+
     //std::cout << "Debug 2" << std::endl;
     postludeExpression();
     //std::cout << "Debug 3" << std::endl;
@@ -1020,7 +1034,7 @@ void DoHead()
 void DoTail()
 {
     byte cellId = GetCellId(instructions[contexts.top().instructionPointer].operand1);
-    if (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind != CellKind::Tail)
+    if (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Tail)
     {
         contexts.top().gotoLabel = instructions[contexts.top().instructionPointer].operand2;
     }
@@ -1123,9 +1137,9 @@ void RunInterpreter()
     //std::cout << "contexts.top().instructionPointer = " << contexts.top().instructionPointer << " & instructions.size() = " << instructions.size() << std::endl;
     while (contexts.top().instructionPointer < (int) instructions.size())
     {
-        //std::cout << "Stack level = " << contexts.size() << ", OpCode = " << OpCodes[(int)instructions[contexts.top().instructionPointer].opCode]
-        //          << ", operand1 = '" << instructions[contexts.top().instructionPointer].operand1  << "' & operand2 = '" << instructions[contexts.top().instructionPointer].operand2 << "'" << std::endl;
-        InterpretFilter(OpCodes[(int) instructions[contexts.top().instructionPointer].opCode]);
+        std::cout << "birdPointer = " << contexts.top().birdPointer << ", stack level = " << contexts.size() << ", OpCode = " << OpCodes[(int)instructions[contexts.top().instructionPointer].opCode]
+                  << ", operand1 = '" << instructions[contexts.top().instructionPointer].operand1  << "' & operand2 = '" << instructions[contexts.top().instructionPointer].operand2 << "'" << std::endl;
+        //InterpretFilter(OpCodes[(int) instructions[contexts.top().instructionPointer].opCode]);
 
         switch (instructions[contexts.top().instructionPointer].opCode)
         {
@@ -1219,7 +1233,7 @@ void RunAnalyzers(const std::vector<std::string> &lines)
     // const char justInstructionCommentInstructionComment[] = "LAST BU;ahu ZERO GA, jmp ; So cool language";
  
     preludeExpression();
-    int tst = bnf::Analyze(r_program, line.c_str(), &tailexpr);
+    int tst = bnf::Analyze(r_program, line.c_str(), &tailProg);
     postludeExpression();
 
     if (tst > 0)
@@ -1230,7 +1244,7 @@ void RunAnalyzers(const std::vector<std::string> &lines)
     {
         //TODO: Replace the following by a nice error message...
         printf("Failed, stopped at=%.40s\n status = 0x%0X,  flg = %s%s%s%s%s%s%s%s\n",
-            tailexpr ? tailexpr : "", tst,
+            tailProg ? tailProg : "", tst,
             tst & bnf::eOk ? "eOk" : "Not",
             tst & bnf::eRest ? ", eRest" : "",
             tst & bnf::eOver ? ", eOver" : "",
@@ -1316,7 +1330,9 @@ int main(int argc, char *argv[])
             ("t,target", "", cxxopts::value<std::string>()->default_value(""))
             ("a,analysis", "", cxxopts::value<bool>()->default_value("false"))
             ("i,interpret", "", cxxopts::value<bool>()->default_value("false"))
-            ("b,big", "", cxxopts::value<bool>()->default_value("false"));            
+            ("b,big", "", cxxopts::value<bool>()->default_value("false"));
+          //TODO: Change the immediate parsing rule to support trailing #
+          //("q,quine", "", cxxopts::value<bool>()->default_value("false"));
 
         auto parameters = options.parse(argc, argv);
         file = parameters["file"].as<std::string>();
@@ -1327,6 +1343,7 @@ int main(int argc, char *argv[])
         analysis = parameters["analysis"].as<bool>();
         interpret = parameters["interpret"].as<bool>();
         big = parameters["big"].as<bool>();
+        Quine = parameters["quine"].as<bool>();
 
         // Nice (shows the additional help strings), but incomplete syntax (ie for the "=")
         // std::cout << options.help() << std::endl;
@@ -1358,7 +1375,7 @@ int main(int argc, char *argv[])
     {
         try
         {
-            inputs = CompositeStringToNumbers(data); // In return, base 0 means unknow yet base 
+            inputs = CompositeStringToNumbers(data); // In return, base 0 means unknow yet base. Nibble ok
         }
         catch (const RuntimeException& re)
         {            
@@ -1384,8 +1401,9 @@ int main(int argc, char *argv[])
             //std::copy(bytes.begin(), bytes.end(), inputs.begin());
             for (int i = 0; i < bytes.size(); i++)
             {
-                inputs[i] = BSII(Base::default_, bytes[i]);
+                inputs[i] = BSII(Base::default_, bytes[i]); //TODO: Nibble not supported yet from file !
             }
+            //TODO: We need a kind of automate reader here : nibble mode in unkown base / byte mode...
         }
         catch (const FileNotFoundException &fnf)
         {
@@ -1454,7 +1472,7 @@ int main(int argc, char *argv[])
             if (target != "")
             {
                 std::ofstream ofs(target, std::ios::out | std::ios::binary);
-                std::vector<byte> bytes = NumbersToByteStream(contexts.top().outputs);
+                std::vector<byte> bytes = NumbersToByteStream(contexts.top().outputs); //TODO: Nibble not supported yet to file !
                 ofs.write((const char*) bytes.data(), bytes.size());
                 ofs.close();
 
@@ -1462,7 +1480,7 @@ int main(int argc, char *argv[])
             }
             else
             {            
-                std::cout << NumbersToCompositeString(contexts.top().outputs) << std::endl;
+                std::cout << NumbersToCompositeString(contexts.top().outputs) << std::endl; // Nibble ok
             }
         }
         else

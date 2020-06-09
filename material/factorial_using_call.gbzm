@@ -1,0 +1,41 @@
+
+; Optional, change nibble base IO
+;BASE #BUGA
+
+; No input, no chocolate
+LAST error
+
+; Since we can't end a program today, functions is better placed before the main
+; (not mandatory since all labels are treated at the first pass
+; Alternatively the main could use a RETR meaning that implicitely the program start with a CALL
+JUMP main
+
+; This is not a true function, it is a label that ends with a RETR
+
+:fact
+HSUP GA
+ZERO GA, tail
+CALC BU, GA - #BU
+PUSH BU
+CALL fact ; Recurse !-)
+CALC GA, GA * BU
+PUSH GA
+RETR
+
+:tail
+PUSH #BU
+RETR
+
+:main
+PUMP GA
+PUSH GA
+CALL fact
+HSUP GA
+DUMP GA
+JUMP eof
+
+:error
+CALC GA, #...
+DUMP GA
+
+:eof

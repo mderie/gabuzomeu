@@ -73,6 +73,11 @@ BODY ==> BODY appartment, label // Test if the GA appartment holds neither an ar
 12) LAST ==> LAST label // True/Set Zero Flag if input pointer is beyond the last character (TEST), JUMP to label if true else continue the flow
 Idea : introduce another keyword that return the character count not yet processed ?
 
+New !
+
+13) GBZM
+14) BASE
+
 First ideas
 ***********
 
@@ -96,6 +101,7 @@ Futures
 *******
 
 REPEAT !
+PEEK
 FEEL
 COOL
 LEAF
@@ -116,7 +122,7 @@ FREE
 FULL
 UNIQ
 IFEQ
-EQUAL
+EQUAL Hum !
 IFTH
 TIME
 DATE
@@ -173,7 +179,6 @@ RULE
 MULE
 FROM
 POOR
-POOP
 LOVE
 PAIN
 BUFF Idea bidi tmp storage ?
@@ -188,10 +193,21 @@ BYTE Idea : Flip io to byte mode
 CHAR Idea : Reverse of above
 STAR
 TEAR
+GRUB 
+GRAB
+GREP
+GRIP
+HERE
+FISH
+XCHG
+SIZE
+UNDO
+REDO
 
 Gross !
 *******
 
+POOP
 SHIT
 FUCK
 CUNT

@@ -1,0 +1,18 @@
+
+; No TOP instruction to check the stack status...
+
+:forward
+LAST backward
+CALC BU, BU + #BU
+PUMP GA
+PUSH GA
+JUMP forward
+
+:backward
+ZERO BU, eof
+HSUP GA
+DUMP GA
+CALC BU, BU - #BU
+JUMP backward
+
+:eof

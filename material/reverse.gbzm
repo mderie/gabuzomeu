@@ -1,7 +1,8 @@
 
 ; Ouput in reverse order the input string (en 32 lignes :)
 
-; We assume the we process a C like string (so terminate with #GA)
+; We assume that we process a C like string (so terminate with #GA),
+; So an empty string is its own reverse...
 LAST end
 
 ; Read and potential ascent through zo

@@ -1,0 +1,33 @@
+
+; Almost easy : fact(#BUGA) = #BUZOGA !-)
+; Result can be cross checked here
+; https://www.calculatorsoup.com/calculators/discretemathematics/factorials.php
+
+; Optional, change nibble base IO
+;BASE #BUGA
+
+; No input, no chocolate
+LAST error
+
+; End of recurse ?
+PUMP GA
+ZERO GA, tail
+
+; Recurse !
+CALC ZO, GA - #BU
+GBZM ZO, BU
+CALC GA, GA * BU
+DUMP GA
+JUMP eof
+
+; 0! ==> Return 1 as output (no test like if (GA == 1) in Gabuzomeu...)
+:tail
+CALC GA, #BU
+DUMP GA
+JUMP eof
+
+:error
+CALC GA, #...
+DUMP GA
+
+:eof

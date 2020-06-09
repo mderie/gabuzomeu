@@ -1,0 +1,295 @@
+
+One line version in C#
+**********************
+
+using System; public class Program { private static string thisProgram = "using System; public class Program { private static string thisProgram = ??; public static void Main() { Console.WriteLine(Quine(thisProgram)); } public static string Quine(string s) { return s.Replace(\"?\" + \"?\", \"\\\"\" + s.Replace(\"\\\\\", \"\\\\\\\\\").Replace(\"\\\"\", \"\\\\\\\"\") + \"\\\"\"); } }"; public static void Main() { Console.WriteLine(Quine(thisProgram)); } public static string Quine(string s) { return s.Replace("?" + "?", "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""); } }
+
+Remember in C
+*************
+
+main(){char*s="main(){char*s=%c%s%c;printf(s,34,s,34);}";printf(s,34,s,34);}
+
+==> s = "main(){char*s=%c%s%c;printf(s,34,s,34);}"
+       34                                        34
+                  et s comprend %c%s%c       ==> CLEVERLY ARRANGED DATA
+            printf(format_string, params...) ==> GENERIC PLAYER
+
+==> super short since we can declare variable content and we can easily format the output
+==> Quine in Brainfuck is long ! So will it in Gabuzomeu :(
+			
+			
+
+Character	Meaning ==> Equivalent in Gabuzomeu
+
+> (62)     increment the data pointer (to point to the next cell to the right) ==> MOVE ?
+< (60)     decrement the data pointer (to point to the next cell to the left) ==> MOVE ?
++ (43)     increment (increase by one) the byte at the data pointer ==> CALC ?
+- (45)     decrement (decrease by one) the byte at the data pointer ==> CALC ?
+. (46)     output the byte at the data pointer ==> DUMP
+, (44)     accept one byte of input, storing its value in the byte at the data pointer ==> PUMP
+[ (91)     if the byte at the data pointer is zero, then instead of moving the instruction pointer forward to the next command,
+           jump it forward to the command after the matching ] command ==> ZERO
+] (93)     if the byte at the data pointer is nonzero, then instead of moving the instruction pointer forward to the next command,
+           jump it back to the command after the matching [ command ==> ELSE
+			
+Still we have in addition :
+
+MOVE, FREE, BIRD, LAST, HEAD, TAIL, GBZM & JUMP
+
+Data aspect :
+
+Brainfuck : one random access unlimited vector as tmp buffer and two one way unlimited vectors input & output
+
+Gabuzomeu : two one way access unlimited vectors input & output and unlimited four storage birds
+
+
+
+https://fatiherikli.github.io/brainfuck-visualizer
+
++++++ +++++ initialize counter (cell #0) to 10
+[ use loop to set 70/100/30/10
+> +++++ ++ add 7 to cell #1
+> +++++ +++++ add 10 to cell #2
+> +++ add 3 to cell #3
+> + add 1 to cell #4
+<<<< - decrement counter (cell #0)
+] > ++ . print 'H'
+> + . print 'e'
++++++ ++ . print 'l' . print 'l' +++ . print 'o' > ++ . print ' '
+<< +++++ +++++ +++++ . print 'W' > . print 'o' +++ . print 'r' ----- - .
+print 'l' ----- --- . print 'd' > + . print '!' > . print ' '
+
+==> Hello World!
+
+CALC GA, #BUZOZOGA ; = 'h' = 104 ('H' = 72)
+DUMP GA
+CALC BU, #BUZOBUBU ; = 'e' = 101
+DUMP BU
+CALC ZO, #BUZOMEUGA ; = 'l' = 108
+DUMP ZO
+DUMP ZO
+CALC MEU, #BUZOMEUMEU ; = 'o' = 111
+DUMP MEU
+CALC GA, #ZOGAGA ; =  ' ' = 32
+DUMP GA
+CALC BU, #BUMEUBUMEU ; = 'w' = 119
+DUMP BU
+DUMP MEU
+CALC BU, #BUMEUGAZO ; = 'r' = 114
+DUMP BU
+DUMP ZO
+CALC GA, #BUZOBUGA ; = 'd' = 100
+DUMP GA
+
+
+
+Quine in Brainfuck
+
+
+Code :
+
+>>>>                               leave 4 empty cells
+$$$data definition$$$              to be completed
+++++++++[->++++++++<]>--....[-]    print (62) 4 times
+C                           D
+<<[<]<                             go 2 cells before array
+<++++++++[->+++++>++++++++<<]      generate 40 and 64
+>+++>-->                           then 43 and 62 and got to first data cell
+[                                  for each cell
+  [-<<<+>.>>]                      move value 3 cells on the left and print 43 each time
+  <.                               print 62
+  [->+<]<[->+<]                    moves 43 and 62 on the right
+>>>]                               loop
+<<<<[<]>                           Go to first array cell
+[.>]                               For each cell print char
+
+Code minified :
+
+>>>>$$$data definition$$$++++++++[->++++++++<]>--....[-]<<[<]<<++++++++[->+++++>++++++++<<]>+++>-->[[-<<<+>.>>]<.[->+<]<[->+<]>>>]<<<<[<]>[.>]
+A   B                    C                           D
+
+Data :
+
+++++++++[->++++++++<]>--....       Display >>>>
+C
+
+[-]<<[<]<<++++++++[->+++++>++++++++<<]>+++>-->[[-<<<+>.>>]<.[->+<]<[->+<]>>>]<<<<[<]>[.>]
+D
+
+Tool :
+
+++++++++[->+++++>++++++++<<]>+++>--<<   Generate 43 and 62
+,[                                      For each value in input
+  [->.<]                                Print 43 as many times as needed
+  >>.                                   print 62
+<<,]                                    Loop
+
+Tool Minified, used to generate the $$$data definition$$$ based on the data !
+
+++++++++[->+++++>++++++++<<]>+++>--<<,[[->.<]>>.<<,]
+
+Complete :
+
+First, put all our code after $$$data definition into the data generator
+Then, replace $$$data definition by the generator output
+And... that's all
+
+>>>>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++[->++++++++<]>--....[-]<<[<]<<++++++++[->+++++>++++++++<<]>+++>-->[[-<<<+>.>>]<.[->+<]<[->+<]>>>]<<<<[<]>[.>]
+
+
+
+
+
+Got it :
+
+
+>>>>                               leave 4 empty cells (for counters storage... It is also a kind of header)
++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++>
+++++++++[->++++++++<]>--....[-]    print (62) 4 times (aka the header)
+C                           D
+
+<<[<]<                             go 2 cells before array
+<++++++++[->+++++>++++++++<<]      generate 40 and 64
+>+++>-->                           then 43 and 62 and got to first data cell
+[                                  for each cell
+  [-<<<+>.>>]                      move value 3 cells on the left and print 43 each time
+  <.                               print 62
+  [->+<]<[->+<]                    moves 43 and 62 on the right
+>>>]                               loop
+<<<<[<]>                           Go to first array cell
+[.>] 
+
+Ouput this :
+
+>>>>+++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++++++++++++++++>+.+.
+    43 = +                                      46 = .                                         43 = +                                      46 = .
+Which is equal to >>>> + DATA + DATA AS CODE
+
+==> DATA must be equal to the loop encoded as using + & >
+==> With two characters from the language (one repeated and one sentinel) they encode the 8 ascii codes total existing in the language.
+
+Pour moi : ecrire un programme en gabuzomeu qui dump n'importequel data en une version brute suivie d'une version encodee provenant de "data" qui est en fait du code !!!
+Ensuite il faut encoder ce programme et le transformer en "donnee"
+
+
+C for CALC
+D for DUMP
+B for BASE
+...
+
+Data = CBU#...CGA#...B#...DGA
+
+
+Ecrire un code generique qui dumpe n'importequel data 2 fois...  Car il faudra qu'il se dumpe lui-meme de deux manieres differentes !
+
+
+CALC GA, GA + #BU ==> +
+
+
+
+
+
+INTRODUCING 1 NEW KEYWORD (or use GA[] to get it size ?) AND ONE NEW access OPERATOR ([])
+BUT WE COULD REMOVE : FREE & BIRD, HEAD & TAIL and MOVE !
+
+; "Data" part
+CALC GA[#GA], #... ; any SINGLE BYTE value
+CALC GA[#BU], #...
+...
+; Code part
+CALC BU, #"CALC GA["
+CALC ZO, #"],"
+CALC MEU, GA.SIZE() ; USE SPECIAL PUMP AND SPECIAL LAST INSTEAD ?
+:loop
+BASE #BUGAGAGAGA
+DUMP BU
+BASE #BUGA
+DUMP MEU
+BASE #BUGAGAGAGA
+DUMP ZO
+BASE #BUGA
+DUMP GA[MEU]
+CALC MEU, MEU - #BU
+ELSE loop
+; One shot !
+BASE #BUGAGAGAGA
+DUMP GA
+
+
+So DUMP GA could be also DUMP GA[#BU] or DUMP GA[BU] ?
+
+
+
+Hypothesis BIRD GA, BU then split MOVE to MORE & LESS (or BACK & FORE)
+
+; "Data" part
+CALC GA, #... ; One byte or multiple bytes ? One but using the second # to support B4 nibble output
+BIRD BU, ZO
+FORE BU
+CALC GA, #...
+BIRD BU, ZO
+FORE ZO
+...
+
+; Code part
+
+TODO: REWIND BYTE STRING !
+
+:loop
+(BASE #BUGAGAGAGA ; Optional the very first time since it is the default)
+CALC MEU, #"CALC GA," ; We need those strings inside each bird !
+DUMP MEU
+BASE #BUGA
+DUMP GA
+BASE #BUGAGAGAGA
+CALC MEU, #"BIRD BU, ZO FORE BU"
+DUMP MEU
+TAIL BU, loop_
+JUMP pool
+loop_:
+FORE BU
+JUMP loop
+
+TODO: REWIND BYTE STRING !
+
+:pool
+DUMP GA
+HEAD ZO, pool_
+JUMP eof
+pool_:
+BACK ZO
+JUMP pool
+
+:eof
+
+
+
+
+:rewind_block_to_copy_twice_since_no_function_call_exist_nor_gosub
+HEAD ZO, stepback
+JUMP done
+stepback:
+BACK ZO
+JUMP rewind_block_to_copy_twice_since_no_function_call_exist_nor_gosub
+
+
+ATTENTION for the replay !
+
+DATA = ABC
+
+CALC GA, #"C"
+...
+CALC GA, #"B"
+...
+CALC GA, #"A"
+...
+
+:loop
+
+==> CALC GA, #"A"
+...
+==> CALC GA, #"B"
+...
+==> CALC GA, #"C"
+...
+==> CBA

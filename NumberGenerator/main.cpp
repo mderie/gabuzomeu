@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 	std::vector<byte> output(input.begin(), input.end());
 	InfInt bn = ByteStreamToNumber(output);
 	//std::cout << "CALC MEU," << std::endl << NumberToNibble(bn) << std::endl << "DUMP MEU" << std::endl;
-	std::cout << "CALCBU," << NumberToNibble(Base::default_, bn) << "DUMPBUDUMPBU";
+	std::cout << "CALCBU," << NumberToNibble(Base::Four, bn) << "DUMPBU";
 	//std::cout << "bn.numberOfDigits() = " << bn.numberOfDigits() << " & bn = " << bn.toString() << std::endl;
 	//std::cout << "Which is equal to in power of prime numbers = " << PowerOfPrime(bn) << std::endl;
 

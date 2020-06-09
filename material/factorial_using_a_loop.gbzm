@@ -1,0 +1,22 @@
+
+; Optional, change nibble base IO
+;BASE #BUGA
+
+; No input, no chocolate
+LAST error
+
+CALC BU, #BU
+PUMP GA
+
+:loop
+CALC BU, BU * GA
+CALC GA, GA - #BU
+ELSE GA, loop
+DUMP BU
+JUMP eof
+
+:error
+CALC GA, #...
+DUMP GA
+
+:eof

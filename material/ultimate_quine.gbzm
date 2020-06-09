@@ -1,0 +1,95 @@
+
+; Hypothesis we don't allow BIRD GA, BU
+; So we stick to the alternate birds principle
+
+; Step 0 : define the "data" part
+
+;CALC GA, #BUGABUMEU ; 'G' = 71
+;BIRD BU
+;MOVE BU
+;CALC GA, #BUGAGAZO ; 'B' = 66
+;BIRD ZO
+;MOVE ZO
+;CALC GA, #BUBUZOZO ; 'Z' = 90
+;BIRD BU
+;MOVE BU
+;CALC GA, #BUGAMEUBU ; 'M' = 77
+CALC GA, #MEUZOZO BIRD BU MOVE BU CALC GA, #BUZOBUBU BIRD ZO MOVE ZO CALC GA, #BUMEUZOGA BIRD BU MOVE BU CALC GA, #BUMEUGAGA BIRD ZO MOVE ZO CALC GA, #BUZOGABU BIRD BU MOVE BU CALC GA, #BUZOMEUZO BIRD ZO MOVE ZO CALC GA, #BUZOBUGA BIRD BU MOVE BU CALC GA, #BUBUMEUMEU BIRD ZO MOVE ZO CALC GA, #BUZOMEUGA BIRD BU MOVE BU CALC GA, #BUZOMEUMEU BIRD ZO MOVE ZO CALC GA, #BUZOMEUMEU BIRD BU MOVE BU CALC GA, #BUMEUGAGA BIRD ZO MOVE ZO CALC GA, #BUBUMEUMEU BIRD BU MOVE BU CALC GA, #BUZOGAZO BIRD ZO MOVE ZO CALC GA, #BUMEUBUBU BIRD BU MOVE BU CALC GA, #ZOGAGA BIRD ZO MOVE ZO CALC GA, #BUGAGAMEU BIRD BU MOVE BU CALC GA, #BUGAGABU BIRD ZO MOVE ZO CALC GA, #BUGAMEUGA BIRD BU MOVE BU CALC GA, #BUGAGAMEU BIRD ZO MOVE ZO CALC GA, #ZOGAGA BIRD BU MOVE BU CALC GA, #BUGAMEUBU BIRD ZO MOVE ZO CALC GA, #BUGABUBU BIRD BU MOVE BU CALC GA, #BUBUBUBU BIRD ZO MOVE ZO CALC GA, #ZOMEUGA BIRD BU MOVE BU CALC GA, #ZOGAGA BIRD ZO MOVE ZO CALC GA, #ZOGAMEU BIRD BU MOVE BU CALC GA, #BUGAGAZO BIRD ZO MOVE ZO CALC GA, #BUBUBUBU BIRD BU MOVE BU CALC GA, #BUGABUMEU BIRD ZO MOVE ZO
+CALC GA, #BUGAGABU ; Care the last one can't be followed by BIRD & MOVE !
+
+; Step 1 : we need to rewind the entire data structure
+
+:initial_rewind
+HEAD BU, initial_rewind_bu
+HEAD ZO, initial_rewind_zo
+JUMP expand_loop ; End of the initial rewind
+
+:initial_rewind_bu
+MOVE BU
+JUMP initial_rewind ; Continue the rewinding
+
+:initial_rewind_zo
+MOVE ZO
+JUMP initial_rewind  ; Continue the rewinding
+
+; Step 2 : now we will dump the expanded version of the data structure
+
+:expand_loop
+CALC MEU, #BUGAGAMEUBUGAGABUBUGAMEUGABUGAGAMEUGAZOGAGABUGABUMEUBUGAGABUGAZOMEUGA ; = "CALC GA," We use here the default base !
+DUMP MEU ; We could remove the big number support by "calculating" then dumping each byte, but this extends the real code part and so the length of the data to encode...
+BASE #BUGA
+DUMP GA
+BASE #BUGAGAGAGA
+
+TAIL BU, expand_loop_bu
+TAIL ZO, expand_loop_zo
+JUMP final_rewind
+
+:expand_loop_bu
+CALC MEU, #BUGAGAZOBUGAZOBUBUBUGAZOBUGABUGAGAZOGAGABUGAGAZOBUBUBUBUGAZOGAGABUGAMEUBUBUGAMEUMEUBUBUBUZOBUGABUBUGAZOGAGABUGAGAZOBUBUBUBU ; = "BIRD BU MOVE BU" TODO: Add CR LF ? Remove spaces ?
+DUMP MEU
+MOVE BU
+JUMP expand_loop
+
+:expand_loop_zo
+CALC MEU, #BUGAGAZOBUGAZOBUBUBUGAZOBUGABUGAGAZOGAGABUBUZOZOBUGAMEUMEUGAZOGAGABUGAMEUBUBUGAMEUMEUBUBUBUZOBUGABUBUGAZOGAGABUBUZOZOBUGAMEUMEU ; = "BIRD ZO MOVE ZO"
+DUMP MEU
+MOVE ZO
+JUMP expand_loop
+
+; Step 3 : again we need a complete rewind
+
+:final_rewind
+HEAD BU, final_rewind_bu
+HEAD ZO, final_rewind_zo
+JUMP compact_loop
+
+:final_rewind_bu
+MOVE BU
+JUMP final_rewind
+
+:final_rewind_zo
+MOVE ZO
+JUMP final_rewind
+
+; Step 4 : finally we can dump the compacted version
+
+:compact_loop
+
+DUMP GA
+
+TAIL BU, compact_loop_bu
+TAIL ZO, compact_loop_zo
+JUMP eof
+
+:compact_loop_bu
+MOVE BU
+JUMP compact_loop
+
+:compact_loop_zo
+MOVE ZO
+JUMP compact_loop
+
+; That's all folks !
+
+:eof

@@ -91,6 +91,11 @@ std::string NumberToNibble64(const InfInt &n)
 
 std::string NumberToNibble(const Base &base, const InfInt &n)
 {
+    if (base == Base::default_)
+    {
+        throw BaseNotSupported(std::to_string((byte)Base::default_));
+    }
+
     std::string result;
 
     switch (base)
@@ -418,14 +423,14 @@ std::string NumbersToCompositeString(const std::vector<BSII> &v)
                     else
                     {
                         //std::cout << " std (2) " << std::endl;
-                        result += (char)it2;
+                        result += (char) it2;
                     }
                 }
             }
             else
             {
                 //std::cout << " std " << std::endl;
-                result += (char)it.ii.toInt();
+                result += (char) it.ii.toInt();
             }
         }
         else
@@ -442,7 +447,6 @@ std::string NumbersToCompositeString(const std::vector<BSII> &v)
 //TODO: [future] Can be shorter with do ... while !
 std::vector<byte> NumberToByteStream(const InfInt &n)
 {
-
     std::vector<byte> result;
     byte mod = (byte) (n % 256).toInt();
     //std::cout << "n = " << n << " & mod =  " << (int) mod << std::endl;
@@ -466,9 +470,16 @@ std::vector<byte> NumbersToByteStream(const std::vector<BSII> &v)
     //std::cout << "NumbersToByteStream v.size() = " << v.size() << std::endl;
     for (const auto &it : v)
     {
-        //std::cout << "NumbersToByteStream it = " << it << std::endl;
-        tmp = NumberToByteStream(it.ii); // This is not a recursion :)
-        result.insert(std::end(result), std::begin(tmp), std::end(tmp));
+        if (it.b == Base::default_)
+        {
+            //std::cout << "NumbersToByteStream it = " << it << std::endl;
+            tmp = NumberToByteStream(it.ii); // This is not a recursion :)
+            result.insert(std::end(result), std::begin(tmp), std::end(tmp));
+        }
+        else
+        {
+            //TODO: ...
+        }
     }
     return result;
 }
