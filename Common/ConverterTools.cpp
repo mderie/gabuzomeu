@@ -1,7 +1,9 @@
 
 #include "ConverterTools.hpp"
 
-bool big = false;
+bool big = false; // Big number
+bool Quine = false; // No trailing # at for the nibble
+bool write = false; // Force printing the non printable character (ASCII code < 32)
 
 // Use a special version of Base64 ? https://en.wikipedia.org/wiki/Base64 A-Z, a-z, 0-9, + /
 // Where we replace + & / by : & , could help us achieving Quine exploration
@@ -116,7 +118,7 @@ std::string NumberToNibble(const Base &base, const InfInt &n)
     }
     } // switch
 
-    return "#" + result + "#" ;
+    return "#" + result + (Quine ? "" : "#");
 }
 
 // We assume here that value is > 0
@@ -404,7 +406,7 @@ std::string NumbersToCompositeString(const std::vector<BSII> &v)
         if ((Base) it.b == Base::default_)
         {
             //std::cout << "NumbersToCompositeString it = " << it.ii << std::endl;
-            if (it.ii < 32) // ASCII limitation (avoid non printable characters)
+            if ((it.ii < 32) and (!write)) // ASCII limitation (avoid non printable characters)
             {
                 //std::cout << " < 32 " << std::endl;
                 result += NumberToNibble(Base::Four, (byte) it.ii.toInt());
@@ -415,7 +417,7 @@ std::string NumbersToCompositeString(const std::vector<BSII> &v)
                 std::vector<byte> bytes = NumberToByteStream(it.ii);
                 for (const auto& it2 : bytes)
                 {
-                    if (it2 < 32)
+                    if ((it2 < 32) and (!write))
                     {
                         //std::cout << " < 32 (2)" << std::endl;
                         result += NumberToNibble(Base::Four, it2);

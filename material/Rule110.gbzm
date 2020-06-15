@@ -1,0 +1,511 @@
+
+; https://en.wikipedia.org/wiki/Rule_110
+;
+; This gabuzomeu program don't expect any input : the initial data set must be "manually" encoded at the beginning.
+; The iteration counter is not needed neither : we recommand using the -l | --limit with a reasonable value, like 20000 (almost 50 generations :)
+; Since we print in reverse order the drawing is left-right flipped ! So |\ instead of /|
+;
+; Transforming the input data from the outside world by using the DUMP instruction into the string data "format"
+; described below is doable inside the program but would make it even longer... One would need a loop with LAST, etc !
+; Left as exercise :) See for example reverse.gbzm (==> See the Update! finally not a good initial condition assumption)
+;
+; The execution will output stuff line by line into the given filename or displayed to the console.
+; One can use the optional -w | --write parameter for the support the new line character(s).
+;
+; IE : gabuzomeu --file="Rule110.gbzm" --data="" --target="a.out" --limit=20000
+;
+; There is a lot of back and forth waves on the data. The global idea is as follow
+;
+; (0) Define the data themself in GA (forward), the minimum length is one !
+; (1) Eternal / big / outer loop starts
+; (2) "Copy" the last one before the beginning, so in the boundary (backward)
+; (3) "Copy" the first one after the end (forward)
+; (4) Automaton / small / inner loop starts
+; (5) Step two then "backstep" one and display next generation and store it in BU (backward)
+; (6) if not first then jump Automaton / small / inner loop
+; (7) Destroy the first one (no more needed with the boundaries)
+; (8) Copy BU in GA (forward)
+; (9) Destroy the last one (idem)
+; (A) Jump Eternal / big / outer loop
+
+; Optional
+;BASE #ZO ; Switch to the binary base
+
+; (0) Initial data part : here "10101" so we need four extra birds, notice the alternance of the links between them (through MEU & ZO)
+; Update! ==> This is a wrong start ! http://www.emergentmind.com/elementary-cellular-automata According to here, we have to start
+; with unlimited zeros and one one at the "middle"... So there is no input needed at all !
+; So the current generation data is always in GA and the next generation data is always in BU
+
+CALC BU, #ZOZO
+DUMP BU ; Start with a blank line
+CALC BU, #GA ; Reset :)
+
+BIRD MEU ; First boundary created, no real data for GA ! Allow some simplifications :)
+MOVE MEU ; We could have start with a ZO as well, but we must alternate !
+
+; I initially though that any character code could do the trick (here #ZOZOZO '*' aka 42 :), but in fact for a pretty printing on the console
+; I switch to another non printable one (#BU namely (SOH) aka 1). But all the labels still refer to star...
+
+; Spaceship background pattern (00010011011111), length fourteen so next bird in zo start with zero !-)
+DUMP GA
+
+BIRD ZO 
+MOVE ZO
+DUMP GA
+
+BIRD MEU
+MOVE MEU
+DUMP GA
+
+BIRD ZO
+MOVE ZO
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD MEU
+MOVE MEU
+DUMP GA
+
+BIRD ZO
+MOVE ZO
+DUMP GA
+
+BIRD MEU
+MOVE MEU
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD ZO
+MOVE ZO
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD MEU
+MOVE MEU
+DUMP GA
+
+BIRD ZO
+MOVE ZO
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD MEU
+MOVE MEU
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD ZO
+MOVE ZO
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD MEU
+MOVE MEU
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD ZO
+MOVE ZO
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+; New bird could be entered here... With either with #BU (SOH) or with #GA (NULL), just follow the storage convention
+
+BIRD MEU ; Last boundary ! No content yet for GA, it will be computed
+MOVE MEU
+CALC BU, #ZOZO ; 10 = (LF) Allow us an easy pretty printing :)
+
+; (1) The eternal / big / outer loop... So now the code part ! We start at the right boundary
+
+;;;;;;;;;
+:big_loop
+;;;;;;;;;
+
+DUMP BU ; Platform issue, do we need to dump CR as well ? Or introduce a new toggle ?
+
+; First we need to cross-extend the first and last value :
+; So here with the spaceship, we will end up for the first generation with 1 (LB) + "00010011011111" + 0 (RB).
+; The last original become the first extend and vice versa !
+
+HEAD ZO, initial_back_on_last_move_zo
+MOVE MEU
+JUMP initial_back_on_last_done
+
+:initial_back_on_last_move_zo
+MOVE ZO
+
+; (2) Check the character kind at the current end
+
+:initial_back_on_last_done
+ELSE GA, initial_rewind_found_star_at_end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:initial_rewind_found_null_at_end
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+HEAD ZO, initial_back_zo_found_null_at_end
+HEAD MEU, initial_back_meu_found_null_at_end
+JUMP initial_rewind_done_set_bird_at_begin_with_null
+
+:initial_back_zo_found_null_at_end
+MOVE ZO
+JUMP initial_rewind_found_null_at_end
+
+:initial_back_meu_found_null_at_end
+MOVE MEU
+JUMP initial_rewind_found_null_at_end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:initial_rewind_done_set_bird_at_begin_with_null
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+CALC GA, #GA ; 0 = (NULL)
+
+;;;;;;;;;;;;;;;;;;;;;;
+:initial_fore_on_first
+;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, initial_fore_on_first_move_zo
+MOVE MEU
+JUMP initial_fore_on_first_done
+
+:initial_fore_on_first_move_zo
+MOVE ZO
+
+; (3) Now we must "copy" the first character to a new bird at the end
+
+:initial_fore_on_first_done
+ELSE GA, initial_fast_forward_found_star_at_begin
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:initial_fast_forward_found_null_at_begin
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, initial_fast_forward_zo_found_null_at_begin
+TAIL MEU, initial_fast_forward_meu_found_null_at_begin
+JUMP initial_fast_forward_done_set_bird_at_end_with_null
+
+:initial_fast_forward_zo_found_null_at_begin
+MOVE ZO
+JUMP initial_fast_forward_found_null_at_begin
+
+:initial_fast_forward_meu_found_null_at_begin
+MOVE MEU
+JUMP initial_fast_forward_found_null_at_begin
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:initial_fast_forward_done_set_bird_at_end_with_null
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+CALC GA, #GA ; 0 = (NULL)
+JUMP small_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:initial_rewind_found_star_at_end
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+HEAD ZO, initial_back_zo_found_star_at_end
+HEAD MEU, initial_back_meu_found_star_at_end
+JUMP initial_rewind_done_set_bird_at_begin_with_star
+
+:initial_back_zo_found_star_at_end
+MOVE ZO
+JUMP initial_rewind_found_star_at_end
+
+:initial_back_meu_found_star_at_end
+MOVE MEU
+JUMP initial_rewind_found_star_at_end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:initial_rewind_done_set_bird_at_begin_with_star
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+CALC GA, #BU ; 1 = (SOH)
+JUMP initial_fore_on_first
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:initial_fast_forward_found_star_at_begin
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, initial_fast_forward_zo_found_star_at_begin
+TAIL MEU, initial_fast_forward_meu_found_star_at_begin
+JUMP initial_fast_forward_done_set_bird_at_end_with_star
+
+:initial_fast_forward_zo_found_star_at_begin
+MOVE ZO
+JUMP initial_fast_forward_found_star_at_begin
+
+:initial_fast_forward_meu_found_star_at_begin
+MOVE MEU
+JUMP initial_fast_forward_found_star_at_begin
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:initial_fast_forward_done_set_bird_at_end_with_star
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+CALC GA, #BU ; 1 = (SOH)
+
+; (4) We enter here an automaton loop in order to use the jump labels (aka the status) as memory of the past characters found
+
+;;;;;;;;;;;
+:small_loop
+;;;;;;;;;;;
+
+; (5) At first, we are on the rightmost one, so we follow the pattern : read-backward-read-backward-test !
+; Then either it is the end of the loop either we loop again
+
+ZERO GA, automaton_found_null
+
+; So we found a star !-)
+
+HEAD ZO, automaton_backward_zo_star
+MOVE MEU
+ZERO GA, automaton_found_null_star
+JUMP automaton_found_star_star
+
+:automaton_backward_zo_star
+MOVE ZO
+ZERO GA, automaton_found_null_star
+JUMP automaton_found_star_star
+
+;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_null
+;;;;;;;;;;;;;;;;;;;;;
+
+HEAD ZO, automaton_backward_zo_null
+MOVE MEU
+ZERO GA, automaton_found_null_null
+JUMP automaton_found_star_null
+
+:automaton_backward_zo_null
+MOVE ZO
+ZERO GA, automaton_found_null_null
+JUMP automaton_found_star_null
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_star_star
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+HEAD ZO, automaton_backward_zo_star_star
+HEAD MEU, automaton_backward_meu_star_star
+JUMP automaton_found_any_any_none
+
+:automaton_backward_meu_star_star
+MOVE MEU
+ZERO GA, automaton_found_null_star_star
+JUMP automaton_found_star_star_star
+
+:automaton_backward_zo_star_star
+MOVE ZO
+ZERO GA, automaton_found_null_star_star
+JUMP automaton_found_star_star_star
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_star_null
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+HEAD ZO, automaton_backward_zo_star_null
+HEAD MEU, automaton_backward_meu_star_null
+JUMP automaton_found_any_any_none
+
+:automaton_backward_meu_star_null
+MOVE MEU
+ZERO GA, automaton_found_null_star_null
+JUMP automaton_found_star_star_null
+
+:automaton_backward_zo_star_null
+MOVE ZO
+ZERO GA, automaton_found_null_star_null
+JUMP automaton_found_star_star_null
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_null_star
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+HEAD ZO, automaton_backward_zo_null_star
+HEAD MEU, automaton_backward_meu_null_star
+JUMP automaton_found_any_any_none
+
+:automaton_backward_meu_null_star
+MOVE MEU
+ZERO GA, automaton_found_null_null_star
+JUMP automaton_found_star_null_star
+
+:automaton_backward_zo_null_star
+MOVE ZO
+ZERO GA, automaton_found_null_null_star
+JUMP automaton_found_star_null_star
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_null_null
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+HEAD ZO, automaton_backward_zo_null_null
+HEAD MEU, automaton_backward_meu_null_null
+JUMP automaton_found_any_any_none
+
+:automaton_backward_meu_null_null
+MOVE MEU
+ZERO GA, automaton_found_null_null_null
+JUMP automaton_found_star_null_null
+
+:automaton_backward_zo_null_null
+MOVE ZO
+ZERO GA, automaton_found_null_null_null
+JUMP automaton_found_star_null_null
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_star_star_star
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, automaton_foreward_zo_star_star_star
+MOVE MEU
+CALC BU, #GA ; We found the pattern [*][*][*] => [ ]
+JUMP small_loop
+
+:automaton_foreward_zo_star_star_star
+MOVE ZO
+CALC BU, #GA ; Idem
+JUMP small_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_star_star_null
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, automaton_foreward_zo_star_star_null
+MOVE MEU
+CALC BU, #BU ; We found the pattern [*][*][ ] => [*]
+JUMP small_loop
+
+:automaton_foreward_zo_star_star_null
+MOVE ZO
+CALC BU, #BU ; Idem
+JUMP small_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_star_null_star
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, automaton_foreward_zo_star_null_star
+MOVE MEU
+CALC BU, #BU ; We found the pattern [*][ ][*] => [*]
+JUMP small_loop
+
+:automaton_foreward_zo_star_null_star
+MOVE ZO
+CALC BU, #BU ; Idem
+JUMP small_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_star_null_null
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, automaton_foreward_zo_star_null_null
+MOVE MEU
+CALC BU, #GA ; We found the pattern [*][ ][ ] => [ ]
+JUMP small_loop
+
+:automaton_foreward_zo_star_null_null
+MOVE ZO
+CALC BU, #GA ; Idem
+JUMP small_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_null_star_star
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, automaton_foreward_zo_null_star_star
+MOVE MEU
+CALC BU, #BU ; We found the pattern [ ][*][*] => [*]
+JUMP small_loop
+
+:automaton_foreward_zo_null_star_star
+MOVE ZO
+CALC BU, #BU ; Idem
+JUMP small_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_null_star_null
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, automaton_foreward_zo_null_star_null
+MOVE MEU
+CALC BU, #BU ; We found the pattern [ ][*][ ] => [*]
+JUMP small_loop
+
+:automaton_foreward_zo_null_star_null
+MOVE ZO
+CALC BU, #BU ; Idem
+JUMP small_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_null_null_star
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, automaton_foreward_zo_null_null_star
+MOVE MEU
+CALC BU, #BU ; We found the pattern [ ][ ][*] => [*]
+JUMP small_loop
+
+:automaton_foreward_zo_null_null_star
+MOVE ZO
+CALC BU, #BU ; Idem
+JUMP small_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_null_null_null
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, automaton_foreward_zo_null_null_null
+MOVE MEU
+CALC BU, #GA ; We found the pattern [ ][ ][ ] => [ ]
+JUMP small_loop
+
+:automaton_foreward_zo_null_null_null
+MOVE ZO
+CALC BU, #GA ; Idem
+JUMP small_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_any_any_none
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; (6) & (8) Now we have reached the beginning, we move to real first one then we test then dump and copy all BU to GA
+
+TAIL ZO, automaton_foreward_zo_any_any_none
+MOVE MEU
+JUMP automaton_foreward_test
+
+:automaton_foreward_zo_any_any_none
+MOVE ZO
+
+:automaton_foreward_test
+TAIL ZO, automaton_foreward_dump_copy_move_zo
+TAIL MEU, automaton_foreward_dump_copy_move_meu
+
+; (A) back to the very beginning...
+JUMP big_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_foreward_dump_copy_move_zo
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+DUMP BU
+CALC GA, BU
+MOVE ZO
+JUMP automaton_foreward_test
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_foreward_dump_copy_move_meu
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+DUMP BU
+CALC GA, BU
+MOVE MEU
+JUMP automaton_foreward_test
+
+;;;;;;;;;;;;;;;;;;;
+; Never reached !-)
+;;;;;;;;;;;;;;;;;;;
+
+:eof

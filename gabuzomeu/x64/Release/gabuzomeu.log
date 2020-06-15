@@ -1,10 +1,4 @@
-﻿  ConverterTools.cpp
-C:\laboratory\gabuzomeu\Common\ConverterTools.cpp(291,38): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.26.28801\include\ostream(376,1): warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.26.28801\include\ostream(369): message : while compiling class template member function 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(unsigned __int64)'
-C:\laboratory\gabuzomeu\Common\infint.hpp(989): message : see reference to function template instantiation 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(unsigned __int64)' being compiled
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.26.28801\include\ostream(642): message : see reference to class template instantiation 'std::basic_ostream<char,std::char_traits<char>>' being compiled
-  main.cpp
+﻿  main.cpp
 C:\laboratory\gabuzomeu\Common\bnflite.hpp(339,9): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 C:\laboratory\gabuzomeu\Common\bnflite.hpp(353,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
 C:\laboratory\gabuzomeu\Common\bnflite.hpp(389,1): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
@@ -13,12 +7,12 @@ C:\laboratory\gabuzomeu\Common\bnflite.hpp(396,48): warning C4244: '=': conversi
 C:\laboratory\gabuzomeu\Common\bnflite.hpp(447,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 C:\laboratory\gabuzomeu\Common\bnflite.hpp(460,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 C:\laboratory\gabuzomeu\Common\bnflite.hpp(495,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1314,5): warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1371,40): warning C4101: 're': unreferenced local variable
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1398,45): warning C4101: 'fnf': unreferenced local variable
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1403,46): warning C4101: 'e': unreferenced local variable
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1438,45): warning C4101: 'fnf': unreferenced local variable
-C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1443,46): warning C4101: 'e': unreferenced local variable
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1361,5): warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1431,40): warning C4101: 're': unreferenced local variable
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1459,45): warning C4101: 'fnf': unreferenced local variable
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1464,46): warning C4101: 'e': unreferenced local variable
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1499,45): warning C4101: 'fnf': unreferenced local variable
+C:\laboratory\gabuzomeu\gabuzomeu\main.cpp(1504,46): warning C4101: 'e': unreferenced local variable
 C:\laboratory\gabuzomeu\Common\bnflite.hpp(585,1): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
 C:\laboratory\gabuzomeu\Common\bnflite.hpp(583): message : while compiling class template member function 'std::pair<void *,int> bnf::_Parser<U>::_pre_call(void *)'
           with
@@ -36,8 +30,8 @@ C:\laboratory\gabuzomeu\Common\bnflite.hpp(667): message : see reference to func
               U=bnf::Interface<bool>
           ]
   Generating code
-  1 of 3598 functions (<0.1%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    8 functions had inline decision re-evaluated but remain unchanged
+  8 of 3695 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+    2 functions were new in current compilation
+    35 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   gabuzomeu.vcxproj -> C:\laboratory\gabuzomeu\x64\Release\gabuzomeu.exe

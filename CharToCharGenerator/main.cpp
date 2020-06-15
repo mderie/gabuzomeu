@@ -24,16 +24,36 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
+	bool stark = false;
+
 	std::string input(argv[1]);
 	std::ofstream ofs(input);
 	std::string s;
 	for (int i = 0; i < input.size(); i++)
 	{
-		ofs.write("CALC MEU, ", 10);
+		if (stark)
+		{
+			ofs.write("CALCMEU,", 8);
+
+		}
+		else
+		{
+			ofs.write("CALC MEU, ", 10);
+			ofs << std::endl;
+		}
+		
 		s = NumberToNibble(Base::Four, InfInt(input[i]));
 		std::cout << "input[" << i << "] = " << input[i] << std::endl;
 		ofs.write(s.c_str(), s.size());
-		ofs.write("\nDUMP MEU\n", 10);
+		if (stark)
+		{
+			ofs.write("DUMPMEU", 7);
+		}
+		else
+		{
+			ofs.write("DUMP MEU", 8);
+			ofs << std::endl; // Multiplatform issue, we can't guess the size of the new line character(s)...
+		}		
 	}
 	std::cout << "Output file created = " << input << std::endl;
 

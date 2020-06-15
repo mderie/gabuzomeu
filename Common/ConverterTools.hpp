@@ -11,6 +11,17 @@
 typedef unsigned char byte;
 extern bool big; // No time do better, let's have a global...
 
+// Change the immediate rule in order to enforce a trailing #
+// We need this in order to not change the nibble I/O, so when working with other bases than the default one
+// The situation is more on the reading from file or from the command line ie : #BUGA
+// could be read as #BU in B4 followed by GA in B256 or as #BUGA in B4
+// So in Quine mode we explicitely ask the parser to enforce a trailing # for the immediate in
+// order to dump them as usual nibbles so with a trailing # as well...
+// Update : let's do the opposite way : in Quine mode the all nibbles that goes to the output
+// will be without the trailing #
+extern bool Quine; // Respect for the person is bigger than the codding style hence the upper case
+extern bool write;
+
 enum class Base { Unknown = 0, Two = 2, Four = 4, Ten = 8, SixTeen = 16, SixtyFour = 64, default_ = 256 };
 
 struct BSII

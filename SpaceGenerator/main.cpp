@@ -18,6 +18,7 @@
 
 int main(int argc, char* argv[])
 {
+	/*
 	std::vector<std::string> tokens = { "CALC", "GA,", "#ZOBUMEUGA", "CALC", "BU,", "#ZOBUMEUGA" "CALC", "MEU,", "#BU", ":LOOP", "CALC", "MEU,", "MEU*GA", "CALC", "BU,", "BU-#BU", "ELSE", "BU,", "LOOP", "DUMP", "MEU" };
 	std::string output = "space.dat";
 	std::ofstream osf(output);
@@ -30,6 +31,13 @@ int main(int argc, char* argv[])
 		osf.write(output.c_str(), output.size());
 	}
 	osf.close();
+	*/
+
+	// So we can uses 0 & 1 to the console ;-)
+	for (size_t i = 0; i < 32; i++)
+	{
+		std::cout << "i = " << i << " and it gives the char '" << char(i) << "'" << std::endl;
+	}
 
 	return 0;
 }

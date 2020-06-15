@@ -1,0 +1,362 @@
+
+; https://en.wikipedia.org/wiki/Rule_110
+;
+; This gabuzomeu program don't expect any input : the initial data set must be "manually" encoded at the beginning.
+; The iteration counter is not needed neither : we recommand using the -l | --limit with a reasonable value :)
+; Since we print in reverse order the drawing is left-right flipped ! So |\ instead of /|
+;
+; The execution will output stuff line by line into the given filename or displayed to the console.
+; One can use the optional -w | --write parameter for the support the new line character(s).
+;
+; IE : gabuzomeu --file="Rule110_4good.gbzm" --data="" --target="a.out" --limit=10000
+;
+; There is a lot of back and forth waves on the data. The global idea is as follow
+;
+; (0) Define the data themself in GA (forward), the minimum length is three !
+; (1) Eternal / big / outer loop starts
+; (2) Automaton / small / inner loop starts
+; (3) Step two then "backstep" one and compute next generation and store it in BU (backward)
+; (4) if not first then jump Automaton / small / inner loop
+; (5) Copy BU in GA and display (forward)
+; (6) Jump Eternal / big loop / outer loop
+
+; (0) Initial data part : here "00100...", notice the alternance of the links between them (through MEU & ZO)
+; So the current generation data is always in GA and the next generation data is always in BU
+; New birds have all their cells initialized to 0. Just uncomment or add the required 1 to simulate another input !
+
+; Initial bird already created, we just output an initial blank line
+
+CALC BU, #ZOZO
+DUMP BU ; Start with a blank line
+CALC BU, #GA ; Reset :)
+
+; Spaceship background pattern, length fourteen so next bird in zo start with zero !-)
+DUMP GA
+
+BIRD ZO 
+MOVE ZO
+DUMP GA
+
+BIRD MEU
+MOVE MEU
+DUMP GA
+
+BIRD ZO
+MOVE ZO
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD MEU
+MOVE MEU
+DUMP GA
+
+BIRD ZO
+MOVE ZO
+DUMP GA
+
+BIRD MEU
+MOVE MEU
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD ZO
+MOVE ZO
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD MEU
+MOVE MEU
+DUMP GA
+
+BIRD ZO
+MOVE ZO
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD MEU
+MOVE MEU
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD ZO
+MOVE ZO
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD MEU
+MOVE MEU
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD ZO
+MOVE ZO
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+CALC BU, #ZOZO ; 10 = (LF) Pretty print each generation :)
+
+; (1) The eternal / big loop... So now the code part ! We start at the right boundary
+
+;;;;;;;;;
+:big_loop
+;;;;;;;;;
+
+DUMP BU ; Platform issue, do we need to dump CR as well ? Or introduce a new toggle ?
+
+; (4) We enter here an automaton loop in order to use the jump labels (aka the status) as memory of the past characters found
+
+;;;;;;;;;;;
+:small_loop
+;;;;;;;;;;;
+
+; (5) So we follow the pattern : read-backward-read-backward-test ! Then either it is the end of the loop either we loop again
+
+ZERO GA, automaton_found_null
+
+; So we found a star !-)
+
+HEAD ZO, automaton_backward_zo_star
+MOVE MEU
+ZERO GA, automaton_found_star_null
+JUMP automaton_found_star_star
+
+:automaton_backward_zo_star
+MOVE ZO
+ZERO GA, automaton_found_star_null
+JUMP automaton_found_star_star
+
+;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_null
+;;;;;;;;;;;;;;;;;;;;;
+
+HEAD ZO, automaton_backward_zo_null
+MOVE MEU
+ZERO GA, automaton_found_null_null
+JUMP automaton_found_null_star
+
+:automaton_backward_zo_null
+MOVE ZO
+ZERO GA, automaton_found_null_null
+JUMP automaton_found_null_star
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_star_star
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+HEAD ZO, automaton_backward_zo_star_star
+HEAD MEU, automaton_backward_meu_star_star
+JUMP automaton_found_any_any_none
+
+:automaton_backward_meu_star_star
+MOVE MEU
+ZERO GA, automaton_found_null_star_star
+JUMP automaton_found_star_star_star
+
+:automaton_backward_zo_star_star
+MOVE ZO
+ZERO GA, automaton_found_null_star_star
+JUMP automaton_found_star_star_star
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_star_null
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+HEAD ZO, automaton_backward_zo_star_null
+HEAD MEU, automaton_backward_meu_star_null
+JUMP automaton_found_any_any_none
+
+:automaton_backward_meu_star_null
+MOVE MEU
+ZERO GA, automaton_found_null_star_null
+JUMP automaton_found_star_star_null
+
+:automaton_backward_zo_star_null
+MOVE ZO
+ZERO GA, automaton_found_null_star_null
+JUMP automaton_found_star_star_null
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_null_star
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+HEAD ZO, automaton_backward_zo_null_star
+HEAD MEU, automaton_backward_meu_null_star
+JUMP automaton_found_any_any_none
+
+:automaton_backward_meu_null_star
+MOVE MEU
+ZERO GA, automaton_found_null_null_star
+JUMP automaton_found_star_null_star
+
+:automaton_backward_zo_null_star
+MOVE ZO
+ZERO GA, automaton_found_null_null_star
+JUMP automaton_found_star_null_star
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_null_null
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+HEAD ZO, automaton_backward_zo_null_null
+HEAD MEU, automaton_backward_meu_null_null
+JUMP automaton_found_any_any_none
+
+:automaton_backward_meu_null_null
+MOVE MEU
+ZERO GA, automaton_found_null_null_null
+JUMP automaton_found_star_null_null
+
+:automaton_backward_zo_null_null
+MOVE ZO
+ZERO GA, automaton_found_null_null_null
+JUMP automaton_found_star_null_null
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_star_star_star
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, automaton_foreward_zo_star_star_star
+MOVE MEU ; forward !
+CALC BU, #GA ; We found the pattern [*][*][*] => [ ]
+JUMP small_loop
+
+:automaton_foreward_zo_star_star_star
+MOVE ZO
+CALC BU, #GA ; Idem
+JUMP small_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_star_star_null
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, automaton_foreward_zo_star_star_null
+MOVE MEU
+CALC BU, #BU ; We found the pattern [*][*][ ] => [*]
+JUMP small_loop
+
+:automaton_foreward_zo_star_star_null
+MOVE ZO
+CALC BU, #BU ; Idem
+JUMP small_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_star_null_star
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, automaton_foreward_zo_star_null_star
+MOVE MEU
+CALC BU, #BU ; We found the pattern [*][ ][*] => [*]
+JUMP small_loop
+
+:automaton_foreward_zo_star_null_star
+MOVE ZO
+CALC BU, #BU ; Idem
+JUMP small_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_star_null_null
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, automaton_foreward_zo_star_null_null
+MOVE MEU
+CALC BU, #GA ; We found the pattern [*][ ][ ] => [ ]
+JUMP small_loop
+
+:automaton_foreward_zo_star_null_null
+MOVE ZO
+CALC BU, #GA ; Idem
+JUMP small_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_null_star_star
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, automaton_foreward_zo_null_star_star
+MOVE MEU
+CALC BU, #BU ; We found the pattern [ ][*][*] => [*]
+JUMP small_loop
+
+:automaton_foreward_zo_null_star_star
+MOVE ZO
+CALC BU, #BU ; Idem
+JUMP small_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_null_star_null
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, automaton_foreward_zo_null_star_null
+MOVE MEU
+CALC BU, #BU ; We found the pattern [ ][*][ ] => [*]
+JUMP small_loop
+
+:automaton_foreward_zo_null_star_null
+MOVE ZO
+CALC BU, #BU ; Idem
+JUMP small_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_null_null_star
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, automaton_foreward_zo_null_null_star
+MOVE MEU
+CALC BU, #BU ; We found the pattern [ ][ ][*] => [*]
+JUMP small_loop
+
+:automaton_foreward_zo_null_null_star
+MOVE ZO
+CALC BU, #BU ; Idem
+JUMP small_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_null_null_null
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+TAIL ZO, automaton_foreward_zo_null_null_null
+MOVE MEU
+CALC BU, #GA ; We found the pattern [ ][ ][ ] => [ ]
+JUMP small_loop
+
+:automaton_foreward_zo_null_null_null
+MOVE ZO
+CALC BU, #GA ; Idem
+JUMP small_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_found_any_any_none
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; (5) Now we have reached the beginning, we can dump and copy all BU to GA
+
+TAIL ZO, automaton_foreward_dump_copy_move_zo
+TAIL MEU, automaton_foreward_dump_copy_move_meu
+
+; (A) back to the very beginning at the rightmost actually :)...
+
+;DUMP GA
+JUMP big_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_foreward_dump_copy_move_zo
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+DUMP BU
+CALC GA, BU
+MOVE ZO
+JUMP automaton_found_any_any_none
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:automaton_foreward_dump_copy_move_meu
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+DUMP BU
+CALC GA, BU
+MOVE MEU
+JUMP automaton_found_any_any_none
+
+;;;;;;;;;;;;;;;;;;;
+; Never reached !-)
+;;;;;;;;;;;;;;;;;;;
+
+:eof

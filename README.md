@@ -1,4 +1,5 @@
 
+
 ----------------------------------------------------
 Yet Another Esoteric Programming Language (YEAPL !-)
 ----------------------------------------------------
@@ -53,7 +54,7 @@ SEEK ==> SEEK expression or maybe SEEK appartment ? Or finally SEEK literal // M
 DICE (or RAND) ==> DICE appartment // Put a random value from 0 to 255 into the MEU register [Optional]
 2) CALC (or EVAL) ==> appartment, expression // The only instruction that takes an math runtime expression !!! (classical operator & appartment combinations)
 
-3) BIRD ==> BIRD appartment // Create a new bird and link the current one from MEU to MEU (may raise exception)... Or from GA to GA ??? Save one operand :)
+3) BIRD ==> BIRD appartment // Create a new bird and link the current one from MEU to MEU (may raise exception)... Or from GA to GA ??? Save one operand :) We could also copy the cell contents
 4) FREE (or KILL) ==> FREE appartment // Destroy recursively the bird up or down linked to the given appartment
 
 5) PUMP ==> PUMP appartment // Replace peak ? or read ?-)
@@ -203,6 +204,14 @@ XCHG
 SIZE
 UNDO
 REDO
+GLOB
+BLOB
+CLOB
+BEAT
+MEAT
+NEAT
+FEET
+FOOT
 
 Gross !
 *******

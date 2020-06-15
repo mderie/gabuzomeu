@@ -30,14 +30,8 @@
 
 bool analysis = false;
 bool interpret = false;
-
-// Change the immediate rule in order to enforce a trailing #
-// We need this in order to not change the nibble I/O, so when working with other bases than the default one
-// The situation is more on the reading from file or from the command line ie : #BUGA
-// could be read as #BU in B4 followed by GA in B256 or as #BUGA in B4
-// So in Quine mode we explicitely ask the parser to enforce a trailing # for the immediate in
-// order to dump them as usual nibbles so with a trailing # as well...
-bool Quine = false;
+size_t limit = 0; // No limitation !
+size_t totalInstructionCounter = 0;
 
 const char *tailExpr = nullptr; // Remember, it must be read in reverse : a pointer to a const char
 const char *tailProg = nullptr;
@@ -350,6 +344,15 @@ static bool CaptureDiv(const char* lexem, size_t len)
     return true;
 }
 
+static bool CaptureMod(const char* lexem, size_t len)
+{
+    //printf("Mod = : %.*s;\n", len, lexem);
+    if (!firstPass)
+    {
+    }
+    return true;
+}
+
 static bool OnCalc(const char *lexem, size_t len)
 {
     AnalysisFilter("Calc = : %.*s;\n", len, lexem);
@@ -623,6 +626,20 @@ static bool CaptureDivPowerFollow(const char* lexem, size_t len)
     return true;
 }
 
+static bool CaptureModPowerFollow(const char* lexem, size_t len)
+{
+    //printf("CaptureModPowerFollow = : %.*s;\n", len, lexem);
+    if (!firstPass)
+    {
+        InfInt op2 = operands.top(); operands.pop();
+        InfInt op1 = operands.top(); operands.pop();
+        InfInt value = op1 % op2;
+        operands.push(value);
+        //std::cout << "pushed(" << op1 << "%" << op2 << " = " << value << ")" << std::endl;
+    }
+    return true;
+}
+
 static bool CaptureCell(const char* lexem, size_t len)
 {
     //printf("Cell = : %.*s;\n", len, lexem);
@@ -752,6 +769,8 @@ void InitP2()
     contexts.top().inputs = inputs;
     //lastCell = -1;
     //birds.emplace_back(Bird());
+
+    totalInstructionCounter = 0;
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -804,10 +823,16 @@ bnf::Lexem l_cell = bnf::Lexem("GA") | bnf::Lexem("BU") | bnf::Lexem("ZO") | bnf
 //bnf::Lexem l_addsub = bnf::Lexem("+") | bnf::Lexem("-");
 //bnf::Lexem l_muldiv = bnf::Lexem("*") | bnf::Lexem("/");
 bnf::Lexem l_add = bnf::Lexem("+");
-bnf::Lexem l_sub = bnf::Lexem("-");
+bnf::Lexem l_sub = bnf::Lexem("-"); // Care we don't support unary minus operator, in fact we assume positive integer only
 bnf::Lexem l_mul = bnf::Lexem("*");
 bnf::Lexem l_div = bnf::Lexem("/");
+// Added in chronological order...
 bnf::Lexem l_pow = bnf::Lexem("^");
+bnf::Lexem l_mod = bnf::Lexem("%");
+//TODO: Needed ? 
+//bnf::Lexem l_bnot = bnf::Lexem("~");
+//bnf::Lexem l_band = bnf::Lexem("&");
+//bnf::Lexem l_bor = bnf::Lexem("|");
 
 // Lexemes more like Rules
 bnf::Lexem l_litteral = "#" + 1 * l_cell;
@@ -872,7 +897,7 @@ void preludeExpression()
     // Good ?-) Notice the usage of simple lexemes (bypass C++ operator issues)
     r_expression = (r_term + CaptureTerm + *(l_add + CaptureAdd + r_term + CaptureAddTermFollow | l_sub + CaptureSub + r_term + CaptureSubTermFollow)) + VisitExpression;
     //r_term_follow = "+" + OnAdd + r_term;
-    r_term = (r_power + CapturePow + *(l_mul + CaptureMul + r_power + CaptureMulPowerFollow | l_div + CaptureDiv + r_power + CaptureDivPowerFollow)) + VisitTerm; // Right recursion & longest first !
+    r_term = (r_power + CapturePow + *(l_mul + CaptureMul + r_power + CaptureMulPowerFollow | l_div + CaptureDiv + r_power + CaptureDivPowerFollow | l_mod + CaptureMod + r_power + CaptureModPowerFollow)) + VisitTerm; // Right recursion & longest first !
     //r_fact_follow = ...
     r_power = (r_factor + CaptureFactor + *(l_pow + CapturePow + r_factor + CapturePowFactorFollow)) + VisitPower;
     r_factor = (l_litteral + CaptureLitteral | l_cell + CaptureCell | "(" + r_expression + CaptureExpression + ")") + VisitFactor; // Only one recursion
@@ -952,6 +977,7 @@ void Free(int birdIndex)
 {
 }
 
+//TODO: Verify if we are up or down regarding the link to destroy... Else it is a clean cut !
 void DoFree()
 {
     byte cellId = GetCellId(instructions[contexts.top().instructionPointer].operand1);
@@ -1135,11 +1161,12 @@ void RunInterpreter()
 {
     contexts.top().gotoLabel = "";
     //std::cout << "contexts.top().instructionPointer = " << contexts.top().instructionPointer << " & instructions.size() = " << instructions.size() << std::endl;
-    while (contexts.top().instructionPointer < (int) instructions.size())
+    while ((contexts.top().instructionPointer < (int) instructions.size()) and ((limit == 0) or (totalInstructionCounter < limit)))
     {
-        std::cout << "birdPointer = " << contexts.top().birdPointer << ", stack level = " << contexts.size() << ", OpCode = " << OpCodes[(int)instructions[contexts.top().instructionPointer].opCode]
-                  << ", operand1 = '" << instructions[contexts.top().instructionPointer].operand1  << "' & operand2 = '" << instructions[contexts.top().instructionPointer].operand2 << "'" << std::endl;
-        //InterpretFilter(OpCodes[(int) instructions[contexts.top().instructionPointer].opCode]);
+        std::cout << "totalInstructionCounter = " << totalInstructionCounter << ", birdPointer = " << contexts.top().birdPointer << ", stack level = " << contexts.size()
+                  << ", OpCode = " << OpCodes[(int)instructions[contexts.top().instructionPointer].opCode] << ", operand1 = '" << instructions[contexts.top().instructionPointer].operand1
+                  << "' & operand2 = '" << instructions[contexts.top().instructionPointer].operand2 << "'" << std::endl;
+        InterpretFilter(OpCodes[(int) instructions[contexts.top().instructionPointer].opCode]);
 
         switch (instructions[contexts.top().instructionPointer].opCode)
         {
@@ -1164,6 +1191,10 @@ void RunInterpreter()
         if (contexts.top().gotoLabel != "")
         {
             //std::cout << "labels[gotoLabel] = " << labels[gotoLabel] << ", gotoLabel = " << gotoLabel << " & instructionPointer = " << instructionPointer << std::endl;
+            if (labels.find(contexts.top().gotoLabel) == labels.end())
+            {
+                throw LabelNotFoundException(contexts.top().gotoLabel);
+            }
             contexts.top().instructionPointer = labels[contexts.top().gotoLabel];
             contexts.top().gotoLabel = "";
         }
@@ -1171,6 +1202,8 @@ void RunInterpreter()
         {
             contexts.top().instructionPointer++;
         }
+
+        totalInstructionCounter++;
     } // while not end of program
 }
 
@@ -1269,8 +1302,8 @@ void RunAnalyzers(const std::vector<std::string> &lines)
 void ShowUsage()
 {
     std::cout << "Usage :" << std::endl;    
-    std::cout << "gabuzomeu (--file=\"file_name.gbzm\" | --program=\"text\") (--source=\"file_name\" | --data=\"value\")" << std::endl;
-    std::cout << "          [--target=\"file_name\"] [(-i | --interpret)] [(-a | --analysis)] [(-b | --big)]" << std::endl;
+    std::cout << "gabuzomeu (--file=\"file_name.gbzm\" | --program=\"text\") (--source=\"file_name\" | --data=\"value\") [--target=\"file_name\"]" << std::endl;
+    std::cout << "          [--limit=\"number\"] [(-i | --interpret)] [(-a | --analysis)] [(-b | --big)] [(-Q | --Quine)] [(-w | --write)] " << std::endl;
     std::cout << std::endl;
     std::cout << "Where the file or the program must be provided, the same goes for the source or the data" << std::endl;
     std::cout << "Strings can't contain double quote, screen data in input or output may hold " << std::endl; 
@@ -1279,6 +1312,10 @@ void ShowUsage()
     std::cout << "The optional target is to redirect the output toward a file instead of the screen as default" << std::endl;
     std::cout << "The two optional interpret and analysis flags are there for tracing purpose" << std::endl;
     std::cout << "Finally the optional big flag allows the support of number bigger than a byte" << std::endl;
+    std::cout << "New flags ! Quine parameter allows nibble output without trailing #" << std::endl;
+    std::cout << "write force the character printing on the console for the ASCII code below 32" << std::endl;
+    std::cout << "limit can be used in order to break infinite loop after a given number of instruction" << std::endl;
+    //TODO: separate the parameters like name=value and the toggles !
 }
 
 void Run(const std::vector<std::string> &lines)
@@ -1318,9 +1355,12 @@ int main(int argc, char *argv[])
     // The default output is the screen
     std::string target;
 
+    //std::cout << "Debug 0" << std::endl;
+
     try
     {
         cxxopts::Options options("gabuzomeu", "");
+        //std::cout << "Debug 1" << std::endl;
         options.add_options()
             // Since file & source are mutually exclusive, we have to provide empty default values else the lib raise std::exception("no value") !
             ("f,file", "", cxxopts::value<std::string>()->default_value(""))
@@ -1328,11 +1368,15 @@ int main(int argc, char *argv[])
             ("s,source", "", cxxopts::value<std::string>()->default_value(""))
             ("d,data", "", cxxopts::value<std::string>()->default_value(""))
             ("t,target", "", cxxopts::value<std::string>()->default_value(""))
+            ("l,limit", "", cxxopts::value<size_t>()->default_value("0"))
             ("a,analysis", "", cxxopts::value<bool>()->default_value("false"))
             ("i,interpret", "", cxxopts::value<bool>()->default_value("false"))
-            ("b,big", "", cxxopts::value<bool>()->default_value("false"));
-          //TODO: Change the immediate parsing rule to support trailing #
-          //("q,quine", "", cxxopts::value<bool>()->default_value("false"));
+            ("b,big", "", cxxopts::value<bool>()->default_value("false"))
+            ("w,write", "", cxxopts::value<bool>()->default_value("false"))
+            //("")   Add support for the spaceship operators <-< & >-> ?
+            ("Q,Quine", "", cxxopts::value<bool>()->default_value("false"));
+
+        //std::cout << "Debug 2" << std::endl;
 
         auto parameters = options.parse(argc, argv);
         file = parameters["file"].as<std::string>();
@@ -1343,19 +1387,26 @@ int main(int argc, char *argv[])
         analysis = parameters["analysis"].as<bool>();
         interpret = parameters["interpret"].as<bool>();
         big = parameters["big"].as<bool>();
-        Quine = parameters["quine"].as<bool>();
+        write = parameters["write"].as<bool>();
+        Quine = parameters["Quine"].as<bool>();
+        limit = parameters["limit"].as<size_t>();
+        //TODO: Implement Omniscient mode ? Access other bird brains using [] accessor inside expr... Like CALC GA, BU[ZO] * MEU
 
         // Nice (shows the additional help strings), but incomplete syntax (ie for the "=")
-        // std::cout << options.help() << std::endl;
+        //std::cout << options.help() << std::endl;
+
+        //throw std::exception("test command line");
     }
     catch (const std::exception& e)
     {
         //TODO: Remove this when done
         std::cout << "Exception : " << e.what() << std::endl;
-        std::cout << "Debug0 : file = " << file << ", program = " << program << ", source = " << source << ", data = " << data << " & target = " << target << std::endl;
+        std::cout << "file = '" << file << "', program = '" << program << "', source = '" << source << "', data = '" << data << "' & target = '" << target << "'" <<std::endl;
+        std::cout << "limit = " << limit << ", big = " << big << ", write = " << write << " & Quine = " << Quine << std::endl;
         ShowUsage();
         return -1;
     }
+    //std::cout << "Debug 4" << std::endl;
 
     // The lib kindly removes the double quote for key="value" arguments !
     //std::cout << "Debug : file = " << file << ", program = " << program << ", source = " << source << ", data = " << data << " & target = " << target << std::endl;

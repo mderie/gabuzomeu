@@ -24,6 +24,8 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
+	bool stark = false;
+
 	std::ifstream ifs(argv[1]);
 	std::string line;
 	while (ifs.good())
@@ -37,22 +39,50 @@ int main(int argc, char* argv[])
 	std::string s;
 	for (int i = 0; i < line.size(); i++)
 	{
-		ofs.write("CALC GA,", 8);
-		ofs.write(" n", 1);
-		s = NumberToNibble(Base::Four, line[i]);
-		ofs.write(s.c_str(), s.size() - 1);
-		ofs.write(" ", 1);
-		if (i % 2)
+		if (stark)
 		{
-			ofs.write("BIRD ZO MOVE ZO", 15);
+			ofs.write("CALCGA,", 7);
 		}
 		else
 		{
-			ofs.write("BIRD BU MOVE BU", 15);
+			ofs.write("CALC GA, ", 9);			
+		}		
+
+		Quine = true;  // Remove the trailing #
+		s = NumberToNibble(Base::Four, line[i]);
+		ofs.write(s.c_str(), s.size() - 1);
+
+		if (i % 2)
+		{
+			if (stark)
+			{
+				ofs.write("BIRDZOMOVEZO", 12);
+			}
+			else
+			{
+				ofs.write("BIRD ZO", 7);
+				ofs << std::endl;
+				ofs.write("MOVE ZO", 7);
+				ofs << std::endl;
+			}			
 		}
-		ofs.write(" ", 1);
+		else
+		{
+			if (stark)
+			{
+				ofs.write("BIRDBUMOVEBU", 12);
+			}
+			else
+			{
+				ofs << std::endl;
+				ofs.write("BIRD BU", 7);
+				ofs << std::endl;
+				ofs.write("MOVE BU", 7);
+				ofs << std::endl;
+			}
+		}
 	}
-		
+
 	ofs.close();
 	std::cout << "Output file created = " << outputFileName << std::endl;
 
