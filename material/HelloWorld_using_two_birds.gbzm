@@ -1,8 +1,11 @@
 
-BIRD GA
+; Purpose : Nothing beats the classics !-)
+; This one can be run using the command : gabuzomeu --file="HelloWorld_using_two_birds.gbmz" --data=""
+
+BIRD GA ; Create a new bird
 CALC BU, #BUZOZOGA ; = 'h' = 104
 DUMP BU
-MOVE GA
+MOVE GA ; Move on it !
 CALC BU, #BUZOBUBU ; = 'e' = 101
 DUMP BU
 CALC ZO, #BUZOMEUGA ; = 'l' = 108
@@ -10,12 +13,12 @@ DUMP ZO
 DUMP ZO
 CALC MEU, #BUZOMEUMEU ; = 'o' = 111
 DUMP MEU
-MOVE GA
+MOVE GA ; Move back on the initial one
 CALC ZO, #ZOGAGA ; =  ' ' = 32
 DUMP ZO
 CALC MEU, #BUMEUBUMEU ; = 'w' = 119
 DUMP MEU
-MOVE GA
+MOVE GA ; Jump again
 DUMP MEU
 CALC MEU, MEU + #MEU ; 'o' + 3
 DUMP MEU

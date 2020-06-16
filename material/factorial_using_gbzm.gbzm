@@ -1,6 +1,9 @@
 
+; Purpose : compute the factorial of the given number
+; The program expects one numbers as input
+
 ; Almost easy : fact(#BUGA) = #BUZOGA !-)
-; Result can be cross checked here
+; Result can be cross checked here :
 ; https://www.calculatorsoup.com/calculators/discretemathematics/factorials.php
 
 ; Optional, change nibble base IO
@@ -15,7 +18,7 @@ ZERO GA, tail
 
 ; Recurse !
 CALC ZO, GA - #BU
-GBZM ZO, BU
+GBZM ZO, BU ; Call itself (the "main" actually), ZO holds the new input & BU the new output
 CALC GA, GA * BU
 DUMP GA
 JUMP eof
@@ -26,8 +29,9 @@ CALC GA, #BU
 DUMP GA
 JUMP eof
 
+; Optional, for this to work correctly one need to add the -b | --big parameter !
 :error
-CALC GA, #...
-DUMP GA
+CALC GA, #BUBUBUBUBUMEUGAMEUBUZOGABUBUZOBUMEUBUZOBUBUGAZOGAGAGAMEUZOZOGAZOGAGABUGABUZOBUGAGABUBUGAGAMEUBUBUBUGABUGAMEUMEUBUBUGAZOBUGAZOBUBUGAGABUBUGAMEUGAGAZOGAGABUBUBUZOBUGAGABUBUGAMEUGABUBUBUBUBUGABUBU
+DUMP GA ; Display the help message
 
 :eof

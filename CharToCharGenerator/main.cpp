@@ -1,5 +1,5 @@
 
-// From string to char generator (used for Quine)
+// From string to char generator (doublon ?)
 
 #include <iostream>
 #include <fstream>

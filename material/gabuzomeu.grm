@@ -63,10 +63,9 @@ litteral = '#' ('GA' | 'BU' | 'ZO' | 'MEU')+
 <else> ::= 'ELSE' cell ',' label
 
 <expression> ::=  <term> '+' <expression> | <term> '-' <expression>  | <term> ! We don't care about the unary minus support...
-              
-<term> ::= <factor> '*' <term> | <factor> '/' <term> | <factor>
 
-<power> ::= <factor> | <factor> '^' <power>
+<term> ::= <power> '*' <term> | <power> '/' <term> | <power> '%' <term> | <power> 
+
+<power> ::= <factor> '^' <power> | <factor>
 
 <factor> ::= '(' <expression> ')' | litteral | cell
-

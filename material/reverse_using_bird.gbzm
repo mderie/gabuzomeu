@@ -1,11 +1,16 @@
 
-; Ouput in reverse order the input string (en 32 lignes :)
+; Purpose : ouput in reverse order the input string (in 33 instructions :)
+; BF equivalent is >,[>,]<[.<]
+; This one can be run using the command : gabuzomeu --file="reverse_using_bird.gbmz" --data="Ahu"
+; Returns uhA !-)
 
 ; We assume that we process a C like string (so terminate with #GA),
-; So an empty string is its own reverse...
+; But we replace the end of string by an end of input (LAST).
+; Finally, an empty string is its own reverse...
+
 LAST end
 
-; Read and potential ascent through zo
+; Read and potential ascent through ZO
 :forward_zo
 PUMP GA
 LAST backward_zo
@@ -14,7 +19,7 @@ LAST backward_zo
 BIRD ZO
 MOVE ZO
 
-; Read and potential ascent through meu
+; Read and potential ascent through MEU
 PUMP GA
 LAST backward_meu
 PUMP BU
@@ -36,7 +41,7 @@ DUMP GA
 HEAD MEU, rewind_meu
 JUMP end
 
-; Always descent through meu
+; Always descent through MEU
 :rewind_meu
 MOVE MEU
 

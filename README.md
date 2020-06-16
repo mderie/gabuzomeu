@@ -1,25 +1,36 @@
 
-
 ----------------------------------------------------
 Yet Another Esoteric Programming Language (YEAPL !-)
 ----------------------------------------------------
 
+TODO: Insert TOC here !
+...
+
+Rational
+********
+
+LOL !
+...
+
 Source of inspirations
 **********************
 
-- Le cerveau Shadok a quatre cases !
+- In french : Le cerveau Shadok a quatre cases !
 https://www.youtube.com/watch?v=DuJDPqb0nvE
 
-- Homage a Jacques Rouxel
+- In french : en homage a Jacques Rouxel
 https://fr.wikipedia.org/wiki/Les_Shadoks
 
 - Litteral number converter :)
 https://www.dcode.fr/shadoks-numeral-system
 
-- Turing machine
+- The Turing machine
 https://rosettacode.org/wiki/Universal_Turing_machine
 
-- The Pascal programming language (for the "#" usage)
+- Esolang
+https://esolangs.org/wiki/Main_Page
+
+- The Pascal programming language (for the "#" in string usage)
 
 - Brainfuck (a real gem :)
 
@@ -27,7 +38,37 @@ https://rosettacode.org/wiki/Universal_Turing_machine
 
 - Dos batch (for the label usage)
 
-4 unsigned 8 bit "registers" / Constants
+- ...
+
+Solution folders
+****************
+
+Developed in C++ using VS 2019, still need to port under Linux !
+
+- Material : see below
+- Common : libraries (headers only !)
+- *Generators : littles helpers
+- gabuzomeu : the interpreter
+
+Quick start / The material folder
+*********************************
+
+Sample Gabuzomeu source codes
+
+- 99BottlesOfBeer.gbzm : see http://www.99-bottles-of-beer.net/
+- HelloWorld*.gbzm : see http://helloworldcollection.de/ (Multiple implementations)
+- Quine*.gbzm : Crazy ! See among others https://www.nyx.net/~gthompso/quine.htm
+- Factorial*.gbzm : (Multiple implementations)
+- Reverse*.gbzm : (Multiple implementations)
+- Rule110 : Bitch ! see https://en.wikipedia.org/wiki/Rule_110
+
+Miscellaneous text files
+
+- Some *pattern.gbzm : could be used to play with the rule 110 (not as is :(
+- Gabuzomeu grammars
+- Futures / Ideas / Extentions / ...
+
+4 unsigned 8 bit "registers" & Constants
 ****************************************
 
 Finally not a good idea to have 4 numerical constants, so no need for brackets, ie [GA]
@@ -42,6 +83,7 @@ Flags
 
 Zero
 Carry ?
+...
 
 12 keywords (Final ?-)
 **********************
@@ -76,8 +118,8 @@ Idea : introduce another keyword that return the character count not yet process
 
 New !
 
-13) GBZM
-14) BASE
+13) GBZM ==> Start a new instance
+14) BASE ==> Change the current number base
 
 First ideas
 ***********
@@ -230,16 +272,16 @@ DAMN
 SLUT
 ....
 
-Enhancement ?
-*************
-
-Add an extra ? after keyword that can be tested...
-
 Comments
 ********
 
 C/C++ like : // at the end of line or /* & */ for line block
 Or just ";" ? ==> Yes !
+
+Future / Extentions
+*******************
+
+TODO: See file ? in material folder ?
 
 Charset (finally it is a platform concern)
 ******************************************
@@ -249,16 +291,25 @@ ISO-8859-1 (https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
 label (used for JUMP)
 *********************
 
-Preceded by a colon ==> ":loop" for the declaration and without colon for the definition (usage)
+Preceeded by a colon ==> ":loop" for the declaration and without colon for the definition (usage)
+Definition and usage must be followed by at least one "space" character (CR, LF, TAB, or SPC)
 
-Exceptions
-**********
+Exceptions (runtime)
+********************
 
-Illegal "stack" operations
-Illegal literal
-Missing label
-Seek out of bound
+- Illegal "stack" operations (not implemented)
+- Illegal literal
+- Missing label
+- Seek out of bound while reading
+- Base not supported
 ...
+
+Exceptions (interpreter)
+************************
+
+- File not found
+- Alien
+- ...
 
 Termination
 ***********
@@ -269,19 +320,20 @@ A valid program may (begin and) end with a ":end" label for example.
 IO
 **
 
-Virtual unlimited input and output characters (command line capacity is OS dependant)
+Virtual unlimited input and output characters (remember that the command line capacity is OS dependant)
 
 Interpreter
 ***********
 
-Command line based program that takes two arguments : a text file (*.gbzm) and an input string
+Who needs a compiler ?-)
+Portable command line based program that takes two arguments : a text file (ideally *.gbzm) and an input string
 between double quotes. The runtime loads the text file and provides the input string to the running gabuzomeu program.
-Finally the "collected" string output is shown at the end
+Finally the interpreter "collected" string output is shown at the program end's
 
-literals (numbers in the language)
-**********************************
+literals (numbers only in the language)
+***************************************
 
-Characters : Enclosed in single quote ==> Finally not supported (voluntary obfuscation)
+Characters : Enclosed in single quote ==> Finally not supported (voluntary obfuscation :)
 Numbers : Using the base four notation (GA BU ZO MEU related), preceded with ² or surrounded by """ but then the command line failed :(
 ==> for gabuzomeu experts only ;-)
 
@@ -322,16 +374,173 @@ In order to please the padawan programmers, the default base is the fourth one f
 The BASE keyword allow a base change for further I/O operations Big numbers (arbitray long positive integers)
 support can be set by using the -b or --big parameter else the default number size is the byte
 
-Allowed bird links
-******************
+What's look like a bird brain... In Gabuzomeu
+*********************************************
 
-TODO: in ASCII art ?
+One cell contains a positive or null number that fits on one byte.
+Or more bytes if the -b | --big number parameter is specified
+
+          _.--.---.          
+      ,-''    |    `--.      
+    ,'        |        `.    
+   /          |          \   
+  /    GA     |    BU     \  
+ /            |            \ 
+;             |             :
++-------------+-------------+
+:             |             ;
+ \            |            / 
+  \    ZO     |    MEU    /  
+   \          |          /   
+    `.        |        ,'    
+      '--.    |    _.-'      
+          `---+--''
+
+Allowed bird links (start & end of arrows share the same cell names)
+********************************************************************
+
+- Bird 1 have a tail in ZO
+- Bird 2 have a head in ZO and a tail in MEU
+- Bird 3 have a head in MEU
+
+            Bird 1                                    Bird 2
+
+          _.--.---.                                 _.--.---.
+      ,-''    |    `--.                         ,-''    |    `--.
+    ,'        |        `.                     ,'        |        `.
+   /          |          \                   /          |          \
+  /           |           \                 /           |           \
+ /            |            \               /            |            \
+;             |             :             ;             |             :
++-------------+-------------+             +-------------+-------------+
+:     \       |             ;             :       \     |    |        ;
+ \     \      |            /               \       \    |    |       /
+  \     >-----+-----------+-----------------+------->   |    |_____ /
+   \   /      |          /                   \     /    |   ,'     /
+    `./       |        ,'                     `.  /     |  /     ,'
+      '--.    |    _.-'                         '--.    |,'  _.-'
+          `---+--''                                 `---/--''
+                               _.--.---.              ,'
+                           ,-''    |    `--.         /
+                         ,'        |        `.     ,'
+                        /          |          \   /
+                       /           |           \,'
+                      /            |          ,'\
+                     ;             |         /   :
+                     +-------------+-------,'----+
+                     :             |  |   /      ;
+                      \            |  | ,'      /
+                       \           |  +____    /
+                        \          |          /
+                         `.        |        ,'
+                           '--.    |    _.-'
+                               `---+--''
+							   
+    						     Bird 3
 
 Disallowed bird links
 *********************
 
-Multiple arrows head or tail within the same cell !
-TODO: in ASCII art ?
+Multiple arrow head's or tail's within the same cell is forbidden !
+
+          _.--.---.                                 _.--.---.
+      ,-''    |    `--.                         ,-''    |    `--.
+    ,'        |        `.                     ,'        |        `.
+   /          |          \                   /          |          \
+  /           |           \                 /           |           \
+ /            |            \               /            |            \
+;             |             :             ;             |             :
++-------------+-------------+             +-------------+-------------+
+:             |             ;             :             |             ;
+ \            |            /               \            |            /
+  \           |    +----  /                 \ ----+     |           /
+   \          |    | \   /                   \ ,' |     |          /
+    `.        |    |  \,'                    ,'.  |     |        ,'
+      '--.    |    _.-'\                   ,'   '--.    |    _.-'
+          `---+--''     \                ,'         `---+--''
+                         \     _.--.---,'
+                          \,-''    | ,' `--.
+                         ,'\       ,'       `.
+                        /   \    ,'|          \
+                       /     \ ,'  |           \
+                      /       '    |            \
+                     ;             |             :
+                     +-------------+-------------+
+                     :             |             ;
+                      \            |            /
+                       \           |           /
+                        \          |          /
+                         `.        |        ,'
+                           '--.    |    _.-'
+                               `---+--''
+
+Two arrows can't share the same tail
+
+          _.--.---.                                 _.--.---.
+      ,-''    |    `--.                         ,-''    |    `--.
+    ,'        |        `.                     ,'        |        `.
+   /          |          \                   /          |          \
+  /           |           \                 /           |           \
+ /            |            \               /            |            \
+;             |             :             ;             |             :
++-------------+-------------+             +-------------+-------------+
+:             |      |      ;             :        |    |             ;
+ \            |   ___|     /               \       |___ |            /
+  \           |       \   /                 \    ,'     |           /
+   \          |       `. /                   \ ,'       |          /
+    `.        |        |'                    ,'.        |        ,'
+      '--.    |    _.-' \                  ,'   '--.    |    _.-'
+          `---+--''      \               ,'         `---+--''
+                          \    _.--.---./
+                           \-''    |  ,'`--.
+                         ,'`.      |,'      `.
+                        /   | |   ,'          \
+                       /     \| ,' |           \
+                      /    ---'--- |            \
+                     ;             |             :
+                     +-------------+-------------+
+                     :             |             ;
+                      \            |            /
+                       \           |           /
+                        \          |          /
+                         `.        |        ,'
+                           '--.    |    _.-'
+                               `---+--''
+							   
+Nor can they share the same head
+
+          _.--.---.                                 _.--.---.
+      ,-''    |    `--.                         ,-''    |    `--.
+    ,'        |        `.                     ,'        |        `.
+   /          |          \                   /          |          \
+  /           |           \                 /           |           \
+ /            |            \               /            |            \
+;             |             :             ;             |             :
++-------------+-------------+             +-------------+-------------+
+:             |      |      ;             :    -----+   |             ;
+ \            |   ___|     /               \       ,|   |            /
+  \           |       \   /                 \    ,' |   |           /
+   \          |       `. /                   \ ,'   |   |          /
+    `.        |        |'                    ,'.        |        ,'
+      '--.    |    _.-' \                  ,'   '--.    |    _.-'
+          `---+--''      \               ,'         `---+--''
+                          \    _.--.---./
+                           \-''    |  ,'`--.
+                         ,' |      |,'      `.
+                        /   | |   ,'          \
+                       /     \| ,' |           \
+                      /    ---+    |            \
+                     ;        |    |             :
+                     +-------------+-------------+
+                     :             |             ;
+                      \            |            /
+                       \           |           /
+                        \          |          /
+                         `.        |        ,'
+                           '--.    |    _.-'
+                               `---+--''
+
+Finally they can't follow each other neither
 
 Miscelleanous
 *************
@@ -351,8 +560,8 @@ Again Pascal syntax is as follow 'Hello,'#13#10'world!' So we can mix double quo
 - When the progam starts there is only one bird and all of its appartments hold zero (as any new bird)
 - input string can be empty !-)
 
-Evolution
-*********
+Language evolution
+******************
 
 Introduce a counter register ?
 Introduce LOOP keyword ?
@@ -374,13 +583,53 @@ A Gabuzomeu program does not have input parameters nor return values
 but it can read input value(s) and write output value(s). Those values
 may be provided from / to file or from / to the console. See the GBZM "special" instruction [02/06/2020]
 
+Roadmap
+*******
+
+- 99 Bottles of beer (ongoing)
+- Still a lot of debug prints... (See //TODO: "tags")
+- Code could / should be cleaned a little bit :)
+- Linux porting
+- Versionning
+- Building a true IDE (with birds visualisations, line by line debugging !)
+- Implementing a BF cross stuff
+- ASCII art for the links
+- Review this document title order and start by the TOC
+- ...
+
+License
+*******
+
+- Well... Smileware ? I really doubt that any of the stuff shared here is valuable in anyway !
+- But it is free (see https://en.wikipedia.org/wiki/Gratis_versus_libre)
+- No information found about "Shadocks" copyright
+
 Greetings
 *********
 
+- My wife (who had to support my "divagations"... But she played once with an universal Turing Machine !-)
+- My daugther for the bird logo :)
 - Jarro2783 for the cxxopts library (https://github.com/jarro2783/cxxopts)
 - R35382 for the bnflite library (https://github.com/r35382/bnflite)
 - Sercantutar for the infint library (https://github.com/sercantutar/infint)
+- Stephen Wolfram & Matthew Cook (Seems to be controversial ! Rule 110 proof)
+- Bjarne Stroustrup (C++ obviously :)
+- Douglas Hofstadter (GEB)
+- Urban Müller (BrainFuck)
+- Richard Stallman (GPL, FSF, ...)
+- Linus Torvalds (Linux, GIT, ...)
+- All demosceners (you rocks !)
+- All esoteric language creators so far
+- Markus Gebhard (I've used Jave for the ASCII "art" :) http://www.jave.de/
 - ...
-All demosceners, ...
 
-That's all folks ! [Project started the ten of May 2020]
+May they RIP
+************
+
+- Jacques Rouxel (Shadoks)
+- Alan Turing (Universal Turing Machine among other discoveries / inventions)
+- Niklaus Wirth (Pascal)
+- Willard Van Orman Quine (Quine :)
+- ...
+
+That's all folks ! (Project started the ten of May 2020 / mderie@gmail.com / Coded by Sam Le Pirate [TFL-TDV])

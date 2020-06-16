@@ -1,5 +1,8 @@
 
-; Optional, change nibble base IO
+; Purpose : compute the factorial of the given number
+; The program expects one numbers as input
+
+; Optional, change nibble base IO to 4
 ;BASE #BUGA
 
 ; No input, no chocolate
@@ -15,8 +18,9 @@ ELSE GA, loop
 DUMP BU
 JUMP eof
 
+; Optional, for this to work correctly one need to add the -b | --big parameter !
 :error
-CALC GA, #...
-DUMP GA
+CALC GA, #BUBUBUBUBUMEUGAMEUBUZOGABUBUZOBUMEUBUZOBUBUGAZOGAGAGAMEUZOZOGAZOGAGABUGABUZOBUGAGABUBUGAGAMEUBUBUBUGABUGAMEUMEUBUBUGAZOBUGAZOBUBUGAGABUBUGAMEUGAGAZOGAGABUBUBUZOBUGAGABUBUGAMEUGABUBUBUBUBUGABUBU
+DUMP GA ; Display the help message
 
 :eof

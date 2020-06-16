@@ -1,4 +1,6 @@
 
+; Purpose : output several generations of the rule 110 automation
+
 ; https://en.wikipedia.org/wiki/Rule_110
 ;
 ; This gabuzomeu program don't expect any input : the initial data set must be "manually" encoded at the beginning.
@@ -13,6 +15,8 @@
 ; One can use the optional -w | --write parameter for the support the new line character(s).
 ;
 ; IE : gabuzomeu --file="Rule110.gbzm" --data="" --target="a.out" --limit=20000
+;
+; Minimalist proof that the Gabuzomeu esoteric programming language is actually Turing complete !
 ;
 ; There is a lot of back and forth waves on the data. The global idea is as follow
 ;
@@ -109,7 +113,7 @@ MOVE ZO
 CALC GA, #BU ; 1 = (SOH)
 DUMP GA
 
-; New bird could be entered here... With either with #BU (SOH) or with #GA (NULL), just follow the storage convention
+; New birds could be entered here... With either with #BU (SOH) or with #GA (NULL), just follow the storage convention
 
 BIRD MEU ; Last boundary ! No content yet for GA, it will be computed
 MOVE MEU

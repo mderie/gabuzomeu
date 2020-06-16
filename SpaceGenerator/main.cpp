@@ -1,5 +1,5 @@
 
-// From source code to space (used for Quine)
+// From source code to space ? Well, generate CALC / DUMP series on the default bird in order to print a given string (used for Quine)
 
 #include <iostream>
 #include <fstream>
@@ -34,9 +34,62 @@ int main(int argc, char* argv[])
 	*/
 
 	// So we can uses 0 & 1 to the console ;-)
+	/*
 	for (size_t i = 0; i < 32; i++)
 	{
 		std::cout << "i = " << i << " and it gives the char '" << char(i) << "'" << std::endl;
+	}
+	*/
+
+	cxxopts::Options options("SpaceGenerator", "");
+	options.add_options()
+		("c,cell", "", cxxopts::value<std::string>()->default_value(""))
+		("d,data", "", cxxopts::value<std::string>()->default_value(""))
+		("s,stark", "", cxxopts::value<bool>()->default_value("false"))
+		("Q,Quine", "", cxxopts::value<bool>()->default_value("false"));
+
+	if (argc < 3)
+	{
+		std::cout << "Usage : SpaceGenerator cell=\"name\" data=\"any\" [-s | --stark] [-Q | --Quine]" << std::endl;
+		return -1;
+	}
+
+	auto parameters = options.parse(argc, argv);
+	std::string cell = parameters["cell"].as<std::string>();
+	std::string data = parameters["data"].as<std::string>();
+	bool stark = parameters["stark"].as<bool>(); // Unreadable mode !
+	Quine = parameters["Quine"].as<bool>(); // Care : global variable (beurk :)
+	
+	for (size_t i = 0; i < data.size(); i++)
+	{
+		if (stark)
+		{
+			std::cout << "CALC" << cell << ",";
+		}
+		else
+		{
+			std::cout << "CALC " << cell << ", ";
+		}
+
+		std::cout << NumberToNibble(Base::Four, InfInt(data[i]));
+		if (!stark)
+		{
+			std::cout << std::endl;
+		}
+
+		if (stark)
+		{
+			std::cout << "DUMP" << cell;
+		}
+		else
+		{
+			std::cout << "DUMP " << cell;
+		}
+
+		if (!stark)
+		{
+			std::cout << std::endl;
+		}
 	}
 
 	return 0;

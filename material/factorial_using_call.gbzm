@@ -1,4 +1,9 @@
 
+; Tentative (POC) : the RETR instruction is not implemented
+
+; Purpose : compute the factorial of the given number
+; The program expects one numbers as input
+
 ; Optional, change nibble base IO
 ;BASE #BUGA
 
@@ -8,6 +13,7 @@ LAST error
 ; Since we can't end a program today, functions is better placed before the main
 ; (not mandatory since all labels are treated at the first pass
 ; Alternatively the main could use a RETR meaning that implicitely the program start with a CALL
+
 JUMP main
 
 ; This is not a true function, it is a label that ends with a RETR
@@ -34,8 +40,9 @@ HSUP GA
 DUMP GA
 JUMP eof
 
+; Optional, for this to work correctly one need to add the -b | --big parameter !
 :error
-CALC GA, #...
-DUMP GA
+CALC GA, #BUBUBUBUBUMEUGAMEUBUZOGABUBUZOBUMEUBUZOBUBUGAZOGAGAGAMEUZOZOGAZOGAGABUGABUZOBUGAGABUBUGAGAMEUBUBUBUGABUGAMEUMEUBUBUGAZOBUGAZOBUBUGAGABUBUGAMEUGAGAZOGAGABUBUBUZOBUGAGABUBUGAMEUGABUBUBUBUBUGABUBU
+DUMP GA ; Display the help message
 
 :eof

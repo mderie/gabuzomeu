@@ -7,6 +7,7 @@
 // CARE : in VS 2019 Enable C++ must be set to No !!!
 
 // Base class ! All of them are... interpret time technically speaking :)
+//TODO: Some exceptions may happen before the Gabuzomeu program starts... Review exception naming !
 class RuntimeException
 {
 protected:
@@ -17,7 +18,7 @@ public:
     std::string Message() const { return m_className + (m_message != "" ? (" : " + m_message) : ""); }
 };
 
-//TODO: ... We could also Simply use the Exception in std namespace
+//TODO: ... We could also simply use the Exception in std namespace
 class InvalidNumberException : public RuntimeException
 {
 public:

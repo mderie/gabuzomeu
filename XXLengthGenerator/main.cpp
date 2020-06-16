@@ -1,5 +1,6 @@
 
-// From source code to x^x length (used for Quine)
+// From source code to x^x and length
+// Original idea was too find a big number that holds a given Gabuzomeu program
 
 #include <iostream>
 #include <fstream>

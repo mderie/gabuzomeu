@@ -31,6 +31,6 @@
 
 <calc> ::= "CALC" <cell> "," <expression>
 <expression> ::= <term> (("+" | "-") <term>)*
-<term> ::= <power> (("*" | "/") <power>)*
+<term> ::= <power> (("*" | "/" | "%") <power>)*
 <power> ::= <factor> ("^" <factor>)*
 <factor> ::=  <litteral> | <cell> | "(" <expression> ")"

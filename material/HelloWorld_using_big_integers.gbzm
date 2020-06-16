@@ -1,4 +1,7 @@
 
+; Purpose : Nothing beats the classics !-)
+; This one can be run using the command : gabuzomeu --file="HelloWorld_using_big_integers.gbmz" --data="" --big
+
 ; Thanks to https://defuse.ca/big-number-calculator.htm & https://www.rapidtables.com/convert/number/base-converter.html
 ; 104*256^10 + 101*256^9 + 108*256^8 + 108*256^7 + 111*256^6 + 32*256^5 + 119*256^4 + 111*256^3 + 114*256^2 + 108*256 + 100
 

@@ -1163,9 +1163,9 @@ void RunInterpreter()
     //std::cout << "contexts.top().instructionPointer = " << contexts.top().instructionPointer << " & instructions.size() = " << instructions.size() << std::endl;
     while ((contexts.top().instructionPointer < (int) instructions.size()) and ((limit == 0) or (totalInstructionCounter < limit)))
     {
-        std::cout << "totalInstructionCounter = " << totalInstructionCounter << ", birdPointer = " << contexts.top().birdPointer << ", stack level = " << contexts.size()
-                  << ", OpCode = " << OpCodes[(int)instructions[contexts.top().instructionPointer].opCode] << ", operand1 = '" << instructions[contexts.top().instructionPointer].operand1
-                  << "' & operand2 = '" << instructions[contexts.top().instructionPointer].operand2 << "'" << std::endl;
+        //std::cout << "totalInstructionCounter = " << totalInstructionCounter << ", birdPointer = " << contexts.top().birdPointer << ", stack level = " << contexts.size()
+        //          << ", OpCode = " << OpCodes[(int)instructions[contexts.top().instructionPointer].opCode] << ", operand1 = '" << instructions[contexts.top().instructionPointer].operand1
+        //          << "' & operand2 = '" << instructions[contexts.top().instructionPointer].operand2 << "'" << std::endl;
         InterpretFilter(OpCodes[(int) instructions[contexts.top().instructionPointer].opCode]);
 
         switch (instructions[contexts.top().instructionPointer].opCode)
@@ -1411,7 +1411,8 @@ int main(int argc, char *argv[])
     // The lib kindly removes the double quote for key="value" arguments !
     //std::cout << "Debug : file = " << file << ", program = " << program << ", source = " << source << ", data = " << data << " & target = " << target << std::endl;
 
-    if ((file == "" and program == "") or (file != "" and program != "") or (source != "" and data != ""))
+    // Source and data can be both empty... Usefull for Quine :)
+    if (((file == "") and (program == "")) or ((file != "") and (program != "")) or ((source != "") and (data != "")))
     {
         ShowUsage();
         return -2;
@@ -1519,7 +1520,7 @@ int main(int argc, char *argv[])
 
         if (contexts.top().outputs.size() > 0)
         {
-            std::cout << totalBirdCounder << " bird" << (totalBirdCounder > 1 ? "s say" : " says") << " : ";
+            std::cout << totalBirdCounder << " bird" << (totalBirdCounder > 1 ? "s babble" : " babbles") << " : "; // tweet is "reserved" !
             if (target != "")
             {
                 std::ofstream ofs(target, std::ios::out | std::ios::binary);

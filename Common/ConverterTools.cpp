@@ -6,7 +6,7 @@ bool Quine = false; // No trailing # at for the nibble
 bool write = false; // Force printing the non printable character (ASCII code < 32)
 
 // Use a special version of Base64 ? https://en.wikipedia.org/wiki/Base64 A-Z, a-z, 0-9, + /
-// Where we replace + & / by : & , could help us achieving Quine exploration
+// Where we replace '+' & '/' by ':' & ',' could help us achieving Quine exploration !
 
 // This should be a template :)
 // No generic mapping from string "enum" array and enum value :(

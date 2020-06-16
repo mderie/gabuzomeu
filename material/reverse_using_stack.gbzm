@@ -1,5 +1,8 @@
 
+; Tentative... PUSH & HSUP does'nt exists yet
 ; No TOP instruction to check the stack status...
+
+; Purpose : ouput in reverse order the input string
 
 :forward
 LAST backward

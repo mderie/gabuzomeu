@@ -15,4 +15,6 @@ Allow file content to be similar as command line
 ==> False by default
 ==> Influence instructions PUMP & DUMP
 
-- 
+- Next Bird Accessor (arrow operator) : <-< & >->
+
+- ...
