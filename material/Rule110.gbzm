@@ -45,7 +45,7 @@ DUMP BU ; Start with a blank line
 CALC BU, #GA ; Reset :)
 
 BIRD MEU ; First boundary created, no real data for GA ! Allow some simplifications :)
-MOVE MEU ; We could have start with a ZO as well, but we must alternate !
+LIFT MEU ; We could have start with a ZO as well, but we must alternate !
 
 ; I initially though that any character code could do the trick (here #ZOZOZO '*' aka 42 :), but in fact for a pretty printing on the console
 ; I switch to another non printable one (#BU namely (SOH) aka 1). But all the labels still refer to star...
@@ -54,69 +54,69 @@ MOVE MEU ; We could have start with a ZO as well, but we must alternate !
 DUMP GA
 
 BIRD ZO 
-MOVE ZO
+LIFT ZO
 DUMP GA
 
 BIRD MEU
-MOVE MEU
+LIFT MEU
 DUMP GA
 
 BIRD ZO
-MOVE ZO
-CALC GA, #BU ; 1 = (SOH)
-DUMP GA
-
-BIRD MEU
-MOVE MEU
-DUMP GA
-
-BIRD ZO
-MOVE ZO
-DUMP GA
-
-BIRD MEU
-MOVE MEU
-CALC GA, #BU ; 1 = (SOH)
-DUMP GA
-
-BIRD ZO
-MOVE ZO
+LIFT ZO
 CALC GA, #BU ; 1 = (SOH)
 DUMP GA
 
 BIRD MEU
-MOVE MEU
+LIFT MEU
 DUMP GA
 
 BIRD ZO
-MOVE ZO
+LIFT ZO
+DUMP GA
+
+BIRD MEU
+LIFT MEU
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD ZO
+LIFT ZO
 CALC GA, #BU ; 1 = (SOH)
 DUMP GA
 
 BIRD MEU
-MOVE MEU
-CALC GA, #BU ; 1 = (SOH)
+LIFT MEU
 DUMP GA
 
 BIRD ZO
-MOVE ZO
+LIFT ZO
 CALC GA, #BU ; 1 = (SOH)
 DUMP GA
 
 BIRD MEU
-MOVE MEU
+LIFT MEU
 CALC GA, #BU ; 1 = (SOH)
 DUMP GA
 
 BIRD ZO
-MOVE ZO
+LIFT ZO
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD MEU
+LIFT MEU
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD ZO
+LIFT ZO
 CALC GA, #BU ; 1 = (SOH)
 DUMP GA
 
 ; New birds could be entered here... With either with #BU (SOH) or with #GA (NULL), just follow the storage convention
 
 BIRD MEU ; Last boundary ! No content yet for GA, it will be computed
-MOVE MEU
+LIFT MEU
 CALC BU, #ZOZO ; 10 = (LF) Allow us an easy pretty printing :)
 
 ; (1) The eternal / big / outer loop... So now the code part ! We start at the right boundary
@@ -132,11 +132,11 @@ DUMP BU ; Platform issue, do we need to dump CR as well ? Or introduce a new tog
 ; The last original become the first extend and vice versa !
 
 HEAD ZO, initial_back_on_last_move_zo
-MOVE MEU
+LIFT MEU
 JUMP initial_back_on_last_done
 
 :initial_back_on_last_move_zo
-MOVE ZO
+LIFT ZO
 
 ; (2) Check the character kind at the current end
 
@@ -152,11 +152,11 @@ HEAD MEU, initial_back_meu_found_null_at_end
 JUMP initial_rewind_done_set_bird_at_begin_with_null
 
 :initial_back_zo_found_null_at_end
-MOVE ZO
+LIFT ZO
 JUMP initial_rewind_found_null_at_end
 
 :initial_back_meu_found_null_at_end
-MOVE MEU
+LIFT MEU
 JUMP initial_rewind_found_null_at_end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -170,11 +170,11 @@ CALC GA, #GA ; 0 = (NULL)
 ;;;;;;;;;;;;;;;;;;;;;;
 
 TAIL ZO, initial_fore_on_first_move_zo
-MOVE MEU
+LIFT MEU
 JUMP initial_fore_on_first_done
 
 :initial_fore_on_first_move_zo
-MOVE ZO
+LIFT ZO
 
 ; (3) Now we must "copy" the first character to a new bird at the end
 
@@ -190,11 +190,11 @@ TAIL MEU, initial_fast_forward_meu_found_null_at_begin
 JUMP initial_fast_forward_done_set_bird_at_end_with_null
 
 :initial_fast_forward_zo_found_null_at_begin
-MOVE ZO
+LIFT ZO
 JUMP initial_fast_forward_found_null_at_begin
 
 :initial_fast_forward_meu_found_null_at_begin
-MOVE MEU
+LIFT MEU
 JUMP initial_fast_forward_found_null_at_begin
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -213,11 +213,11 @@ HEAD MEU, initial_back_meu_found_star_at_end
 JUMP initial_rewind_done_set_bird_at_begin_with_star
 
 :initial_back_zo_found_star_at_end
-MOVE ZO
+LIFT ZO
 JUMP initial_rewind_found_star_at_end
 
 :initial_back_meu_found_star_at_end
-MOVE MEU
+LIFT MEU
 JUMP initial_rewind_found_star_at_end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -236,11 +236,11 @@ TAIL MEU, initial_fast_forward_meu_found_star_at_begin
 JUMP initial_fast_forward_done_set_bird_at_end_with_star
 
 :initial_fast_forward_zo_found_star_at_begin
-MOVE ZO
+LIFT ZO
 JUMP initial_fast_forward_found_star_at_begin
 
 :initial_fast_forward_meu_found_star_at_begin
-MOVE MEU
+LIFT MEU
 JUMP initial_fast_forward_found_star_at_begin
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -263,12 +263,12 @@ ZERO GA, automaton_found_null
 ; So we found a star !-)
 
 HEAD ZO, automaton_backward_zo_star
-MOVE MEU
+LIFT MEU
 ZERO GA, automaton_found_null_star
 JUMP automaton_found_star_star
 
 :automaton_backward_zo_star
-MOVE ZO
+LIFT ZO
 ZERO GA, automaton_found_null_star
 JUMP automaton_found_star_star
 
@@ -277,12 +277,12 @@ JUMP automaton_found_star_star
 ;;;;;;;;;;;;;;;;;;;;;
 
 HEAD ZO, automaton_backward_zo_null
-MOVE MEU
+LIFT MEU
 ZERO GA, automaton_found_null_null
 JUMP automaton_found_star_null
 
 :automaton_backward_zo_null
-MOVE ZO
+LIFT ZO
 ZERO GA, automaton_found_null_null
 JUMP automaton_found_star_null
 
@@ -295,12 +295,12 @@ HEAD MEU, automaton_backward_meu_star_star
 JUMP automaton_found_any_any_none
 
 :automaton_backward_meu_star_star
-MOVE MEU
+LIFT MEU
 ZERO GA, automaton_found_null_star_star
 JUMP automaton_found_star_star_star
 
 :automaton_backward_zo_star_star
-MOVE ZO
+LIFT ZO
 ZERO GA, automaton_found_null_star_star
 JUMP automaton_found_star_star_star
 
@@ -313,12 +313,12 @@ HEAD MEU, automaton_backward_meu_star_null
 JUMP automaton_found_any_any_none
 
 :automaton_backward_meu_star_null
-MOVE MEU
+LIFT MEU
 ZERO GA, automaton_found_null_star_null
 JUMP automaton_found_star_star_null
 
 :automaton_backward_zo_star_null
-MOVE ZO
+LIFT ZO
 ZERO GA, automaton_found_null_star_null
 JUMP automaton_found_star_star_null
 
@@ -331,12 +331,12 @@ HEAD MEU, automaton_backward_meu_null_star
 JUMP automaton_found_any_any_none
 
 :automaton_backward_meu_null_star
-MOVE MEU
+LIFT MEU
 ZERO GA, automaton_found_null_null_star
 JUMP automaton_found_star_null_star
 
 :automaton_backward_zo_null_star
-MOVE ZO
+LIFT ZO
 ZERO GA, automaton_found_null_null_star
 JUMP automaton_found_star_null_star
 
@@ -349,12 +349,12 @@ HEAD MEU, automaton_backward_meu_null_null
 JUMP automaton_found_any_any_none
 
 :automaton_backward_meu_null_null
-MOVE MEU
+LIFT MEU
 ZERO GA, automaton_found_null_null_null
 JUMP automaton_found_star_null_null
 
 :automaton_backward_zo_null_null
-MOVE ZO
+LIFT ZO
 ZERO GA, automaton_found_null_null_null
 JUMP automaton_found_star_null_null
 
@@ -363,12 +363,12 @@ JUMP automaton_found_star_null_null
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 TAIL ZO, automaton_foreward_zo_star_star_star
-MOVE MEU
+LIFT MEU
 CALC BU, #GA ; We found the pattern [*][*][*] => [ ]
 JUMP small_loop
 
 :automaton_foreward_zo_star_star_star
-MOVE ZO
+LIFT ZO
 CALC BU, #GA ; Idem
 JUMP small_loop
 
@@ -377,12 +377,12 @@ JUMP small_loop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 TAIL ZO, automaton_foreward_zo_star_star_null
-MOVE MEU
+LIFT MEU
 CALC BU, #BU ; We found the pattern [*][*][ ] => [*]
 JUMP small_loop
 
 :automaton_foreward_zo_star_star_null
-MOVE ZO
+LIFT ZO
 CALC BU, #BU ; Idem
 JUMP small_loop
 
@@ -391,12 +391,12 @@ JUMP small_loop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 TAIL ZO, automaton_foreward_zo_star_null_star
-MOVE MEU
+LIFT MEU
 CALC BU, #BU ; We found the pattern [*][ ][*] => [*]
 JUMP small_loop
 
 :automaton_foreward_zo_star_null_star
-MOVE ZO
+LIFT ZO
 CALC BU, #BU ; Idem
 JUMP small_loop
 
@@ -405,12 +405,12 @@ JUMP small_loop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 TAIL ZO, automaton_foreward_zo_star_null_null
-MOVE MEU
+LIFT MEU
 CALC BU, #GA ; We found the pattern [*][ ][ ] => [ ]
 JUMP small_loop
 
 :automaton_foreward_zo_star_null_null
-MOVE ZO
+LIFT ZO
 CALC BU, #GA ; Idem
 JUMP small_loop
 
@@ -419,12 +419,12 @@ JUMP small_loop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 TAIL ZO, automaton_foreward_zo_null_star_star
-MOVE MEU
+LIFT MEU
 CALC BU, #BU ; We found the pattern [ ][*][*] => [*]
 JUMP small_loop
 
 :automaton_foreward_zo_null_star_star
-MOVE ZO
+LIFT ZO
 CALC BU, #BU ; Idem
 JUMP small_loop
 
@@ -433,12 +433,12 @@ JUMP small_loop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 TAIL ZO, automaton_foreward_zo_null_star_null
-MOVE MEU
+LIFT MEU
 CALC BU, #BU ; We found the pattern [ ][*][ ] => [*]
 JUMP small_loop
 
 :automaton_foreward_zo_null_star_null
-MOVE ZO
+LIFT ZO
 CALC BU, #BU ; Idem
 JUMP small_loop
 
@@ -447,12 +447,12 @@ JUMP small_loop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 TAIL ZO, automaton_foreward_zo_null_null_star
-MOVE MEU
+LIFT MEU
 CALC BU, #BU ; We found the pattern [ ][ ][*] => [*]
 JUMP small_loop
 
 :automaton_foreward_zo_null_null_star
-MOVE ZO
+LIFT ZO
 CALC BU, #BU ; Idem
 JUMP small_loop
 
@@ -461,12 +461,12 @@ JUMP small_loop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 TAIL ZO, automaton_foreward_zo_null_null_null
-MOVE MEU
+LIFT MEU
 CALC BU, #GA ; We found the pattern [ ][ ][ ] => [ ]
 JUMP small_loop
 
 :automaton_foreward_zo_null_null_null
-MOVE ZO
+LIFT ZO
 CALC BU, #GA ; Idem
 JUMP small_loop
 
@@ -477,11 +477,11 @@ JUMP small_loop
 ; (6) & (8) Now we have reached the beginning, we move to real first one then we test then dump and copy all BU to GA
 
 TAIL ZO, automaton_foreward_zo_any_any_none
-MOVE MEU
+LIFT MEU
 JUMP automaton_foreward_test
 
 :automaton_foreward_zo_any_any_none
-MOVE ZO
+LIFT ZO
 
 :automaton_foreward_test
 TAIL ZO, automaton_foreward_dump_copy_move_zo
@@ -496,7 +496,7 @@ JUMP big_loop
 
 DUMP BU
 CALC GA, BU
-MOVE ZO
+LIFT ZO
 JUMP automaton_foreward_test
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -505,7 +505,7 @@ JUMP automaton_foreward_test
 
 DUMP BU
 CALC GA, BU
-MOVE MEU
+LIFT MEU
 JUMP automaton_foreward_test
 
 ;;;;;;;;;;;;;;;;;;;

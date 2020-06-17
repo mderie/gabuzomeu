@@ -5,7 +5,7 @@
 BIRD GA ; Create a new bird
 CALC BU, #BUZOZOGA ; = 'h' = 104
 DUMP BU
-MOVE GA ; Move on it !
+LIFT GA ; Move on it !
 CALC BU, #BUZOBUBU ; = 'e' = 101
 DUMP BU
 CALC ZO, #BUZOMEUGA ; = 'l' = 108
@@ -13,12 +13,12 @@ DUMP ZO
 DUMP ZO
 CALC MEU, #BUZOMEUMEU ; = 'o' = 111
 DUMP MEU
-MOVE GA ; Move back on the initial one
+LIFT GA ; Move back on the initial one
 CALC ZO, #ZOGAGA ; =  ' ' = 32
 DUMP ZO
 CALC MEU, #BUMEUBUMEU ; = 'w' = 119
 DUMP MEU
-MOVE GA ; Jump again
+LIFT GA ; Jump again
 DUMP MEU
 CALC MEU, MEU + #MEU ; 'o' + 3
 DUMP MEU

@@ -40,6 +40,22 @@ int main(int argc, char* argv[])
 	while (ifs.good())
 	{
 		std::getline(ifs, line);
+
+		if (line == "")
+		{
+			continue;
+		}
+
+		if (size_t pos = line.find(';') ; pos != std::string::npos) // Thanks to C++ 17
+		{
+			line = line.substr(0, pos);
+		}
+
+		if (line[0] == ':')
+		{
+			// We can't shortcut the labels here... It must be done directly in the code (else we wan't be able to rebuild itself from the data
+		}
+
 		//if (stark) {}
 		lines.emplace_back(line);
 	}
@@ -48,7 +64,7 @@ int main(int argc, char* argv[])
 	std::string outputFileName = std::string(file) + std::string(".out");
 	std::ofstream ofs(outputFileName.c_str());
 	std::string s;
-	for (const auto &line : lines) // It seems that we can't recycle the existing variable... Let's cheat then !
+	for (const auto &line : lines) // It seems that we can't recycle the existing variable... Let's cheat then !-)
 	{
 		for (int i = 0; i < line.size(); i++)
 		{
@@ -69,13 +85,13 @@ int main(int argc, char* argv[])
 			{
 				if (stark)
 				{
-					ofs.write("BIRDZOMOVEZO", 12);
+					ofs.write("BIRDZOLIFTZO", 12);
 				}
 				else
 				{
 					ofs.write("BIRD ZO", 7);
 					ofs << std::endl;
-					ofs.write("MOVE ZO", 7);
+					ofs.write("LIFT ZO", 7);
 					ofs << std::endl;
 				}			
 			}
@@ -83,26 +99,28 @@ int main(int argc, char* argv[])
 			{
 				if (stark)
 				{
-					ofs.write("BIRDBUMOVEBU", 12);
+					ofs.write("BIRDBULIFTBU", 12);
 				}
 				else
 				{
 					ofs.write("BIRD BU", 7);
 					ofs << std::endl;
-					ofs.write("MOVE BU", 7);
+					ofs.write("LIFT BU", 7);
 					ofs << std::endl;
 				}
 			}
 		}
 
+		/*
 		if (!stark)
 		{
 			s = NumberToNibble(Base::Four, line[i]);
 			ofs.write("BIRD BU", 7);
 			ofs << std::endl;
-			ofs.write("MOVE BU", 7);
+			ofs.write("LIFT BU", 7);
 			ofs << std::endl;
 		}
+		*/
 	}
 
 	ofs.close();

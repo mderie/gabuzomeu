@@ -1,19 +1,19 @@
 
-----------------------------------------------------
-Yet Another Esoteric Programming Language (YEAPL !-)
-----------------------------------------------------
+------------------------------------------------------
+# Yet Another Esoteric Programming Language (YEAPL !-)
+------------------------------------------------------
 
 TODO: Insert TOC here !
 ...
 
-Rational
-********
+## Rational
+***********
 
-LOL !
-...
+> LOL !
+TODO: ? ...
 
-Source of inspirations
-**********************
+## Source of inspirations
+*************************
 
 - In french : Le cerveau Shadok a quatre cases !
 https://www.youtube.com/watch?v=DuJDPqb0nvE
@@ -24,7 +24,7 @@ https://fr.wikipedia.org/wiki/Les_Shadoks
 - Litteral number converter :)
 https://www.dcode.fr/shadoks-numeral-system
 
-- The Turing machine
+- The Turing machine implemenation
 https://rosettacode.org/wiki/Universal_Turing_machine
 
 - Esolang
@@ -40,20 +40,20 @@ https://esolangs.org/wiki/Main_Page
 
 - ...
 
-Solution folders
-****************
+## Solution folders
+*******************
 
-Developed in C++ using VS 2019, still need to port under Linux !
+> Developed in C++ using VS 2019, still need to port under Linux !
 
 - Material : see below
 - Common : libraries (headers only !)
 - *Generators : littles helpers
 - gabuzomeu : the interpreter
 
-Quick start / The material folder
-*********************************
+## Quick start / The material folder
+************************************
 
-Sample Gabuzomeu source codes
+> Sample Gabuzomeu source codes
 
 - 99BottlesOfBeer.gbzm : see http://www.99-bottles-of-beer.net/
 - HelloWorld*.gbzm : see http://helloworldcollection.de/ (Multiple implementations)
@@ -62,15 +62,16 @@ Sample Gabuzomeu source codes
 - Reverse*.gbzm : (Multiple implementations)
 - Rule110 : Bitch ! see https://en.wikipedia.org/wiki/Rule_110
 
-Miscellaneous text files
+> Miscellaneous text files
 
 - Some *pattern.gbzm : could be used to play with the rule 110 (not as is :(
 - Gabuzomeu grammars
 - Futures / Ideas / Extentions / ...
 
-4 unsigned 8 bit "registers" & Constants
-****************************************
+## 4 unsigned 8 bit "registers" & Constants
+*******************************************
 
+````
 Finally not a good idea to have 4 numerical constants, so no need for brackets, ie [GA]
 
 GA = 0
@@ -84,10 +85,12 @@ Flags
 Zero
 Carry ?
 ...
+````
 
-12 keywords (Final ?-)
-**********************
+## 12 keywords (Final ?-)
+*************************
 
+````
 SCAN (or PEAK) ==> SCAN appartment // Like READ but without moving the input pointer (may set ZF if any) [Optional]
 SEEK ==> SEEK expression or maybe SEEK appartment ? Or finally SEEK literal // Move the read pointer (unsigned value, 0 = #GA is the beginning) [Optional]
 
@@ -102,7 +105,7 @@ DICE (or RAND) ==> DICE appartment // Put a random value from 0 to 255 into the 
 5) PUMP ==> PUMP appartment // Replace peak ? or read ?-)
 6) DUMP (or BUMP) ==> DUMP appartment (add support for DUMP constant ?) // Replace write !-)
 
-7) To be combined into one MOVE keyword since two arrow parts can't share the same apparment !!!
+7) To be combined into one LIFT keyword since two arrow parts can't share the same apparment !!!
 MORE ==> MORE appartment // Travel from the current bird to the next one using MEU as source (may raise exception)
 LESS ==> LESS appartment // Travel from the current bird to the previous one using GA as target (may raise exception)
 
@@ -120,10 +123,12 @@ New !
 
 13) GBZM ==> Start a new instance
 14) BASE ==> Change the current number base
+````
 
-First ideas
-***********
+## First ideas
+**************
 
+````
 CALL label? ==> Unconditional JUMP to label and return ???
 READ ==> READ(GA) or GA READ or READ [GA] (may set ZF)
 REPL ? // Replace in place for input / output changing ?
@@ -139,163 +144,164 @@ PLOP (FLOP ?) ==> PLOP MEU // Destroy the brain/bird link associated to the MEU 
 INCR ==> INCR [GA] // Set the Zero flag if overflow ;)
 DECR ==> DECR [MEU] // Set the Zero flag
 TEST ==> TEST [BU] ? // Is the BU register holding a brain/bird
+````
 
-Futures
-*******
+## Futures
+**********
 
-REPEAT !
-PEEK
-FEEL
-COOL
-LEAF
-DUMB
-BUMP
-NEXT
-PREV
-FALL
-BALL
-MALL
-NULL
-BOIL
-CELL (care largely used in source code)
-LIST
-FEED
-FOOD
-FREE
-FULL
-UNIQ
-IFEQ
-EQUAL Hum !
-IFTH
-TIME
-DATE
-DOWN
-LINK
-SPOT
-BACK
-FORE
-EVAL
-BUMP
-LOAD
-SAVE
-BLOB
-ZERO
-POP
-SCAN
-PULL
-LEFT
-GOTO
-LOOP
-FLAG
-DIFF
-GRAB
-STOP
-CONT
-FIST
-COPY
-CALL ==> CALL label
-RETR // No param :(
-COND
-BIND
-FIND
-KIND
-MIND
-WIND
-DROP
-MESG
-TALK
-PORT
-DUPL
-ROLL
-DICE
-FACE
-MAZE
-BILL
-PILL
-FILL
-BULL
-FUNC
-BUZZ
-EXIT
-FOOL :)
-RULE
-MULE
-FROM
-POOR
-LOVE
-PAIN
-BUFF Idea bidi tmp storage ?
-SKIP
-CIAO (it means both hello & goodbye)
-FILE
-CODE
-TEXT
-DONE
-TONE
-BYTE Idea : Flip io to byte mode
-CHAR Idea : Reverse of above
-STAR
-TEAR
-GRUB 
-GRAB
-GREP
-GRIP
-HERE
-FISH
-XCHG
-SIZE
-UNDO
-REDO
-GLOB
-BLOB
-CLOB
-BEAT
-MEAT
-NEAT
-FEET
-FOOT
+REPEAT !  
+PEEK  
+FEEL  
+COOL  
+LEAF  
+DUMB  
+BUMP  
+NEXT  
+PREV  
+FALL  
+BALL  
+MALL  
+NULL  
+BOIL  
+CELL (care largely used in source code)  
+LIST  
+FEED  
+FOOD  
+FREE  
+FULL  
+UNIQ  
+IFEQ  
+EQUAL Hum !  
+IFTH  
+TIME  
+DATE  
+DOWN  
+LINK  
+SPOT  
+BACK  
+FORE  
+EVAL  
+BUMP  
+LOAD  
+SAVE  
+BLOB  
+ZERO  
+POP   
+SCAN  
+PULL  
+LEFT  
+GOTO  
+LOOP  
+FLAG  
+DIFF  
+GRAB  
+STOP  
+CONT  
+FIST  
+COPY  
+CALL ==> CALL label  
+RETR // No param :(  
+COND  
+BIND  
+FIND  
+KIND  
+MIND  
+WIND  
+DROP  
+MESG  
+TALK  
+PORT  
+DUPL  
+ROLL  
+DICE  
+FACE  
+MAZE  
+BILL  
+PILL  
+FILL  
+BULL  
+FUNC  
+BUZZ  
+EXIT  
+FOOL :)  
+RULE  
+MULE  
+FROM  
+POOR  
+LOVE  
+PAIN  
+BUFF Idea bidi tmp storage ?  
+SKIP  
+CIAO (it means both hello & goodbye)  
+FILE  
+CODE  
+TEXT  
+DONE  
+TONE  
+BYTE Idea : Flip io to byte mode  
+CHAR Idea : Reverse of above  
+STAR  
+TEAR  
+GRUB  
+GRAB  
+GREP  
+GRIP  
+HERE  
+FISH  
+XCHG  
+SIZE  
+UNDO  
+REDO  
+GLOB  
+BLOB  
+CLOB  
+BEAT  
+MEAT  
+NEAT  
+FEET  
+FOOT  
 
-Gross !
-*******
+## Gross !
+**********
 
-POOP
-SHIT
-FUCK
-CUNT
-DICK
-CRAP
-BUTT
-PISS
-TITS
-COCK
-DAMN
-SLUT
-....
+POOP  
+SHIT  
+FUCK  
+CUNT  
+DICK  
+CRAP  
+BUTT  
+PISS  
+TITS  
+COCK  
+DAMN  
+SLUT  
+....  
 
-Comments
-********
+## Comments
+***********
 
-C/C++ like : // at the end of line or /* & */ for line block
+> C/C++ like : // at the end of line or /* & */ for line block
 Or just ";" ? ==> Yes !
 
-Future / Extentions
-*******************
+## Future / Extentions
+**********************
 
-TODO: See file ? in material folder ?
+> TODO: See file ? in material folder ?
 
-Charset (finally it is a platform concern)
-******************************************
+## Charset (finally it is a platform concern)
+********************************************
 
-ISO-8859-1 (https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
+> ISO-8859-1 (https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
 
-label (used for JUMP)
-*********************
+## label (used for JUMP)
+************************
 
-Preceeded by a colon ==> ":loop" for the declaration and without colon for the definition (usage)
-Definition and usage must be followed by at least one "space" character (CR, LF, TAB, or SPC)
+> Preceeded by a colon ==> ":loop" for the declaration and without colon for the definition (usage)  
+Definition and usage must be followed by at least one "space" character (CR, LF, TAB, or SPC)  
 
-Exceptions (runtime)
-********************
+## Exceptions (runtime)
+***********************
 
 - Illegal "stack" operations (not implemented)
 - Illegal literal
@@ -304,36 +310,81 @@ Exceptions (runtime)
 - Base not supported
 ...
 
-Exceptions (interpreter)
-************************
+## Exceptions (interpreter)
+***************************
 
 - File not found
 - Alien
 - ...
 
-Termination
-***********
+## Termination
+**************
 
-When no more instruction !-) No need for exit 0 or stop for now...
-A valid program may (begin and) end with a ":end" label for example.
+> When no more instruction !-) No need for exit 0 or stop for now...  
+A valid program may (begin and) end with a ":end" label for example.  
 
-IO
-**
+## I/O
+******
 
-Virtual unlimited input and output characters (remember that the command line capacity is OS dependant)
+> Virtual unlimited input and output characters (remember that the command line capacity is OS dependant)
 
-Interpreter
-***********
+## Nibble
+*********
 
-Who needs a compiler ?-)
+> When performing IO, the numbers are processed either as being in the default base (so it is 256 a plain old byte :)
+either as being in another known bases. But in thoses cases, the number representation must be surrounded by '#'
+Some sample nibbles below in each base : 
+
+````
+#01110# in base #ZO (aka 2)
+#GABU# in base #BUGA (aka 4)
+#31# in base #ZOZO (aka 10)
+#C0FFEEBABE# in base #BUGAGA (aka 16)
+#ABba# in base #BUGAGAGA (aka 64)
+````
+
+> The BASE instruction takes either a cell either a litteral (so in base #BUGA) and allows to change the current base
+for the next I/O. It affects the DUMP & PUMP instructions whatever the data comes from / ends up in a file or 
+taken / shown at the console.
+
+## Interpreter
+**************
+
+> Who needs a compiler ?-)
 Portable command line based program that takes two arguments : a text file (ideally *.gbzm) and an input string
 between double quotes. The runtime loads the text file and provides the input string to the running gabuzomeu program.
 Finally the interpreter "collected" string output is shown at the program end's
 
-literals (numbers only in the language)
-***************************************
+## Command line parameters of the interpreter
+*********************************************
 
-Characters : Enclosed in single quote ==> Finally not supported (voluntary obfuscation :)
+````
+gabuzomeu (--file="file_name.gbzm" | --program="text") (--source="file_name" | --data="value") [--target="file_name"]
+          [--limit=\"number\"] [(-i | --interpret)] [(-a | --analysis)] [(-b | --big)] [(-Q | --Quine)] [(-w | --write)]
+
+[] optional
+() grouping
+| choosing
+- one letter
+-- full name
+````
+
+Where the file or the program must be provided, the same goes for the source or the data
+Strings can't contain double quote, screen data in input or output may hold
+\#numeric_nibbles\# in gabuzomeu base four in order to replace the non printable characters
+On the other hand, file data are treated as stream of bytes
+The optional target is to redirect the output toward a file instead of the screen as default
+The two optional interpret and analysis flags are there for tracing purpose
+Finally the optional big flag allows the support of number bigger than a byte
+New flags ! Quine parameter allows nibble output without trailing \#
+write force the character printing on the console for the ASCII code below 32
+limit can be used in order to break infinite loop after a given number of instruction
+````
+
+## literals (numbers only in the language)
+******************************************
+
+> Characters : Enclosed in single quote ==> Finally not supported (voluntary obfuscation :)
 Numbers : Using the base four notation (GA BU ZO MEU related), preceded with ² or surrounded by """ but then the command line failed :(
 ==> for gabuzomeu experts only ;-)
 
@@ -364,22 +415,23 @@ or with one (maybe two #)
 
 or only gabuzomeu litteral between single quotes (to ease the command line ?)
 
-Numbers from / to the outside
-*****************************
+## Numbers from / to the outside
+********************************
 
-The supported bases are 2, 4, 10, 16, 64 & 256 Where the later actually means make use of the ascii code for representing them.
+> The supported bases are 2, 4, 10, 16, 64 & 256 Where the later actually means make use of the ascii code for representing them.
 Obviously numbers below ascii code 32 are not printable. They are shown as using gabuzomeu base 4 notation between #
 For the others bases, since we don't know in advance their length, they must be enclosed as well by #
 In order to please the padawan programmers, the default base is the fourth one for the code and 256 for the I/O
-The BASE keyword allow a base change for further I/O operations Big numbers (arbitray long positive integers)
+The BASE keyword allow a base change for further I/O operations. Big numbers (arbitray long positive integers)
 support can be set by using the -b or --big parameter else the default number size is the byte
 
-What's look like a bird brain... In Gabuzomeu
-*********************************************
+## What's look like a bird brain... In Gabuzomeu
+************************************************
 
-One cell contains a positive or null number that fits on one byte.
+> One cell contains a positive or null number that fits on one byte.
 Or more bytes if the -b | --big number parameter is specified
 
+````
           _.--.---.          
       ,-''    |    `--.      
     ,'        |        `.    
@@ -395,14 +447,62 @@ Or more bytes if the -b | --big number parameter is specified
     `.        |        ,'    
       '--.    |    _.-'      
           `---+--''
+````
 
-Allowed bird links (start & end of arrows share the same cell names)
-********************************************************************
+## From one bird to another one
+*******************************
+
+> It should be seen as taking a lift : here we have both "GA" cells linked
+The LIFT instruction is able to travel both ways, although the HEAD keyword
+test the presence of the arrow ... Head ! The same goes for the TAIL one !
+
+````
+                 Bird 1
+
+               _.--.---.
+           ,-''    |    `--.
+         ,'        |        `.
+        /    ^     |          \
+       /    /|\    |           \
+      /    / | \   |            \
+     ;       |     |             :
+     +-------+-----+-------------+
+     :       |     |             ;
+      \      |     |            /
+       \     |     |           /
+        \    |     |          /
+         `.  |     |        ,'
+           '-+.    |    _.-'
+             | `---+--''
+             |
+             |
+             | _.--.---.
+           ,-+'    |    `--.
+         ,'  |     |        `.
+        /    |     |          \
+       /     ^     |           \
+      /     / \    |            \
+     ;     /   \   |             :
+     +-------------+-------------+
+     :             |             ;
+      \            |            /
+       \           |           /
+        \          |          /
+         `.        |        ,'
+           '--.    |    _.-'
+               `---+--''
+
+                 Bird 2
+````
+
+## Allowed bird links (start & end of arrows share the same cell names)
+***********************************************************************
 
 - Bird 1 have a tail in ZO
 - Bird 2 have a head in ZO and a tail in MEU
 - Bird 3 have a head in MEU
 
+````
             Bird 1                                    Bird 2
 
           _.--.---.                                 _.--.---.
@@ -437,12 +537,14 @@ Allowed bird links (start & end of arrows share the same cell names)
                                `---+--''
 							   
     						     Bird 3
+````
 
-Disallowed bird links
-*********************
+## Disallowed bird links
+************************
 
 Multiple arrow head's or tail's within the same cell is forbidden !
 
+````
           _.--.---.                                 _.--.---.
       ,-''    |    `--.                         ,-''    |    `--.
     ,'        |        `.                     ,'        |        `.
@@ -463,8 +565,8 @@ Multiple arrow head's or tail's within the same cell is forbidden !
                          ,'\       ,'       `.
                         /   \    ,'|          \
                        /     \ ,'  |           \
-                      /       '    |            \
-                     ;             |             :
+                      /     __'__  |            \
+                     ;        |    |             :
                      +-------------+-------------+
                      :             |             ;
                       \            |            /
@@ -473,9 +575,11 @@ Multiple arrow head's or tail's within the same cell is forbidden !
                          `.        |        ,'
                            '--.    |    _.-'
                                `---+--''
+````
 
-Two arrows can't share the same tail
+So two arrows can't share the same tail.
 
+````
           _.--.---.                                 _.--.---.
       ,-''    |    `--.                         ,-''    |    `--.
     ,'        |        `.                     ,'        |        `.
@@ -496,7 +600,7 @@ Two arrows can't share the same tail
                          ,'`.      |,'      `.
                         /   | |   ,'          \
                        /     \| ,' |           \
-                      /    ---'--- |            \
+                      /    ---+--- |            \
                      ;             |             :
                      +-------------+-------------+
                      :             |             ;
@@ -506,9 +610,11 @@ Two arrows can't share the same tail
                          `.        |        ,'
                            '--.    |    _.-'
                                `---+--''
-							   
-Nor can they share the same head
+````
 
+Nor can they share the same head.
+
+````
           _.--.---.                                 _.--.---.
       ,-''    |    `--.                         ,-''    |    `--.
     ,'        |        `.                     ,'        |        `.
@@ -539,11 +645,12 @@ Nor can they share the same head
                          `.        |        ,'
                            '--.    |    _.-'
                                `---+--''
+````
 
-Finally they can't follow each other neither
+Finally they can't follow each other neither...
 
-Miscelleanous
-*************
+## Miscelleanous
+****************
 
 - One brain/bird at time, four appartements or braincells or simply cells (numbered from 0 to 3 ?) or just named ?-)
 - Character collection processor ? Well do the word processor for the V2
@@ -560,14 +667,14 @@ Again Pascal syntax is as follow 'Hello,'#13#10'world!' So we can mix double quo
 - When the progam starts there is only one bird and all of its appartments hold zero (as any new bird)
 - input string can be empty !-)
 
-Language evolution
-******************
+## Language evolution
+*********************
 
-Introduce a counter register ?
-Introduce LOOP keyword ?
+- Introduce a counter register ?
+- Introduce LOOP keyword ?
 
-Care : command line limitation (OS related topic)
-*************************************************
+## Care : command line limitation (OS related topic)
+****************************************************
 
 https://www.cyberciti.biz/faq/linux-unix-arg_max-maximum-length-of-arguments/
 Try the following command 
@@ -583,31 +690,32 @@ A Gabuzomeu program does not have input parameters nor return values
 but it can read input value(s) and write output value(s). Those values
 may be provided from / to file or from / to the console. See the GBZM "special" instruction [02/06/2020]
 
-Roadmap
-*******
+## Roadmap
+**********
 
 - 99 Bottles of beer (ongoing)
-- Still a lot of debug prints... (See //TODO: "tags")
+- Enhance the parsing error messages
+- Still a lot of debug prints... (See the numerous //TODO: "tags")
 - Code could / should be cleaned a little bit :)
 - Linux porting
 - Versionning
 - Building a true IDE (with birds visualisations, line by line debugging !)
 - Implementing a BF cross stuff
-- ASCII art for the links
+- Implement a compiler !
 - Review this document title order and start by the TOC
 - ...
 
-License
-*******
+## License
+**********
 
 - Well... Smileware ? I really doubt that any of the stuff shared here is valuable in anyway !
 - But it is free (see https://en.wikipedia.org/wiki/Gratis_versus_libre)
-- No information found about "Shadocks" copyright
+- Found no information about "Shadocks" copyright, even less about ga bu zo meu (& ni ! Nor about the gibis...)
 
-Greetings
-*********
+## Greetings
+************
 
-- My wife (who had to support my "divagations"... But she played once with an universal Turing Machine !-)
+- My wife (who had to support my "divagations"... But she once played with the universal Turing Machine !-)
 - My daugther for the bird logo :)
 - Jarro2783 for the cxxopts library (https://github.com/jarro2783/cxxopts)
 - R35382 for the bnflite library (https://github.com/r35382/bnflite)
@@ -623,8 +731,8 @@ Greetings
 - Markus Gebhard (I've used Jave for the ASCII "art" :) http://www.jave.de/
 - ...
 
-May they RIP
-************
+## May they RIP
+***************
 
 - Jacques Rouxel (Shadoks)
 - Alan Turing (Universal Turing Machine among other discoveries / inventions)
@@ -632,4 +740,6 @@ May they RIP
 - Willard Van Orman Quine (Quine :)
 - ...
 
+````
 That's all folks ! (Project started the ten of May 2020 / mderie@gmail.com / Coded by Sam Le Pirate [TFL-TDV])
+````

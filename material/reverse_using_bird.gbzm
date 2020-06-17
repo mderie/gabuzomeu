@@ -17,7 +17,7 @@ LAST backward_zo
 PUMP BU
 LAST backward_zo
 BIRD ZO
-MOVE ZO
+LIFT ZO
 
 ; Read and potential ascent through MEU
 PUMP GA
@@ -25,12 +25,12 @@ LAST backward_meu
 PUMP BU
 LAST backward_meu
 BIRD MEU
-MOVE MEU
+LIFT MEU
 JUMP forward_zo
 
 ; Always descent through zo
 :rewind_zo
-MOVE ZO
+LIFT ZO
 
 ; Write at most two times
 :backward_zo
@@ -43,7 +43,7 @@ JUMP end
 
 ; Always descent through MEU
 :rewind_meu
-MOVE MEU
+LIFT MEU
 
 ; Write at most two times
 :backward_meu

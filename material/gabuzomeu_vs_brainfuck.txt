@@ -21,8 +21,8 @@ main(){char*s="main(){char*s=%c%s%c;printf(s,34,s,34);}";printf(s,34,s,34);}
 
 Character	Meaning ==> Equivalent in Gabuzomeu
 
-> (62)     increment the data pointer (to point to the next cell to the right) ==> MOVE ?
-< (60)     decrement the data pointer (to point to the next cell to the left) ==> MOVE ?
+> (62)     increment the data pointer (to point to the next cell to the right) ==> LIFT ?
+< (60)     decrement the data pointer (to point to the next cell to the left) ==> LIFT ?
 + (43)     increment (increase by one) the byte at the data pointer ==> CALC ?
 - (45)     decrement (decrease by one) the byte at the data pointer ==> CALC ?
 . (46)     output the byte at the data pointer ==> DUMP
@@ -34,7 +34,7 @@ Character	Meaning ==> Equivalent in Gabuzomeu
 			
 Still we have in addition :
 
-MOVE, FREE, BIRD, LAST, HEAD, TAIL, GBZM & JUMP
+LIFT, FREE, BIRD, LAST, HEAD, TAIL, GBZM, BASE & JUMP
 
 Data aspect :
 

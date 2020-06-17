@@ -36,7 +36,7 @@ litteral = '#' ('GA' | 'BU' | 'ZO' | 'MEU')+
 
 <line> ::= <instruction> | label
 
-<instruction> ::= <last> | <jump> | <dump> | <pump> | <free> | <bird> | <move> | <calc> | <head> | <tail> | <zero> | <else>
+<instruction> ::= <last> | <jump> | <dump> | <pump> | <free> | <bird> | <lift> | <calc> | <head> | <tail> | <zero> | <else> | <gbzm> | <base>
 
 <last> ::= 'LAST' label
 
@@ -50,7 +50,7 @@ litteral = '#' ('GA' | 'BU' | 'ZO' | 'MEU')+
 
 <bird> ::= 'BIRD' cell
 
-<move> ::= 'MOVE' cell
+<lift> ::= 'LIFT' cell
 
 <calc> ::= 'CALC' cell ',' <expression>
 
@@ -61,6 +61,10 @@ litteral = '#' ('GA' | 'BU' | 'ZO' | 'MEU')+
 <zero> ::= 'ZERO' cell ',' label
 
 <else> ::= 'ELSE' cell ',' label
+
+<gbzm> ::= 'GBZM' cell ',' cell
+
+<base> ::= 'BASE' cell | 'BASE' litteral ! Could be shorten ? 'BASE' (cell | litteral) is invalid :(
 
 <expression> ::=  <term> '+' <expression> | <term> '-' <expression>  | <term> ! We don't care about the unary minus support...
 

@@ -16,18 +16,20 @@
 
 <program> ::= <line>*
 <line> ::= <colon_label> | <colon_label> <instruction> | <instruction>
-<instruction> ::= <last> | <jump> | <dump> | <pump> | <free> | <bird> | <move> | <calc> | <head> | <tail> | <zero> | <else>
+<instruction> ::= <last> | <jump> | <dump> | <pump> | <free> | <bird> | <lift> | <calc> | <head> | <tail> | <zero> | <else> | <gbzm> | <base>
 <last> ::= "LAST" <label>
 <jump> ::= "JUMP" <label>
 <dump> ::= "DUMP" <cell>
 <pump> ::= "PUMP" <cell>
 <free> ::= "FREE" <cell>
 <bird> ::= "BIRD" <cell>
-<move> ::= "MOVE" <cell>
+<lift> ::= "LIFT" <cell>
 <head> ::= "HEAD" <cell> "," <label>
 <tail> ::= "TAIL" <cell> "," <label>
 <zero> ::= "ZERO" <cell> "," <label>
 <else> ::= "ELSE" <cell> "," <label>
+<gbzm> ::= "GBZM" <cell> "," <cell>
+<base> ::= "BASE" (<cell> | <litteral>)
 
 <calc> ::= "CALC" <cell> "," <expression>
 <expression> ::= <term> (("+" | "-") <term>)*

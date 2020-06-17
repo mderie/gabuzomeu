@@ -17,4 +17,6 @@ Allow file content to be similar as command line
 
 - Next Bird Accessor (arrow operator) : <-< & >->
 
+- Define the [] operator accross bird ? And use it empty to know how many are they ?
+
 - ...

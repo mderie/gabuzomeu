@@ -34,62 +34,62 @@ CALC BU, #GA ; Reset :)
 DUMP GA
 
 BIRD ZO 
-MOVE ZO
+LIFT ZO
 DUMP GA
 
 BIRD MEU
-MOVE MEU
+LIFT MEU
 DUMP GA
 
 BIRD ZO
-MOVE ZO
-CALC GA, #BU ; 1 = (SOH)
-DUMP GA
-
-BIRD MEU
-MOVE MEU
-DUMP GA
-
-BIRD ZO
-MOVE ZO
-DUMP GA
-
-BIRD MEU
-MOVE MEU
-CALC GA, #BU ; 1 = (SOH)
-DUMP GA
-
-BIRD ZO
-MOVE ZO
+LIFT ZO
 CALC GA, #BU ; 1 = (SOH)
 DUMP GA
 
 BIRD MEU
-MOVE MEU
+LIFT MEU
 DUMP GA
 
 BIRD ZO
-MOVE ZO
+LIFT ZO
+DUMP GA
+
+BIRD MEU
+LIFT MEU
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD ZO
+LIFT ZO
 CALC GA, #BU ; 1 = (SOH)
 DUMP GA
 
 BIRD MEU
-MOVE MEU
-CALC GA, #BU ; 1 = (SOH)
+LIFT MEU
 DUMP GA
 
 BIRD ZO
-MOVE ZO
+LIFT ZO
 CALC GA, #BU ; 1 = (SOH)
 DUMP GA
 
 BIRD MEU
-MOVE MEU
+LIFT MEU
 CALC GA, #BU ; 1 = (SOH)
 DUMP GA
 
 BIRD ZO
-MOVE ZO
+LIFT ZO
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD MEU
+LIFT MEU
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD ZO
+LIFT ZO
 CALC GA, #BU ; 1 = (SOH)
 DUMP GA
 
@@ -116,12 +116,12 @@ ZERO GA, automaton_found_null
 ; So we found a star !-)
 
 HEAD ZO, automaton_backward_zo_star
-MOVE MEU
+LIFT MEU
 ZERO GA, automaton_found_star_null
 JUMP automaton_found_star_star
 
 :automaton_backward_zo_star
-MOVE ZO
+LIFT ZO
 ZERO GA, automaton_found_star_null
 JUMP automaton_found_star_star
 
@@ -130,12 +130,12 @@ JUMP automaton_found_star_star
 ;;;;;;;;;;;;;;;;;;;;;
 
 HEAD ZO, automaton_backward_zo_null
-MOVE MEU
+LIFT MEU
 ZERO GA, automaton_found_null_null
 JUMP automaton_found_null_star
 
 :automaton_backward_zo_null
-MOVE ZO
+LIFT ZO
 ZERO GA, automaton_found_null_null
 JUMP automaton_found_null_star
 
@@ -148,12 +148,12 @@ HEAD MEU, automaton_backward_meu_star_star
 JUMP automaton_found_any_any_none
 
 :automaton_backward_meu_star_star
-MOVE MEU
+LIFT MEU
 ZERO GA, automaton_found_null_star_star
 JUMP automaton_found_star_star_star
 
 :automaton_backward_zo_star_star
-MOVE ZO
+LIFT ZO
 ZERO GA, automaton_found_null_star_star
 JUMP automaton_found_star_star_star
 
@@ -166,12 +166,12 @@ HEAD MEU, automaton_backward_meu_star_null
 JUMP automaton_found_any_any_none
 
 :automaton_backward_meu_star_null
-MOVE MEU
+LIFT MEU
 ZERO GA, automaton_found_null_star_null
 JUMP automaton_found_star_star_null
 
 :automaton_backward_zo_star_null
-MOVE ZO
+LIFT ZO
 ZERO GA, automaton_found_null_star_null
 JUMP automaton_found_star_star_null
 
@@ -184,12 +184,12 @@ HEAD MEU, automaton_backward_meu_null_star
 JUMP automaton_found_any_any_none
 
 :automaton_backward_meu_null_star
-MOVE MEU
+LIFT MEU
 ZERO GA, automaton_found_null_null_star
 JUMP automaton_found_star_null_star
 
 :automaton_backward_zo_null_star
-MOVE ZO
+LIFT ZO
 ZERO GA, automaton_found_null_null_star
 JUMP automaton_found_star_null_star
 
@@ -202,12 +202,12 @@ HEAD MEU, automaton_backward_meu_null_null
 JUMP automaton_found_any_any_none
 
 :automaton_backward_meu_null_null
-MOVE MEU
+LIFT MEU
 ZERO GA, automaton_found_null_null_null
 JUMP automaton_found_star_null_null
 
 :automaton_backward_zo_null_null
-MOVE ZO
+LIFT ZO
 ZERO GA, automaton_found_null_null_null
 JUMP automaton_found_star_null_null
 
@@ -216,12 +216,12 @@ JUMP automaton_found_star_null_null
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 TAIL ZO, automaton_foreward_zo_star_star_star
-MOVE MEU ; forward !
+LIFT MEU ; forward !
 CALC BU, #GA ; We found the pattern [*][*][*] => [ ]
 JUMP small_loop
 
 :automaton_foreward_zo_star_star_star
-MOVE ZO
+LIFT ZO
 CALC BU, #GA ; Idem
 JUMP small_loop
 
@@ -230,12 +230,12 @@ JUMP small_loop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 TAIL ZO, automaton_foreward_zo_star_star_null
-MOVE MEU
+LIFT MEU
 CALC BU, #BU ; We found the pattern [*][*][ ] => [*]
 JUMP small_loop
 
 :automaton_foreward_zo_star_star_null
-MOVE ZO
+LIFT ZO
 CALC BU, #BU ; Idem
 JUMP small_loop
 
@@ -244,12 +244,12 @@ JUMP small_loop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 TAIL ZO, automaton_foreward_zo_star_null_star
-MOVE MEU
+LIFT MEU
 CALC BU, #BU ; We found the pattern [*][ ][*] => [*]
 JUMP small_loop
 
 :automaton_foreward_zo_star_null_star
-MOVE ZO
+LIFT ZO
 CALC BU, #BU ; Idem
 JUMP small_loop
 
@@ -258,12 +258,12 @@ JUMP small_loop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 TAIL ZO, automaton_foreward_zo_star_null_null
-MOVE MEU
+LIFT MEU
 CALC BU, #GA ; We found the pattern [*][ ][ ] => [ ]
 JUMP small_loop
 
 :automaton_foreward_zo_star_null_null
-MOVE ZO
+LIFT ZO
 CALC BU, #GA ; Idem
 JUMP small_loop
 
@@ -272,12 +272,12 @@ JUMP small_loop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 TAIL ZO, automaton_foreward_zo_null_star_star
-MOVE MEU
+LIFT MEU
 CALC BU, #BU ; We found the pattern [ ][*][*] => [*]
 JUMP small_loop
 
 :automaton_foreward_zo_null_star_star
-MOVE ZO
+LIFT ZO
 CALC BU, #BU ; Idem
 JUMP small_loop
 
@@ -286,12 +286,12 @@ JUMP small_loop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 TAIL ZO, automaton_foreward_zo_null_star_null
-MOVE MEU
+LIFT MEU
 CALC BU, #BU ; We found the pattern [ ][*][ ] => [*]
 JUMP small_loop
 
 :automaton_foreward_zo_null_star_null
-MOVE ZO
+LIFT ZO
 CALC BU, #BU ; Idem
 JUMP small_loop
 
@@ -300,12 +300,12 @@ JUMP small_loop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 TAIL ZO, automaton_foreward_zo_null_null_star
-MOVE MEU
+LIFT MEU
 CALC BU, #BU ; We found the pattern [ ][ ][*] => [*]
 JUMP small_loop
 
 :automaton_foreward_zo_null_null_star
-MOVE ZO
+LIFT ZO
 CALC BU, #BU ; Idem
 JUMP small_loop
 
@@ -314,12 +314,12 @@ JUMP small_loop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 TAIL ZO, automaton_foreward_zo_null_null_null
-MOVE MEU
+LIFT MEU
 CALC BU, #GA ; We found the pattern [ ][ ][ ] => [ ]
 JUMP small_loop
 
 :automaton_foreward_zo_null_null_null
-MOVE ZO
+LIFT ZO
 CALC BU, #GA ; Idem
 JUMP small_loop
 
@@ -343,7 +343,7 @@ JUMP big_loop
 
 DUMP BU
 CALC GA, BU
-MOVE ZO
+LIFT ZO
 JUMP automaton_found_any_any_none
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -352,7 +352,7 @@ JUMP automaton_found_any_any_none
 
 DUMP BU
 CALC GA, BU
-MOVE MEU
+LIFT MEU
 JUMP automaton_found_any_any_none
 
 ;;;;;;;;;;;;;;;;;;;

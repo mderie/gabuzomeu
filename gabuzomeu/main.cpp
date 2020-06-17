@@ -73,8 +73,8 @@ std::map<std::string, size_t> labels;
 
 // Unable to get the number of elementsinside an enum
 // https://stackoverflow.com/questions/712463/number-of-elements-in-an-enum
-enum class OpCode { last, jump, pump, dump, free, bird, move, calc, head, tail, zero, else_, gbzm, base, last_item }; // Care of the else keyword !
-const std::string OpCodes[(int) (OpCode::last_item)] = { "LAST", "JUMP", "PUMP", "DUMP", "FREE", "BIRD", "MOVE", "CALC", "HEAD", "TAIL", "ZERO", "ELSE", "GBZM", "BASE" };
+enum class OpCode { last, jump, pump, dump, free, bird, lift, calc, head, tail, zero, else_, gbzm, base, last_item }; // Care of the else keyword !
+const std::string OpCodes[(int) (OpCode::last_item)] = { "LAST", "JUMP", "PUMP", "DUMP", "FREE", "BIRD", "LIFT", "CALC", "HEAD", "TAIL", "ZERO", "ELSE", "GBZM", "BASE" };
 
 struct Instruction
 {
@@ -249,10 +249,10 @@ static bool OnBird(const char *lexem, size_t len)
     return true;
 }
 
-static bool OnMove(const char *lexem, size_t len)
+static bool OnLift(const char *lexem, size_t len)
 {
-    AnalysisFilter("Move = : %.*s;\n", len, lexem);
-    instructions.emplace_back(Instruction(OpCode::move, std::string(lexem, len), ""));
+    AnalysisFilter("Lift = : %.*s;\n", len, lexem);
+    instructions.emplace_back(Instruction(OpCode::lift, std::string(lexem, len), ""));
     return true;
 }
 
@@ -782,16 +782,15 @@ bnf::Lexem l_last("LAST");
 bnf::Lexem l_jump("JUMP");
 bnf::Lexem l_dump("DUMP");
 bnf::Lexem l_pump("PUMP");
-bnf::Lexem l_free("FREE"); // Hum...
-bnf::Lexem l_bird("BIRD"); // Hum...
-bnf::Lexem l_move("MOVE"); // Hum...
+bnf::Lexem l_free("FREE");
+bnf::Lexem l_bird("BIRD");
+bnf::Lexem l_lift("LIFT");
 bnf::Lexem l_calc("CALC");
-bnf::Lexem l_head("HEAD"); // Hum...
-bnf::Lexem l_tail("TAIL"); // Hum...
+bnf::Lexem l_head("HEAD");
+bnf::Lexem l_tail("TAIL");
 bnf::Lexem l_zero("ZERO");
 bnf::Lexem l_else("ELSE");
 bnf::Lexem l_gbzm("GBZM"); // Judas !
-bnf::Lexem l_size("SIZE"); // define it as CALC math operator ? Or use it empty [] to get the size (and set the size ?)
 bnf::Lexem l_base(OpCodes[(int) OpCode::base].c_str()); // OK as well but a bit long :)
 
 // Tokens
@@ -847,7 +846,7 @@ bnf::Rule r_dump = (l_dump + l_cell) + OnDump;
 bnf::Rule r_pump = (l_pump + l_cell) + OnPump;
 bnf::Rule r_free = (l_free + l_cell) + OnFree;
 bnf::Rule r_bird = (l_bird + l_cell) + OnBird;
-bnf::Rule r_move = (l_move + l_cell) + OnMove;
+bnf::Rule r_lift = (l_lift + l_cell) + OnLift;
 bnf::Rule r_head = (l_head + l_cell + CaptureCell + "," + l_label) + OnHead;
 bnf::Rule r_tail = (l_tail + l_cell + CaptureCell + "," + l_label) + OnTail;
 bnf::Rule r_zero = (l_zero + l_cell + CaptureCell + "," + l_label) + OnZero;
@@ -863,7 +862,7 @@ bnf::Rule r_factor;
 
 bnf::Rule r_calc = (l_calc + l_cell + CaptureTargetCell + "," + r_expression) + OnCalc;
 
-bnf::Rule r_instruction = (r_last | r_jump | r_dump | r_pump | r_free | r_bird | r_move | r_calc | r_head | r_tail | r_zero | r_else | r_gbzm | r_base) + OnInstruction;
+bnf::Rule r_instruction = (r_last | r_jump | r_dump | r_pump | r_free | r_bird | r_lift | r_calc | r_head | r_tail | r_zero | r_else | r_gbzm | r_base) + OnInstruction;
 bnf::Rule r_line = (l_colon_label + OnLabel | r_instruction) + OnLine;
 
 // This was ok but raises strange duplicate lines !
@@ -1010,17 +1009,17 @@ void DoBird()
     totalBirdCounder++;
 }
 
-void DoMove()
+void DoLift()
 {
     byte cellId = GetCellId(instructions[contexts.top().instructionPointer].operand1);
     if ((contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Head) or (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Tail))
     {        
         contexts.top().birdPointer = contexts.top().birds[contexts.top().birdPointer].cells[cellId].value.toInt();
-        //std::cout << "DoMove ==> contexts.top().birdPointer = " << contexts.top().birdPointer << std::endl;
+        //std::cout << "DoLift ==> contexts.top().birdPointer = " << contexts.top().birdPointer << std::endl;
     }
     else
     {
-        throw InvalidCellKindException("DoMove " + CellIds[cellId]);
+        throw InvalidCellKindException("DoLift " + CellIds[cellId]);
     }
 }
 
@@ -1176,7 +1175,7 @@ void RunInterpreter()
         case OpCode::dump: { DoDump(); break; }
         case OpCode::free: { DoFree(); break; }
         case OpCode::bird: { DoBird(); break; }
-        case OpCode::move: { DoMove(); break; }
+        case OpCode::lift: { DoLift(); break; }
         case OpCode::calc: { DoCalc(); break; }
         case OpCode::head: { DoHead(); break; }
         case OpCode::tail: { DoTail(); break; }
@@ -1242,19 +1241,19 @@ void RunAnalyzers(const std::vector<std::string> &lines)
     //const char helloWorld[] = "CALCGA,#BUZOZOGADUMPGACALCBU,#BUZOBUBUDUMPBUCALCZO,#BUZOMEUGADUMPZODUMPZOCALCMEU,#BUZOMEUMEUDUMPMEUCALCGA,#ZOGAGADUMPGACALCBU,#BUMEUBUMEUDUMPBUDUMPMEUCALCBU,#BUMEUGAZODUMPBUDUMPZOCALCGA,#BUZOBUGADUMPGA";
     const char justHelloZob[] = "CALC GA, #BUZOZOGA DUMP GA CALC BU, #BUZOBUBU DUMP BU CALC ZOB"; // KO so OK :)
     const char justCalc[] = "CALC GA, #BUZOZOGA"; // OK
-    const char justMove[] = "MOVEGA"; // OK
+    const char justMove[] = "LIFTGA"; // OK
     const char justJump[] = "JUMPTOTO"; // OK
     const char justDoubleJump[] = "JUMPTOTOJUMPTITI"; // OK
     const char justBirdWithSpace[] = "BIRD GA"; // OK
-    const char justDoubleMove[] = "MOVEGAMOVEBU"; // OK
-    const char justBogusMove[] = "MOVEGO"; // KO so OK :)
-    const char justDoubleMoveWithSpaces[] = "MOVE GA MOVE MEU"; // OK
+    const char justDoubleMove[] = "LIFTGALIFTBU"; // OK
+    const char justBogusMove[] = "LIFTGO"; // KO so OK :)
+    const char justDoubleMoveWithSpaces[] = "LIFT GA LIFT MEU"; // OK
     const char justNothing[] = ""; // OK
     const char justLabel[] = ":TOTO"; // OK
     const char justCell[] = "GA"; // KO so OK :)
     const char justGarbage[] = "TGA"; // KO so OK :)
-    const char justSomeLabels[] = ":TOTO :TITI MOVE GA :AHU"; // OK
-    const char justSameLabels[] = ":TOTO :TITI MOVE GA :TOTO"; // KO so OK :)
+    const char justSomeLabels[] = ":TOTO :TITI LIFT GA :AHU"; // OK
+    const char justSameLabels[] = ":TOTO :TITI LIFT GA :TOTO"; // KO so OK :)
     const char justParenthesis[] = "CALC MEU, (#BUBU)"; // = 5 OK
     const char justAssignementThenCalc[] = "CALC MEU, #BUZO CALC ZO, (MEU * #BUZO) * #BU + #ZO"; // 36 OK
     const char justSimpleExpression[] = "CALC MEU, #BUBU * #BUZO / #BUMEU"; // AKA 5 * 6 / 7 = 4 (Nice we support left to right evaluation :)
