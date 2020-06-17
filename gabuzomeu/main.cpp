@@ -1300,11 +1300,12 @@ void RunAnalyzers(const std::vector<std::string> &lines)
 
 void ShowUsage()
 {
-    std::cout << "Usage :" << std::endl;    
-    std::cout << "gabuzomeu (--file=\"file_name.gbzm\" | --program=\"text\") (--source=\"file_name\" | --data=\"value\") [--target=\"file_name\"]" << std::endl;
-    std::cout << "          [--limit=\"number\"] [(-i | --interpret)] [(-a | --analysis)] [(-b | --big)] [(-Q | --Quine)] [(-w | --write)] " << std::endl;
+    std::cout << "Usage :" << std::endl;
     std::cout << std::endl;
-    std::cout << "Where the file or the program must be provided, the same goes for the source or the data" << std::endl;
+    std::cout << "gabuzomeu (--file=\"file_name.gbzm\" | --program=\"text\") [--source=\"file_name\" | --data=\"value\"] [--target=\"file_name\"]" << std::endl;
+    std::cout << "          [--limit=\"number\"] [-i | --interpret] [-a | --analysis] [-b | --big] [-Q | --Quine] [-w | --write] " << std::endl;
+    std::cout << std::endl;
+    std::cout << "Where the file or the program must be provided, the data can be empty" << std::endl;
     std::cout << "Strings can't contain double quote, screen data in input or output may hold " << std::endl; 
     std::cout << "#numeric_nibbles# in gabuzomeu base four in order to replace the non printable characters" << std::endl; // The nibble value for the # (35) is #ZOGAMEU and for " (34) it is #ZOGAZO
     std::cout << "On the other hand, file data are treated as stream of bytes" << std::endl;
@@ -1312,7 +1313,7 @@ void ShowUsage()
     std::cout << "The two optional interpret and analysis flags are there for tracing purpose" << std::endl;
     std::cout << "Finally the optional big flag allows the support of number bigger than a byte" << std::endl;
     std::cout << "New flags ! Quine parameter allows nibble output without trailing #" << std::endl;
-    std::cout << "write force the character printing on the console for the ASCII code below 32" << std::endl;
+    std::cout << "write force the character printing on the console for the ASCII code below 32" << std::endl; // So the display will be OS dependant
     std::cout << "limit can be used in order to break infinite loop after a given number of instruction" << std::endl;
     //TODO: separate the parameters like name=value and the toggles !
 }
@@ -1398,7 +1399,7 @@ int main(int argc, char *argv[])
     }
     catch (const std::exception& e)
     {
-        //TODO: Remove this when done
+        //TODO: Remove this when done !
         std::cout << "Exception : " << e.what() << std::endl;
         std::cout << "file = '" << file << "', program = '" << program << "', source = '" << source << "', data = '" << data << "' & target = '" << target << "'" <<std::endl;
         std::cout << "limit = " << limit << ", big = " << big << ", write = " << write << " & Quine = " << Quine << std::endl;

@@ -1,9 +1,0 @@
-﻿  ConverterTools.cpp
-C:\laboratory\gabuzomeu\Common\ConverterTools.cpp(293,38): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-  main.cpp
-  Generating code
-  0 of 733 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
-  Finished generating code
-  CharToCharGenerator.vcxproj -> C:\laboratory\gabuzomeu\x64\Release\CharToCharGenerator.exe

@@ -1,0 +1,11 @@
+
+; Parsing limitation (or not :), a label must be followed by at least one space character at definition or at usage
+
+CALC GA, #BU
+
+; KO (parse error)
+:loopCALCGA,GA-#BUELSEloop DUMPBU
+; KO Again (no output)
+;loop CALCGA,GA-#BUELSEGA,loopDUMPBU
+; OK
+:loop CALCGA,GA-#BUELSEGA,loop DUMPBU

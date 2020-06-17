@@ -190,7 +190,7 @@ CALC GA, GA + #BU ==> +
 
 
 INTRODUCING 1 NEW KEYWORD (or use GA[] to get it size ?) AND ONE NEW access OPERATOR ([])
-BUT WE COULD REMOVE : FREE & BIRD, HEAD & TAIL and MOVE !
+BUT WE COULD REMOVE : FREE & BIRD, HEAD & TAIL and LIFT !
 
 ; "Data" part
 CALC GA[#GA], #... ; any SINGLE BYTE value
@@ -220,7 +220,7 @@ So DUMP GA could be also DUMP GA[#BU] or DUMP GA[BU] ?
 
 
 
-Hypothesis BIRD GA, BU then split MOVE to MORE & LESS (or BACK & FORE)
+Hypothesis BIRD GA, BU then split LIFT to MORE & LESS (or BACK & FORE)
 
 ; "Data" part
 CALC GA, #... ; One byte or multiple bytes ? One but using the second # to support B4 nibble output

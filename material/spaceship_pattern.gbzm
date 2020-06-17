@@ -1,0 +1,69 @@
+
+; Initial bird already created, we just output an initial blank line
+
+CALC BU, #ZOZO
+DUMP BU ; Start with a blank line
+CALC BU, #GA ; Reset :)
+
+; Spaceship background pattern, length fourteen so next bird in zo start with zero !-)
+DUMP GA
+
+BIRD ZO 
+LIFT ZO
+DUMP GA
+
+BIRD MEU
+LIFT MEU
+DUMP GA
+
+BIRD ZO
+LIFT ZO
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD MEU
+LIFT MEU
+DUMP GA
+
+BIRD ZO
+LIFT ZO
+DUMP GA
+
+BIRD MEU
+LIFT MEU
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD ZO
+LIFT ZO
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD MEU
+LIFT MEU
+DUMP GA
+
+BIRD ZO
+LIFT ZO
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD MEU
+LIFT MEU
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD ZO
+LIFT ZO
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD MEU
+LIFT MEU
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA
+
+BIRD ZO
+LIFT ZO
+CALC GA, #BU ; 1 = (SOH)
+DUMP GA

@@ -27,7 +27,6 @@
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app
 
@@ -37,8 +36,8 @@
 *.pdb
 *.ipch
 *.VC.db
-/x64/
-/.vs
-/*.tlog
+x64/
+.vs/
+*.tlog
 *.user
 *.filters
