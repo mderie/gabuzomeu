@@ -4,12 +4,12 @@
     <ShowAllFiles>false</ShowAllFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>--file="factorial_standard.gbzm" --data="#MEU#"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>--file="quine_compact.gbzm" --target="quine_compact_t.gbzm" --Quine</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>$(OutDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>--file="factorial_standard.gbzm" --data="#MEU#"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>--file="quine_compact.gbzm" --target="quine_compact_t.gbzm" --Quine</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>$(OutDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>

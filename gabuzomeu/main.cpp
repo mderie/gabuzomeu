@@ -971,7 +971,7 @@ void DoDump()
 }
 
 // Care : recursive ! Or not... We can leave everything as is and not recycle birds
-// nor changing all the id's ! So some birds may be unreachable
+// nor changing all the id's ! So some birds may be unreachable !
 void Free(int birdIndex)
 {
 }
@@ -1137,7 +1137,11 @@ void DoBase()
     InfInt base;
     if (operand[0] == '#')
     {
+        // Little dirty trick here... The BASE instruction awaits the new base number. Althouhg 256 doesn't fit into a byte !
+        bool big_backup = big;
+        big = true;
         base = LexerNibbleToNumber(operand.substr(1, operand.size() - 1));
+        big = big_backup;
     }
     else
     {
@@ -1162,9 +1166,17 @@ void RunInterpreter()
     //std::cout << "contexts.top().instructionPointer = " << contexts.top().instructionPointer << " & instructions.size() = " << instructions.size() << std::endl;
     while ((contexts.top().instructionPointer < (int) instructions.size()) and ((limit == 0) or (totalInstructionCounter < limit)))
     {
-        //std::cout << "totalInstructionCounter = " << totalInstructionCounter << ", birdPointer = " << contexts.top().birdPointer << ", stack level = " << contexts.size()
-        //          << ", OpCode = " << OpCodes[(int)instructions[contexts.top().instructionPointer].opCode] << ", operand1 = '" << instructions[contexts.top().instructionPointer].operand1
-        //          << "' & operand2 = '" << instructions[contexts.top().instructionPointer].operand2 << "'" << std::endl;
+        //TODO: Pff : Review this....
+        /*
+        std::cout << "totalInstructionCounter = " << totalInstructionCounter << ", birdPointer = " << contexts.top().birdPointer
+                  << ", stack level = " << contexts.size() << ", OpCode = " << OpCodes[(int) instructions[contexts.top().instructionPointer].opCode] 
+                  << ", operand1 = '" << instructions[contexts.top().instructionPointer].operand1
+                  << "' & operand2 = '" << instructions[contexts.top().instructionPointer].operand2
+                  << "' [GA = " << contexts.top().birds[contexts.top().birdPointer].cells[(int) CellId::ga].value
+                  << ", BU = " << contexts.top().birds[contexts.top().birdPointer].cells[(int) CellId::bu].value
+                  << ", ZO = " << contexts.top().birds[contexts.top().birdPointer].cells[(int) CellId::zo].value
+                  << " & MEU = " << contexts.top().birds[contexts.top().birdPointer].cells[(int) CellId::meu].value << "]" << std::endl;
+        */
         InterpretFilter(OpCodes[(int) instructions[contexts.top().instructionPointer].opCode]);
 
         switch (instructions[contexts.top().instructionPointer].opCode)
@@ -1524,7 +1536,7 @@ int main(int argc, char *argv[])
             if (target != "")
             {
                 std::ofstream ofs(target, std::ios::out | std::ios::binary);
-                std::vector<byte> bytes = NumbersToByteStream(contexts.top().outputs); //TODO: Nibble not supported yet to file !
+                std::vector<byte> bytes = NumbersToByteStream(contexts.top().outputs);
                 ofs.write((const char*) bytes.data(), bytes.size());
                 ofs.close();
 

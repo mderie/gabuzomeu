@@ -41,7 +41,7 @@ https://esolangs.org/wiki/Main_Page
 Solution folders
 ----------------
 
-Developed in C++ using VS 2019, still need to be ported under Linux !
+Developed in C++ using VS 2019, it stills need to be ported under Linux !
 
 - Material : see below
 - Common : libraries (headers only !)
@@ -58,7 +58,7 @@ Sample Gabuzomeu source codes
 
 - 99BottlesOfBeer.gbzm (soon available) : see http://www.99-bottles-of-beer.net/
 - HelloWorld*.gbzm : see http://helloworldcollection.de/ (multiple implementations)
-- Quine*.gbzm (soon available) : Crazy ! See among others https://www.nyx.net/~gthompso/quine.htm
+- Quine*.gbzm (the compact version is available) : Crazy ! See among others https://www.nyx.net/~gthompso/quine.htm
 - Factorial*.gbzm : (multiple implementations)
 - Reverse*.gbzm : (multiple implementations)
 - Rule110 : Bitch ! see https://en.wikipedia.org/wiki/Rule_110
@@ -265,7 +265,7 @@ NEAT
 FEET  
 FOOT  
 
-Gross (the infamous four lette words !-)
+Gross (the infamous four letter words !-)
 ----------------------------------------
 
 POOP  
@@ -297,7 +297,7 @@ Charset (finally it is a platform concern)
 
 ISO-8859-1 (https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
 
-labels (used for JUMP)
+Labels (used for JUMP)
 ---------------------
 
 - Preceeded by a colon ==> ":loop" for the declaration and without colon for the definition (usage)  
@@ -334,7 +334,7 @@ Virtual unlimited input and output characters (remember that the command line ca
 Nibbles
 -------
 
-When performing IO, the numbers are processed either as being in the default base (so it is 256 a plain old byte :)
+When performing IO, the numbers are processed either as being in the default base #BUGAGAGAGA (so it is 256, a plain old byte :)
 either as being in another known bases. But in thoses cases, the number representation must be surrounded by '\#'.
 Some sample nibbles below in each base : 
 
@@ -349,6 +349,9 @@ Some sample nibbles below in each base :
 The BASE instruction takes either a cell either a litteral (so in base \#BUGA) and allows to change the current base
 for the next I/O. It affects the DUMP & PUMP instructions whatever the data comes from / ends up in a file or 
 taken / shown at the console.
+
+Care : the following instruction "BASE, #BUGAGAGAGA" should require the support of the big number
+(since the literal is a bit too big !)... Although it is actually bypassed !
 
 Interpreter
 -----------
@@ -383,7 +386,7 @@ write force the character printing on the console for the ASCII code below 32
 limit can be used in order to break infinite loop after a given number of instruction
 ````
 
-literals (numbers only in the language)
+Literals (numbers only in the language)
 ---------------------------------------
 
 Characters : Enclosed in single quote ==> Finally not supported (voluntary obfuscation :)
@@ -702,8 +705,9 @@ Roadmap
 -------
 
 - 99 Bottles of beer (ongoing)
-- Quine (ongoing, the POC is done :)
+- Quine (ongoing, the compact version is done :)
 - Enhance the parsing error messages
+- Think about changing the label syntax in order to remove the surrounding spaces (in their definition and usage)
 - Still a lot of debug prints... (See the numerous //TODO: "tags")
 - Code could / should be cleaned a little bit :)
 - Linux porting

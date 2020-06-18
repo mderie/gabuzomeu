@@ -1,0 +1,145 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Step 1 : we need to rewind the entire data structure
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+:_
+HEAD BU, a
+HEAD ZO, b
+JUMP c
+
+:a
+LIFT BU
+JUMP _
+
+:b
+LIFT ZO
+JUMP _
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Step 2 : now we will dump the expanded version of the data structure
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+:c
+; CALCGA,
+CALC MEU, #BUGAGAMEU
+DUMP MEU
+CALC MEU, #BUGAGABU
+DUMP MEU
+CALC MEU, #BUGAMEUGA
+DUMP MEU
+CALC MEU, #BUGAGAMEU
+DUMP MEU
+CALC MEU, #BUGABUMEU
+DUMP MEU
+CALC MEU, #BUGAGABU
+DUMP MEU
+CALC MEU, #ZOMEUGA
+DUMP MEU
+BASE #BUGA
+DUMP GA
+BASE #BUGAGAGAGA
+
+TAIL BU, d
+TAIL ZO, e
+JUMP f
+
+:d
+; BIRDBULIFTBU
+CALC MEU, #BUGAGAZO
+DUMP MEU
+CALC MEU, #BUGAZOBU
+DUMP MEU
+CALC MEU, #BUBUGAZO
+DUMP MEU
+CALC MEU, #BUGABUGA
+DUMP MEU
+CALC MEU, #BUGAGAZO
+DUMP MEU
+CALC MEU, #BUBUBUBU
+DUMP MEU
+CALC MEU, #BUGAMEUGA
+DUMP MEU
+CALC MEU, #BUGAZOBU
+DUMP MEU
+CALC MEU, #BUGABUZO
+DUMP MEU
+CALC MEU, #BUBUBUGA
+DUMP MEU
+CALC MEU, #BUGAGAZO
+DUMP MEU
+CALC MEU, #BUBUBUBU
+DUMP MEU
+LIFT BU
+JUMP c
+
+:e
+; BIRDZOLIFTZO
+CALC MEU, #BUGAGAZO
+DUMP MEU
+CALC MEU, #BUGAZOBU
+DUMP MEU
+CALC MEU, #BUBUGAZO
+DUMP MEU
+CALC MEU, #BUGABUGA
+DUMP MEU
+CALC MEU, #BUBUZOZO
+DUMP MEU
+CALC MEU, #BUGAMEUMEU
+DUMP MEU
+CALC MEU, #BUGAMEUGA
+DUMP MEU
+CALC MEU, #BUGAZOBU
+DUMP MEU
+CALC MEU, #BUGABUZO
+DUMP MEU
+CALC MEU, #BUBUBUGA
+DUMP MEU
+CALC MEU, #BUBUZOZO
+DUMP MEU
+CALC MEU, #BUGAMEUMEU
+DUMP MEU
+LIFT ZO
+JUMP c
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Step 3 : again we need a complete rewind
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+:f
+HEAD BU, g
+HEAD ZO, h
+JUMP i
+
+:g
+LIFT BU
+JUMP f
+
+:h
+LIFT ZO
+JUMP f
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Step 4 : finally we can dump the compacted version
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+:i
+
+DUMP GA
+
+TAIL BU, j
+TAIL ZO, k
+JUMP l
+
+:j
+LIFT BU
+JUMP i
+
+:k
+LIFT ZO
+JUMP i
+
+;;;;;;;;;;;;;;;;;;;;
+; That's all folks !
+;;;;;;;;;;;;;;;;;;;;
+
+:l

@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 {
 	if (argc < 2)
 	{
-		std::cout << "Usage : DataAsCodeGenerator file=\"any\" [-s | --stark]" << std::endl;
+		std::cout << "Usage : DataAsCodeGenerator --file=\"any\" [-s | --stark]" << std::endl;
 		return -1;
 	}
 
@@ -33,6 +33,12 @@ int main(int argc, char* argv[])
 	std::string file = parameters["file"].as<std::string>();
 	bool stark = parameters["stark"].as<bool>(); // Unreadable mode !
 	Quine = true;  // Remove the trailing #
+
+	if (file == "")
+	{
+		std::cout << "Usage : DataAsCodeGenerator --file=\"any\" [-s | --stark]" << std::endl;
+		return -2;
+	}
 
 	std::ifstream ifs(file);
 	std::vector<std::string> lines;
@@ -79,7 +85,11 @@ int main(int argc, char* argv[])
 			
 			s = NumberToNibble(Base::Four, line[i]);
 			ofs.write(s.c_str(), s.size());
-			ofs << std::endl;
+
+			if (!stark)
+			{
+				ofs << std::endl;
+			}			
 
 			if (i % 2)
 			{

@@ -2,25 +2,30 @@
 ; Purpose : program that prints its own source code ! Almost done, full material available soon...
 ; Still need to finetune the *Generator helper programs.
 ;
-; Check the compact or the readable version which are complete, the skeleton here below is just the placeholder
-; The big number alternative is an shorter alternative since it required the usage of the -b | --big paramater
+; Check the (ultra :) compact or the readable versions which are complete, the skeleton here below is just the placeholder
+; The big number alternative is a shorter alternative than the readable one but it requires the usage of the -b | --big paramater
 ;
-; Based on this skeleton, three version exists so far :
+; So, based on this skeleton / canvas, three version exists so far :
 ;
 ; The compact, the big numbers and the readable ones ! They are sorted by souce code size
 ; The compact doesn't holds any space characters, the big number requires the -b | --big parameter and the readable is the full extent one
 ;
 ; This one can be run using the command : gabuzomeu --file="quine_compact.gbmz" --data="" --target="quine_c.gbmz"
 ; Then the result of the following "DOS command" FC /B quine_compact.gbmz quine_c.gbmz should be "FC: no differences encountered"
+;
+; The compact version use also shorter labels :)
+;
+; The cells usage is as follow : GA (data), BU & ZO (alternate lifts) & MEU (code)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Step 0 : define the "data" part
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; The data part can be generated using the DataGenerator, for example by using a given well chosen code part as input...
-; Here below we used : 
+; Here below we used : DataAsCodeGenerator.exe --file="code_include.gbzm" where the file holds ":expand_loop_bu CALC MEU, #BUGA"
+
 CALC GA, #MEUZOZO BIRD BU LIFT BU CALC GA, #BUZOBUBU BIRD ZO LIFT ZO CALC GA, #BUMEUZOGA BIRD BU LIFT BU CALC GA, #BUMEUGAGA BIRD ZO LIFT ZO CALC GA, #BUZOGABU BIRD BU LIFT BU CALC GA, #BUZOMEUZO BIRD ZO LIFT ZO CALC GA, #BUZOBUGA BIRD BU LIFT BU CALC GA, #BUBUMEUMEU BIRD ZO LIFT ZO CALC GA, #BUZOMEUGA BIRD BU LIFT BU CALC GA, #BUZOMEUMEU BIRD ZO LIFT ZO CALC GA, #BUZOMEUMEU BIRD BU LIFT BU CALC GA, #BUMEUGAGA BIRD ZO LIFT ZO CALC GA, #BUBUMEUMEU BIRD BU LIFT BU CALC GA, #BUZOGAZO BIRD ZO LIFT ZO CALC GA, #BUMEUBUBU BIRD BU LIFT BU CALC GA, #ZOGAGA BIRD ZO LIFT ZO CALC GA, #BUGAGAMEU BIRD BU LIFT BU CALC GA, #BUGAGABU BIRD ZO LIFT ZO CALC GA, #BUGAMEUGA BIRD BU LIFT BU CALC GA, #BUGAGAMEU BIRD ZO LIFT ZO CALC GA, #ZOGAGA BIRD BU LIFT BU CALC GA, #BUGAMEUBU BIRD ZO LIFT ZO CALC GA, #BUGABUBU BIRD BU LIFT BU CALC GA, #BUBUBUBU BIRD ZO LIFT ZO CALC GA, #ZOMEUGA BIRD BU LIFT BU CALC GA, #ZOGAGA BIRD ZO LIFT ZO CALC GA, #ZOGAMEU BIRD BU LIFT BU CALC GA, #BUGAGAZO BIRD ZO LIFT ZO CALC GA, #BUBUBUBU BIRD BU LIFT BU CALC GA, #BUGABUMEU BIRD ZO LIFT ZO
-CALC GA, #BUGAGABU ; Care the last one here can't be followed by BIRD & LIFT !
+CALC GA, #BUGAGABU ; Care : the last one here can't be followed by BIRD & LIFT !
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Step 1 : we need to rewind the entire data structure

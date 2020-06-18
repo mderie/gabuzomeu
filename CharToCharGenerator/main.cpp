@@ -1,11 +1,13 @@
 
 // From string to char generator (doublon ?)
+// Transformed to source code file to compact version !
 
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <filesystem>
 #include <vector>
+#include <regex>
 
 // Third party
 #include "..\Common\cxxopts.hpp"
@@ -20,43 +22,57 @@ int main(int argc, char* argv[])
 {
 	if (argc != 2)
 	{
-		std::cout << "Usage : CharToCharGenerator \"any_string\"" << std::endl;
+		std::cout << "Usage : CharToCharGenerator \"any_source_code_file\"" << std::endl;
 		return -1;
 	}
 
-	bool stark = false;
-
 	std::string input(argv[1]);
-	std::ofstream ofs(input);
-	std::string s;
-	for (int i = 0; i < input.size(); i++)
+	std::ifstream ifs(input);
+	std::ofstream ofs(input + ".out");
+	std::string line;
+	std::string result;
+
+	while (ifs.good())
 	{
-		if (stark)
-		{
-			ofs.write("CALCMEU,", 8);
+		std::getline(ifs, line);
 
+		if (line == "")
+		{
+			continue;
+		}
+
+		if (size_t pos = line.find(';'); pos != std::string::npos) // Thanks to C++ 17
+		{
+			line = line.substr(0, pos);
+		}
+
+		if (line[0] == ':')
+		{
+			// We can't shortcut the labels here... It must be done directly in the code (else we wan't be able to rebuild itself from the data
+			line = " " + line + " "; // Add spaces
 		}
 		else
 		{
-			ofs.write("CALC MEU, ", 10);
-			ofs << std::endl;
+			line = std::regex_replace(line, std::regex(" "), ""); // Remove spaces :)
 		}
-		
-		s = NumberToNibble(Base::Four, InfInt(input[i]));
-		std::cout << "input[" << i << "] = " << input[i] << std::endl;
-		ofs.write(s.c_str(), s.size());
-		if (stark)
+
+		if (islower(line[line.size() - 1]))
 		{
-			ofs.write("DUMPMEU", 7);
+			line += " ";
 		}
-		else
-		{
-			ofs.write("DUMP MEU", 8);
-			ofs << std::endl; // Multiplatform issue, we can't guess the size of the new line character(s)...
-		}		
+
+		result += line;
 	}
-	std::cout << "Output file created = " << input << std::endl;
 
+	ifs.close();
+	
+	result = std::regex_replace(result, std::regex("  "), " "); // Remove double spaces :)
+	// Same effect :)
+	// FindAndReplaceInternal(result, "  ", " ");
+
+	ofs.write(result.c_str(), result.size());
 	ofs.close();
+	std::cout << "Output file created = " << input + ".out" << std::endl;
+
 	return 0;
 }

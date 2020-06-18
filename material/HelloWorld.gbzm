@@ -2,7 +2,7 @@
 ; Purpose : Nothing beats the classics !-)
 ; This one can be run using the command : gabuzomeu --file="HelloWorld.gbmz" --data=""
 
-CALC GA, #BUZOZOGA ; = 'h' = 104
+CALC GA, #BUGAZOGA ; = 'H' = 72
 DUMP GA
 CALC BU, #BUZOBUBU ; = 'e' = 101
 DUMP BU
@@ -25,4 +25,4 @@ DUMP GA
 ; Or directly using the file content as parameter
 ; The the command is : gabuzomeu --program="..." --data=""
 ; Replace the ellipsis by the following (no comment allowed then...) :
-; CALC GA, #BUZOZOGA DUMP GA CALC BU, #BUZOBUBU DUMP BU CALC ZO, #BUZOMEUGA DUMP ZO DUMP ZO CALC MEU, #BUZOMEUMEU DUMP MEU CALC GA, #ZOGAGA DUMP GA CALC BU, #BUMEUBUMEU DUMP BU DUMP MEU CALC BU, #BUMEUGAZO DUMP BU DUMP ZO CALC GA, #BUZOBUGA DUMP GA
+; CALC GA, #BUGAZOGA DUMP GA CALC BU, #BUZOBUBU DUMP BU CALC ZO, #BUZOMEUGA DUMP ZO DUMP ZO CALC MEU, #BUZOMEUMEU DUMP MEU CALC GA, #ZOGAGA DUMP GA CALC BU, #BUMEUBUMEU DUMP BU DUMP MEU CALC BU, #BUMEUGAZO DUMP BU DUMP ZO CALC GA, #BUZOBUGA DUMP GA

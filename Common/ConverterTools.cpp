@@ -469,6 +469,7 @@ std::vector<byte> NumbersToByteStream(const std::vector<BSII> &v)
 {
     std::vector<byte> result;
     std::vector<byte> tmp;
+    std::string s;
     //std::cout << "NumbersToByteStream v.size() = " << v.size() << std::endl;
     for (const auto &it : v)
     {
@@ -480,7 +481,8 @@ std::vector<byte> NumbersToByteStream(const std::vector<BSII> &v)
         }
         else
         {
-            //TODO: ...
+            s = NumberToNibble(it.b, it.ii);
+            result.insert(std::end(result), std::begin(s), std::end(s));
         }
     }
     return result;

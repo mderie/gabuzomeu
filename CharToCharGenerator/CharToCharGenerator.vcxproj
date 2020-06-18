@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Common\StringTools.cpp" />
     <ClCompile Include="..\Common\ConverterTools.cpp" />
     <ClCompile Include="..\Common\RuntimeExceptions.cpp" />
     <ClCompile Include="main.cpp" />

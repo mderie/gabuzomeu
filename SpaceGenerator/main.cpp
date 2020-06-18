@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
 
 	if (argc < 3)
 	{
-		std::cout << "Usage : SpaceGenerator cell=\"name\" data=\"any\" [-s | --stark] [-Q | --Quine]" << std::endl;
+		std::cout << "Usage : SpaceGenerator --cell=\"name\" --data=\"any\" [-s | --stark] [-Q | --Quine]" << std::endl;
 		return -1;
 	}
 
