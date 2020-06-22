@@ -1,3 +1,413 @@
 
-; Purpose : program that prints the lyrics of the song "99 Bottles of Beer" ! Almost done, full material available soon...
-; Still need to finetune the *Generator helper programs.
+; Purpose : program that prints the lyrics of the song "99 Bottles of Beer" !
+; This version doesn't store anything (so it don't required extra birds), it works with a little automaton.
+; Cells are used as follow : GA for the counter starting at 99, BU for the automaton status, ZO for the CALC/DUMP & MEU for the CALC/ZERO
+; Keep in mind that Gabuzomeu don't have GOSUB nor function...
+; The program doesn't expect any input, since here it uses itself for a function simulation !
+; This one can be run using the command : gabuzomeu --file="99BottlesOfBeer.gbzm" --big --target="a.out"
+; Returns the song lyrics in to the a.out file. One may choose to uncomment both "99" lines and comment both "3" lines
+; in order to have the complete lyrics !
+; If one want the output on the console then : gabuzomeu --file="99BottlesOfBeer.gbzm" --big --write --noprompt
+
+LAST main
+
+; Called as a function (transform #xx# into xx without changing base !-)
+; This is also a POC that function calls could take place and so cells are less limited. We need the big here for the output !
+PUMP GA
+CALC BU, (GA % #ZOZO) + #MEUGAGA
+CALC ZO, GA / #ZOZO
+ZERO ZO, skip_zero ; Avoid the leading '0'
+CALC BU, ((ZO + #MEUGAGA) * #BUGAGAGAGA) + BU
+:skip_zero
+DUMP BU
+JUMP eof
+
+:main
+
+; Start on a blank line
+CALC ZO, #ZOZO
+DUMP ZO
+
+; CALC GA, #BUZOGAMEU ; 99 !-)
+CALC GA, #MEU ; 3 Enough for a POC
+
+:big_loop_big_automaton
+
+CALC BU, #MEUMEU
+
+:big_automaton
+
+CALC MEU, BU - #MEUMEU ; MEU could be negative after this... No harm although, we can't test like if (BU == 10)
+ZERO MEU, counter
+CALC MEU, BU - #MEUZO
+ZERO MEU, _bottle_of_beer
+CALC MEU, BU - #MEUBU
+ZERO MEU, _on_the_wall
+CALC MEU, BU - #MEUGA
+ZERO MEU, comma_
+CALC MEU, BU - #ZOMEU
+ZERO MEU, counter
+CALC MEU, BU - #ZOZO
+ZERO MEU, _bottle_of_beer
+CALC MEU, BU - #ZOBU
+ZERO MEU, dotnewline
+CALC MEU, BU - #ZOGA
+ZERO MEU, Take_one_down_and_pass_it_around
+CALC MEU, BU - #BUMEU
+ZERO MEU, comma_
+CALC MEU, BU - #BUZO
+ZERO MEU, decrement
+CALC MEU, BU - #BUBU
+ZERO MEU, counter
+CALC MEU, BU - #BUGA
+ZERO MEU, _bottle_of_beer
+CALC MEU, BU - #MEU
+ZERO MEU, _on_the_wall
+CALC MEU, BU - #ZO
+ZERO MEU, dotnewline
+CALC MEU, BU - #BU
+ZERO MEU, newline
+
+:small_loop_big_automaton
+
+CALC BU, BU - #BU
+ELSE BU, big_automaton
+
+; Already done in decrement...
+;CALC GA, GA - #BU
+
+ZERO GA, last_verse
+JUMP big_loop_big_automaton
+
+:counter
+ZERO GA, no_more_lowercase
+; This "work" but show numbers between '#'
+;BASE #ZOZO
+;DUMP GA
+;BASE #BUGAGAGAGA
+; So we call ourself by using the I/O through cells trick !-)
+GBZM GA, ZO
+DUMP ZO
+JUMP small_loop_big_automaton
+
+:_bottle_of_beer
+
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUZOGAZO
+DUMP ZO
+CALC ZO, #BUZOMEUMEU
+DUMP ZO
+CALC ZO, #BUMEUBUGA
+DUMP ZO
+CALC ZO, #BUMEUBUGA
+DUMP ZO
+CALC ZO, #BUZOMEUGA
+DUMP ZO
+CALC ZO, #BUZOBUBU
+DUMP ZO
+; Need to add the trailing 's' ? This is a "only one" test (GA ==1)... Luckily it works with zero or negative value as well
+CALC MEU, GA - #BU
+ZERO MEU, skip_s
+CALC ZO, #BUMEUGAMEU
+DUMP ZO
+:skip_s
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUZOMEUMEU
+DUMP ZO
+CALC ZO, #BUZOBUZO
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUZOGAZO
+DUMP ZO
+CALC ZO, #BUZOBUBU
+DUMP ZO
+CALC ZO, #BUZOBUBU
+DUMP ZO
+CALC ZO, #BUMEUGAZO
+DUMP ZO
+CALC MEU, GA + #BU
+ZERO MEU, small_loop_small_automaton
+JUMP small_loop_big_automaton
+
+:_on_the_wall
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUZOMEUMEU
+DUMP ZO
+CALC ZO, #BUZOMEUZO
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUMEUBUGA
+DUMP ZO
+CALC ZO, #BUZOZOGA
+DUMP ZO
+CALC ZO, #BUZOBUBU
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUMEUBUMEU
+DUMP ZO
+CALC ZO, #BUZOGABU
+DUMP ZO
+CALC ZO, #BUZOMEUGA
+DUMP ZO
+CALC ZO, #BUZOMEUGA
+DUMP ZO
+CALC MEU, GA + #BU
+ZERO MEU, small_loop_small_automaton
+JUMP small_loop_big_automaton
+
+:comma_
+CALC ZO, #ZOMEUGA
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC MEU, GA + #BU
+ZERO MEU, small_loop_small_automaton
+JUMP small_loop_big_automaton
+
+:dotnewline
+CALC ZO, #ZOMEUZO
+DUMP ZO
+CALC ZO, #ZOZO
+DUMP ZO
+CALC MEU, GA + #BU
+ZERO MEU, small_loop_small_automaton
+JUMP small_loop_big_automaton
+
+:Take_one_down_and_pass_it_around
+CALC ZO, #BUBUBUGA
+DUMP ZO
+CALC ZO, #BUZOGABU
+DUMP ZO
+CALC ZO, #BUZOZOMEU
+DUMP ZO
+CALC ZO, #BUZOBUBU
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUZOMEUMEU
+DUMP ZO
+CALC ZO, #BUZOMEUZO
+DUMP ZO
+CALC ZO, #BUZOBUBU
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUZOBUGA
+DUMP ZO
+CALC ZO, #BUZOMEUMEU
+DUMP ZO
+CALC ZO, #BUMEUBUMEU
+DUMP ZO
+CALC ZO, #BUZOMEUZO
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUZOGABU
+DUMP ZO
+CALC ZO, #BUZOMEUZO
+DUMP ZO
+CALC ZO, #BUZOBUGA
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUMEUGAGA
+DUMP ZO
+CALC ZO, #BUZOGABU
+DUMP ZO
+CALC ZO, #BUMEUGAMEU
+DUMP ZO
+CALC ZO, #BUMEUGAMEU
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUZOZOBU
+DUMP ZO
+CALC ZO, #BUMEUBUGA
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUZOGABU
+DUMP ZO
+CALC ZO, #BUMEUGAZO
+DUMP ZO
+CALC ZO, #BUZOMEUMEU
+DUMP ZO
+CALC ZO, #BUMEUBUBU
+DUMP ZO
+CALC ZO, #BUZOMEUZO
+DUMP ZO
+CALC ZO, #BUZOBUGA
+DUMP ZO
+JUMP small_loop_big_automaton
+
+:decrement
+CALC GA, GA - #BU
+JUMP small_loop_big_automaton
+
+:newline
+CALC ZO, #ZOZO
+DUMP ZO
+JUMP small_loop_big_automaton
+
+:Go_to_the_store_and_buy_some_more
+CALC ZO, #BUGABUMEU
+DUMP ZO
+CALC ZO, #BUZOMEUMEU
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUMEUBUGA
+DUMP ZO
+CALC ZO, #BUZOMEUMEU
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUMEUBUGA
+DUMP ZO
+CALC ZO, #BUZOZOGA
+DUMP ZO
+CALC ZO, #BUZOBUBU
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUMEUGAMEU
+DUMP ZO
+CALC ZO, #BUMEUBUGA
+DUMP ZO
+CALC ZO, #BUZOMEUMEU
+DUMP ZO
+CALC ZO, #BUMEUGAZO
+DUMP ZO
+CALC ZO, #BUZOBUBU
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUZOGABU
+DUMP ZO
+CALC ZO, #BUZOMEUZO
+DUMP ZO
+CALC ZO, #BUZOBUGA
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUZOGAZO
+DUMP ZO
+CALC ZO, #BUMEUBUBU
+DUMP ZO
+CALC ZO, #BUMEUZOBU
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUMEUGAMEU
+DUMP ZO
+CALC ZO, #BUZOMEUMEU
+DUMP ZO
+CALC ZO, #BUZOMEUBU
+DUMP ZO
+CALC ZO, #BUZOBUBU
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUZOMEUBU
+DUMP ZO
+CALC ZO, #BUZOMEUMEU
+DUMP ZO
+CALC ZO, #BUMEUGAZO
+DUMP ZO
+CALC ZO, #BUZOBUBU
+DUMP ZO
+JUMP small_loop_small_automaton
+
+:no_more_lowercase
+CALC ZO, #BUZOMEUZO
+DUMP ZO
+CALC ZO, #BUZOMEUMEU
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUZOMEUBU
+DUMP ZO
+CALC ZO, #BUZOMEUMEU
+DUMP ZO
+CALC ZO, #BUMEUGAZO
+DUMP ZO
+CALC ZO, #BUZOBUBU
+DUMP ZO
+CALC MEU, GA + #BU
+ZERO MEU, small_loop_small_automaton
+JUMP small_loop_big_automaton
+
+:last_verse
+
+; GA = 0 Here we have to introduce a new automaton (without the big loop) here for the last verse ! Didn't find another way :(
+CALC GA, GA - #BU ; So now GA is equal to minus one !-)
+
+CALC BU, #MEUBU
+
+:small_automaton
+
+CALC MEU, BU - #MEUBU
+ZERO MEU, no_more_uppercase
+CALC MEU, BU - #MEUGA
+ZERO MEU, _bottle_of_beer
+CALC MEU, BU - #ZOMEU
+ZERO MEU, _on_the_wall
+CALC MEU, BU - #ZOZO
+ZERO MEU, comma_
+CALC MEU, BU - #ZOBU
+ZERO MEU, no_more_lowercase
+CALC MEU, BU - #ZOGA
+ZERO MEU, _bottle_of_beer
+CALC MEU, BU - #BUMEU
+ZERO MEU, dotnewline
+CALC MEU, BU - #BUZO
+ZERO MEU, Go_to_the_store_and_buy_some_more
+CALC MEU, BU - #BUBU
+ZERO MEU, comma_
+CALC MEU, BU - #BUGA
+ZERO MEU, initial_counter
+CALC MEU, BU - #MEU
+ZERO MEU, _bottle_of_beer
+CALC MEU, BU - #ZO
+ZERO MEU, _on_the_wall
+CALC MEU, BU - #BU
+ZERO MEU, dotnewline
+
+:small_loop_small_automaton
+
+CALC BU, BU - #BU
+ELSE BU, small_automaton
+
+JUMP eof
+
+:initial_counter
+; CALC MEU, #BUZOGAMEU ; 99 !-)
+CALC MEU, #MEU ; 3 Enough for a POC
+GBZM MEU, ZO
+DUMP ZO
+JUMP small_loop_small_automaton
+
+:No_more_uppercase
+CALC ZO, #BUGAMEUZO
+DUMP ZO
+CALC ZO, #BUZOMEUMEU
+DUMP ZO
+CALC ZO, #ZOGAGA
+DUMP ZO
+CALC ZO, #BUZOMEUBU
+DUMP ZO
+CALC ZO, #BUZOMEUMEU
+DUMP ZO
+CALC ZO, #BUMEUGAZO
+DUMP ZO
+CALC ZO, #BUZOBUBU
+DUMP ZO
+JUMP small_loop_small_automaton
+
+:eof

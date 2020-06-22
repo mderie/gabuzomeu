@@ -8,7 +8,7 @@
 ; The execution will output stuff line by line into the given filename or displayed to the console.
 ; One can use the optional -w | --write parameter for the support the new line character(s).
 ;
-; IE : gabuzomeu --file="Rule110_4good.gbzm" --data="" --target="a.out" --limit=10000
+; IE : gabuzomeu --file="Rule110_using_infinite_zero_trick.gbzm" --target="a.out" --limit=10000
 ;
 ; There is a lot of back and forth waves on the data. The global idea is as follow
 ;

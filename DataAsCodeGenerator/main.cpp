@@ -24,20 +24,31 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	cxxopts::Options options("DataAsCodeGenerator", "");
-	options.add_options()
-		("f,file", "", cxxopts::value<std::string>()->default_value(""))
-		("s,stark", "", cxxopts::value<bool>()->default_value("false"));
-
-	auto parameters = options.parse(argc, argv);
-	std::string file = parameters["file"].as<std::string>();
-	bool stark = parameters["stark"].as<bool>(); // Unreadable mode !
+	std::string file;
+	bool stark;
 	Quine = true;  // Remove the trailing #
+
+	try
+	{
+		cxxopts::Options options("DataAsCodeGenerator", "");
+		options.add_options()
+			("f,file", "", cxxopts::value<std::string>()->default_value(""))
+			("s,stark", "", cxxopts::value<bool>()->default_value("false"));
+
+		auto parameters = options.parse(argc, argv);
+		file = parameters["file"].as<std::string>();
+		stark = parameters["stark"].as<bool>(); // Unreadable mode !	
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << "Exception : " << e.what() << std::endl;
+		return -2;
+	}
 
 	if (file == "")
 	{
 		std::cout << "Usage : DataAsCodeGenerator --file=\"any\" [-s | --stark]" << std::endl;
-		return -2;
+		return -3;
 	}
 
 	std::ifstream ifs(file);

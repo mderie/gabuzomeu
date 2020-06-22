@@ -24,12 +24,17 @@
 #include "..\Common\ConverterTools.hpp"
 #include "..\..\Common\StringTools.hpp"
 
+//TODO: Create ..\Common\Language.hpp ?
+#define INTERPRETER_VERSION 1.2 // Follow github versionning
+#define LANGUAGE_VERSION 1.1 // 1.0 was without BASE & GBZM
+
 //////////////////////////////////////////////////////////////////////////////////////
 // Global variables part one (TODO: [future] put all this into a class, one day ?-) //
 //////////////////////////////////////////////////////////////////////////////////////
 
 bool analysis = false;
 bool interpret = false;
+bool noprompt = false;
 size_t limit = 0; // No limitation !
 size_t totalInstructionCounter = 0;
 
@@ -124,10 +129,10 @@ struct Bird
 
     Bird()
     {
-        for (auto &i : cells)
+        for (auto &it : cells)
         {
-            i.kind = CellKind::Body;
-            i.value = 0;
+            it.kind = CellKind::Body;
+            it.value = 0;
         }
     }
 };
@@ -156,6 +161,9 @@ struct Context
         instructionPointer = 0;
         birdPointer = 0;
         pumpPointer = 0;
+        inputs.clear();
+        outputs.clear();
+        birds.clear();
         birds.emplace_back(Bird());
     }
 };
@@ -766,11 +774,12 @@ void InitP2()
     //instructions.clear();
     //labels.clear();
     //instructionCounter = 0; //TODO: Or -1 ?    
-    contexts.top().inputs = inputs;
+    // Too dangerous here ! Conflict in GBZM implementation
+    //contexts.top().inputs = inputs;
     //lastCell = -1;
     //birds.emplace_back(Bird());
 
-    totalInstructionCounter = 0;
+    //totalInstructionCounter = 0;
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -1100,32 +1109,34 @@ void DoGbzm()
     byte cellId = GetCellId(instructions[contexts.top().instructionPointer].operand1);
     if ((contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Head) or (contexts.top().birds[contexts.top().birdPointer].cells[cellId].kind == CellKind::Tail))
     {
-        throw InvalidCellKindException("DoElse " + CellIds[cellId]);
+        throw InvalidCellKindException("DoGbzm " + CellIds[cellId]);
     }    
 
-    // Prepare the inputs for the "new interpreter instance" !
+    // Copy the inputs for the "new interpreter instance" ! We assume the base 256
     std::vector<byte> bytes = NumberToByteStream(contexts.top().birds[contexts.top().birdPointer].cells[cellId].value);
-    inputs.clear();
-    inputs.resize(bytes.size()); // Care ! https://stackoverflow.com/questions/29920394/vector-of-class-without-default-constructor
-    //std::copy(bytes.begin(), bytes.end(), inputs.begin());
-    for (int i=0; i < bytes.size(); i++)
-    {
-        inputs[i] = BSII(Base::default_, bytes[i]);
-    }
 
     // Prepare a new context
     contexts.push(contexts.top()); // push inputs, outputs, instruction pointer, ...
     contexts.top().Clear();
+    
+    // Paste it ! 
+    contexts.top().inputs.resize(bytes.size()); // Care ! https://stackoverflow.com/questions/29920394/vector-of-class-without-default-constructor
+    //std::copy(bytes.begin(), bytes.end(), inputs.begin());
+    for (int i = 0; i < bytes.size(); i++)
+    {
+        contexts.top().inputs[i] = BSII(Base::default_, bytes[i]);
+    }
+
     InitP2(); // init inputs, outputs, instruction pointer, ...
     RunInterpreter(); // In RunInterpreter when current program is finished, check context stack content... Needed ?
 
     // Retrieve the ouputs for the "old interpreter instance" !
-    outputs = contexts.top().outputs;
+    std::vector<BSII> bigns = contexts.top().outputs;
 
     // Restore the old context
     contexts.pop(); // if not empty, pop inputs, outputs, instruction pointer, ...
     cellId = GetCellId(instructions[contexts.top().instructionPointer].operand2);
-    contexts.top().birds[contexts.top().birdPointer].cells[cellId].value = ByteStreamToNumber(NumbersToByteStream(outputs));
+    contexts.top().birds[contexts.top().birdPointer].cells[cellId].value = ByteStreamToNumber(NumbersToByteStream(bigns, true));
     //std::cout << "DoGbzm ==> cellId = " << (int) cellId  << " & Return value = " << contexts.top().birds[contexts.top().birdPointer].cells[cellId].value << std::endl;
 }
 
@@ -1167,16 +1178,18 @@ void RunInterpreter()
     while ((contexts.top().instructionPointer < (int) instructions.size()) and ((limit == 0) or (totalInstructionCounter < limit)))
     {
         //TODO: Pff : Review this....
-        /*
-        std::cout << "totalInstructionCounter = " << totalInstructionCounter << ", birdPointer = " << contexts.top().birdPointer
-                  << ", stack level = " << contexts.size() << ", OpCode = " << OpCodes[(int) instructions[contexts.top().instructionPointer].opCode] 
-                  << ", operand1 = '" << instructions[contexts.top().instructionPointer].operand1
-                  << "' & operand2 = '" << instructions[contexts.top().instructionPointer].operand2
-                  << "' [GA = " << contexts.top().birds[contexts.top().birdPointer].cells[(int) CellId::ga].value
-                  << ", BU = " << contexts.top().birds[contexts.top().birdPointer].cells[(int) CellId::bu].value
-                  << ", ZO = " << contexts.top().birds[contexts.top().birdPointer].cells[(int) CellId::zo].value
-                  << " & MEU = " << contexts.top().birds[contexts.top().birdPointer].cells[(int) CellId::meu].value << "]" << std::endl;
-        */
+#ifdef _DEBUG
+        std::cout << "TIC = " << totalInstructionCounter << ", BP = " << contexts.top().birdPointer
+            << ", SL = " << contexts.size() << ", Opc = " << OpCodes[(int)instructions[contexts.top().instructionPointer].opCode]
+            << ", inputs.size() = " << contexts.top().inputs.size()
+            << ", outputs.size() = " << contexts.top().outputs.size()
+            << ", op1 = '" << instructions[contexts.top().instructionPointer].operand1
+            << "', op2 = '" << instructions[contexts.top().instructionPointer].operand2
+            << "', GA = " << contexts.top().birds[contexts.top().birdPointer].cells[(int) CellId::ga].value
+            << ", BU = " << contexts.top().birds[contexts.top().birdPointer].cells[(int) CellId::bu].value
+            << ", ZO = " << contexts.top().birds[contexts.top().birdPointer].cells[(int) CellId::zo].value
+            << "& MEU = " << contexts.top().birds[contexts.top().birdPointer].cells[(int) CellId::meu].value << std::endl;
+#endif
         InterpretFilter(OpCodes[(int) instructions[contexts.top().instructionPointer].opCode]);
 
         switch (instructions[contexts.top().instructionPointer].opCode)
@@ -1277,7 +1290,7 @@ void RunAnalyzers(const std::vector<std::string> &lines)
     // const char justInstructionCommentInstructionComment[] = "LAST BU;ahu ZERO GA, jmp ; So cool language";
  
     preludeExpression();
-    int tst = bnf::Analyze(r_program, line.c_str(), &tailProg);
+    int tst = bnf::Analyze(r_program, line.c_str(), &tailProg); // tailProg content is not meaningfull :(
     postludeExpression();
 
     if (tst > 0)
@@ -1314,8 +1327,9 @@ void ShowUsage()
 {
     std::cout << "Usage :" << std::endl;
     std::cout << std::endl;
-    std::cout << "gabuzomeu (--file=\"file_name.gbzm\" | --program=\"text\") [--source=\"file_name\" | --data=\"value\"] [--target=\"file_name\"]" << std::endl;
-    std::cout << "          [--limit=\"number\"] [-i | --interpret] [-a | --analysis] [-b | --big] [-Q | --Quine] [-w | --write] " << std::endl;
+    std::cout << "gabuzomeu (--file=\"file_name.gbzm\" | --program=\"text\") [--source=\"file_name\" | --data=\"value\"]" << std::endl;
+    std::cout << "          [--target = \"file_name\"] [--limit=\"number\"] [-i | --interpret] [-a | --analysis] [-b | --big]" << std::endl;
+    std::cout << "          [-Q | --Quine] [-w | --write] [-v | --version] [-n | --noprompt]" << std::endl;
     std::cout << std::endl;
     std::cout << "Where the file or the program must be provided, the data can be empty" << std::endl;
     std::cout << "Strings can't contain double quote, screen data in input or output may hold " << std::endl; 
@@ -1327,6 +1341,7 @@ void ShowUsage()
     std::cout << "New flags ! Quine parameter allows nibble output without trailing #" << std::endl;
     std::cout << "write force the character printing on the console for the ASCII code below 32" << std::endl; // So the display will be OS dependant
     std::cout << "limit can be used in order to break infinite loop after a given number of instruction" << std::endl;
+    std::cout << "noprompt remove the output formatting for the console and version just display information and stop" << std::endl;
     //TODO: separate the parameters like name=value and the toggles !
 }
 
@@ -1343,6 +1358,8 @@ void Run(const std::vector<std::string> &lines)
     }
     else
     {
+        contexts.push(Context());
+        contexts.top().inputs = inputs;
         InitP2();
         RunInterpreter(); // May call Analyze(...) again for CALC instructions
     }
@@ -1386,7 +1403,9 @@ int main(int argc, char *argv[])
             ("b,big", "", cxxopts::value<bool>()->default_value("false"))
             ("w,write", "", cxxopts::value<bool>()->default_value("false"))
             //("")   Add support for the spaceship operators <-< & >-> ?
-            ("Q,Quine", "", cxxopts::value<bool>()->default_value("false"));
+            ("Q,Quine", "", cxxopts::value<bool>()->default_value("false"))
+            ("v,version", "", cxxopts::value<bool>()->default_value("false"))
+            ("n,noprompt", "", cxxopts::value<bool>()->default_value("false")); // IE : for Quine
 
         //std::cout << "Debug 2" << std::endl;
 
@@ -1402,6 +1421,13 @@ int main(int argc, char *argv[])
         write = parameters["write"].as<bool>();
         Quine = parameters["Quine"].as<bool>();
         limit = parameters["limit"].as<size_t>();
+        noprompt = parameters["noprompt"].as<bool>();
+        
+        if (parameters["version"].as<bool>())
+        {
+            std::cout << "This interpreter version is " << INTERPRETER_VERSION << " and the supported Gabuzomeu language version is " << LANGUAGE_VERSION << std::endl;
+            return 0;
+        }
         //TODO: Implement Omniscient mode ? Access other bird brains using [] accessor inside expr... Like CALC GA, BU[ZO] * MEU
 
         // Nice (shows the additional help strings), but incomplete syntax (ie for the "=")
@@ -1526,25 +1552,31 @@ int main(int argc, char *argv[])
     ///////////////
 
     try
-    {
-        contexts.push(Context());
+    {        
         Run(lines);
 
         if (contexts.top().outputs.size() > 0)
         {
-            std::cout << totalBirdCounder << " bird" << (totalBirdCounder > 1 ? "s babble" : " babbles") << " : "; // tweet is "reserved" !
+            if (!noprompt)
+            { 
+                std::cout << totalBirdCounder << " bird" << (totalBirdCounder > 1 ? "s babble" : " babbles") << " : "; // tweet is "reserved" !
+            }
             if (target != "")
             {
                 std::ofstream ofs(target, std::ios::out | std::ios::binary);
-                std::vector<byte> bytes = NumbersToByteStream(contexts.top().outputs);
+                std::vector<byte> bytes = NumbersToByteStream(contexts.top().outputs, false);
                 ofs.write((const char*) bytes.data(), bytes.size());
                 ofs.close();
 
                 std::cout << target << " file created" << std::endl;
             }
             else
-            {            
-                std::cout << NumbersToCompositeString(contexts.top().outputs) << std::endl; // Nibble ok
+            {
+                std::cout << NumbersToCompositeString(contexts.top().outputs);  // Nibble ok
+                if (!noprompt)
+                {
+                    std::cout << std::endl;
+                }
             }
         }
         else

@@ -56,7 +56,7 @@ The interpreter itself (gabuzomeu.exe stand alone executable)
 
 Sample Gabuzomeu source codes
 
-- 99BottlesOfBeer.gbzm (soon available) : see http://www.99-bottles-of-beer.net/
+- 99BottlesOfBeer.gbzm : see http://www.99-bottles-of-beer.net/
 - HelloWorld*.gbzm : see http://helloworldcollection.de/ (multiple implementations)
 - Quine*.gbzm (the compact version is available) : Crazy ! See among others https://www.nyx.net/~gthompso/quine.htm
 - Factorial*.gbzm : (multiple implementations)
@@ -365,8 +365,9 @@ Command line parameters of the interpreter
 ------------------------------------------
 
 ````
-gabuzomeu (--file="file_name.gbzm" | --program="text") (--source="file_name" | --data="value") [--target="file_name"]
-          [--limit=\"number\"] [(-i | --interpret)] [(-a | --analysis)] [(-b | --big)] [(-Q | --Quine)] [(-w | --write)]
+gabuzomeu (--file="file_name.gbzm" | --program="text") [--source="file_name" | --data="value"]
+          [--target="file_name"] [--limit=\"number\"] [-i | --interpret] [-a | --analysis] [-b | --big]
+		  [-Q | --Quine] [-w | --write] [-v | --version] [-n | --noprompt]
 
 [] optional
 () grouping
@@ -384,6 +385,7 @@ Finally the optional big flag allows the support of number bigger than a byte
 New flags ! Quine parameter allows nibble output without trailing #
 write force the character printing on the console for the ASCII code below 32
 limit can be used in order to break infinite loop after a given number of instruction
+noprompt remove the output formatting for the console and version just display information and stop
 ````
 
 Literals (numbers only in the language)
@@ -704,20 +706,26 @@ may be provided from / to file or from / to the console. See the GBZM "special" 
 Roadmap
 -------
 
-- 99 Bottles of beer (ongoing)
 - Quine (ongoing, the compact version is done :)
-- Enhance the parsing error messages
+- Enhance the parsing error messages (it seems that tailProg is not meaningfull :(
 - Think about changing the label syntax in order to remove the surrounding spaces (in their definition and usage)
 - Still a lot of debug prints... (See the numerous //TODO: "tags")
 - Code could / should be cleaned a little bit :)
-- Linux porting
-- Versionning on the language itself ? On the interpreter ?
+- Linux porting (and join this uroboros ? https://github.com/mame/quine-relay)
 - Building a true IDE (with birds visualisations, line by line debugging and so on !)
-- Implement unit tests
+- Implement unit tests ! Deeply needed, fix a bug in v1.1 ...
 - Implement a BF cross stuff
-- Implement a compiler !
+- Implement a compiler (it has already a name : project ni)
 - Review this document title order and start by the TOC (missing feature in Markdown :(
+- Implement a perfect number generator ?
 - ...
+
+Achievements
+------------
+
+- 99 Bottles of beer
+- Versionning on the language itself, on the interpreter, on the future compiler
+- Implement a noprompt mode for the interpreter (so no message like "1 bird babbles : ") and no new line at end
 
 License
 -------

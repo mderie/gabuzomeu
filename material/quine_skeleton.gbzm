@@ -10,8 +10,8 @@
 ; The compact, the big numbers and the readable ones ! They are sorted by souce code size
 ; The compact doesn't holds any space characters, the big number requires the -b | --big parameter and the readable is the full extent one
 ;
-; This one can be run using the command : gabuzomeu --file="quine_compact.gbmz" --data="" --target="quine_c.gbmz"
-; Then the result of the following "DOS command" FC /B quine_compact.gbmz quine_c.gbmz should be "FC: no differences encountered"
+; This one can be run using the command : gabuzomeu --file="quine_compact.gbzm" --target="quine_c.gbzm" --Quine
+; Then the result of the following "DOS command" FC /B quine_compact.gbzm quine_c.gbzm should be "FC: no differences encountered"
 ;
 ; The compact version use also shorter labels :)
 ;

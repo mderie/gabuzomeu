@@ -1,7 +1,7 @@
 
 ; Purpose : ouput in reverse order the input string (in 33 instructions :)
 ; BF equivalent is >,[>,]<[.<]
-; This one can be run using the command : gabuzomeu --file="reverse_using_bird.gbmz" --data="Ahu"
+; This one can be run using the command : gabuzomeu --file="reverse_using_bird.gbzm" --data="Ahu"
 ; Returns uhA !-)
 
 ; We assume that we process a C like string (so terminate with #GA),

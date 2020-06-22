@@ -465,7 +465,7 @@ std::vector<byte> NumberToByteStream(const InfInt &n)
     return result;
 }
 
-std::vector<byte> NumbersToByteStream(const std::vector<BSII> &v)
+std::vector<byte> NumbersToByteStream(const std::vector<BSII> &v, bool internal)
 {
     std::vector<byte> result;
     std::vector<byte> tmp;
@@ -473,7 +473,7 @@ std::vector<byte> NumbersToByteStream(const std::vector<BSII> &v)
     //std::cout << "NumbersToByteStream v.size() = " << v.size() << std::endl;
     for (const auto &it : v)
     {
-        if (it.b == Base::default_)
+        if ((it.b == Base::default_) or (internal))
         {
             //std::cout << "NumbersToByteStream it = " << it << std::endl;
             tmp = NumberToByteStream(it.ii); // This is not a recursion :)
@@ -482,7 +482,7 @@ std::vector<byte> NumbersToByteStream(const std::vector<BSII> &v)
         else
         {
             s = NumberToNibble(it.b, it.ii);
-            result.insert(std::end(result), std::begin(s), std::end(s));
+            result.insert(std::end(result), std::begin(s), std::end(s)); // BUG HERE !!!
         }
     }
     return result;

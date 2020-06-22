@@ -1,19 +1,20 @@
 
 ; Purpose : compute the factorial of the given number
 ; The program expects one numbers as input
+; This one can be run using the command : gabuzomeu --file="factorial_using_gbzm.gbzm" --data="#BUGA#" --big
+; Returns #BUZOGA !-)
 
-; Almost easy : fact(#BUGA) = #BUZOGA !-)
 ; Result can be cross checked here :
 ; https://www.calculatorsoup.com/calculators/discretemathematics/factorials.php
 
-; Optional, change nibble base IO
-;BASE #BUGA
+; Optional, change nibble base IO 4
+BASE #BUGA
 
 ; No input, no chocolate
 LAST error
 
 ; End of recurse ?
-PUMP GA
+PUMP GA ; Counter
 ZERO GA, tail
 
 ; Recurse !
@@ -29,7 +30,7 @@ CALC GA, #BU
 DUMP GA
 JUMP eof
 
-; Optional, for this to work correctly one need to add the -b | --big parameter !
+; Optional (computed with the NumberGenerator), for this to work correctly one need to add the -b | --big parameter (or use the SpaceGenerator...) !
 :error
 CALC GA, #BUBUBUBUBUMEUGAMEUBUZOGABUBUZOBUMEUBUZOBUBUGAZOGAGAGAMEUZOZOGAZOGAGABUGABUZOBUGAGABUBUGAGAMEUBUBUBUGABUGAMEUMEUBUBUGAZOBUGAZOBUBUGAGABUBUGAMEUGAGAZOGAGABUBUBUZOBUGAGABUBUGAMEUGABUBUBUBUBUGABUBU
 DUMP GA ; Display the help message

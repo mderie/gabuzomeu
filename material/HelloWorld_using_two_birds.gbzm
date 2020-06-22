@@ -1,6 +1,6 @@
 
 ; Purpose : Nothing beats the classics !-)
-; This one can be run using the command : gabuzomeu --file="HelloWorld_using_two_birds.gbmz" --data=""
+; This one can be run using the command : gabuzomeu --file="HelloWorld_using_two_birds.gbzm"
 
 BIRD GA ; Create a new bird
 CALC BU, #BUZOZOGA ; = 'h' = 104

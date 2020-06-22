@@ -4,12 +4,12 @@
     <ShowAllFiles>false</ShowAllFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>--file="quine_compact.gbzm" --target="quine_compact_t.gbzm" --Quine</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>--file="99BottlesOfBeer.gbzm" --big</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>$(OutDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>--file="quine_compact.gbzm" --target="quine_compact_t.gbzm" --Quine</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>--file="99BottlesOfBeer.gbzm" --big</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>$(OutDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>

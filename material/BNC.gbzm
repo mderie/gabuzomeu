@@ -2,6 +2,8 @@
 ; Purpose : Base Number Converter
 ; The program expects three numbers as input (target base, source base, value)
 ; The two firsts must be provided in base 4 !-)
+; This one can be run using the command : gabuzomeu --file="BNC.gbzm" --data="#BUGA##ZO##1000#" --big
+; Returns #ZOGA !-)
 
 LAST error
 BASE #BUGA
@@ -15,7 +17,7 @@ BASE GA ; Switch to the target base
 DUMP ZO
 JUMP eof
 
-; Optional, for this to work correctly one need to add the -b | --big parameter !
+; Optional (computed with the NumberGenerator), for this to work correctly one need to add the -b | --big parameter (or use the SpaceGenerator...) !
 :error
 BASE #BUGAGAGAGA ; Switch back to the default base
 CALC MEU, #BUBUBUBUBUMEUGAMEUBUZOGABUBUZOBUMEUBUZOBUBUGAZOGAGAGAMEUZOZOGAZOGAGABUGAGAZOBUGAMEUZOBUGAGAMEUGAZOGAGABUBUBUGABUGAGABUBUBUGAZOBUGABUMEUBUGABUBUBUBUBUGABUBUMEUMEUBUGAGAZOBUGAGABUBUBUGAMEUBUGABUBUGAZOGAGABUBUGAMEUBUGAMEUMEUBUBUBUBUBUBUGAZOBUGAGAMEUBUGABUBUBUBUMEUMEUBUGAGAZOBUGAGABUBUBUGAMEUBUGABUBUGAZOGAGABUBUBUZOBUGAGABUBUGAMEUGABUBUBUBUBUGABUBU

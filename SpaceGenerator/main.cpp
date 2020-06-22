@@ -41,25 +41,37 @@ int main(int argc, char* argv[])
 	}
 	*/
 
-	cxxopts::Options options("SpaceGenerator", "");
-	options.add_options()
-		("c,cell", "", cxxopts::value<std::string>()->default_value(""))
-		("d,data", "", cxxopts::value<std::string>()->default_value(""))
-		("s,stark", "", cxxopts::value<bool>()->default_value("false"))
-		("Q,Quine", "", cxxopts::value<bool>()->default_value("false"));
-
 	if (argc < 3)
 	{
 		std::cout << "Usage : SpaceGenerator --cell=\"name\" --data=\"any\" [-s | --stark] [-Q | --Quine]" << std::endl;
 		return -1;
 	}
 
-	auto parameters = options.parse(argc, argv);
-	std::string cell = parameters["cell"].as<std::string>();
-	std::string data = parameters["data"].as<std::string>();
-	bool stark = parameters["stark"].as<bool>(); // Unreadable mode !
-	Quine = parameters["Quine"].as<bool>(); // Care : global variable (beurk :)
-	
+	std::string cell;
+	std::string data;
+	bool stark;
+
+	try
+	{
+		cxxopts::Options options("SpaceGenerator", "");
+		options.add_options()
+			("c,cell", "", cxxopts::value<std::string>()->default_value(""))
+			("d,data", "", cxxopts::value<std::string>()->default_value(""))
+			("s,stark", "", cxxopts::value<bool>()->default_value("false"))
+			("Q,Quine", "", cxxopts::value<bool>()->default_value("false"));
+
+		auto parameters = options.parse(argc, argv);
+		cell = parameters["cell"].as<std::string>();
+		data = parameters["data"].as<std::string>();
+		stark = parameters["stark"].as<bool>(); // Unreadable mode !
+		Quine = parameters["Quine"].as<bool>(); // Care : global variable (beurk :)
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << "Exception : " << e.what() << std::endl;
+		return -2;
+	}
+
 	for (size_t i = 0; i < data.size(); i++)
 	{
 		if (stark)

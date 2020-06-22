@@ -1,11 +1,11 @@
 
-; Tentative (POC) : the RETR instruction is not implemented
+; Tentative (POC) : the RETR instruction is not implemented (nor the PUSH & HSUP)
 
 ; Purpose : compute the factorial of the given number
 ; The program expects one numbers as input
 
-; Optional, change nibble base IO
-;BASE #BUGA
+; Optional, change nibble base IO to 10
+BASE #ZOZO
 
 ; No input, no chocolate
 LAST error
@@ -40,7 +40,7 @@ HSUP GA
 DUMP GA
 JUMP eof
 
-; Optional, for this to work correctly one need to add the -b | --big parameter !
+; Optional (computed with the NumberGenerator), for this to work correctly one need to add the -b | --big parameter (or use the SpaceGenerator...) !
 :error
 CALC GA, #BUBUBUBUBUMEUGAMEUBUZOGABUBUZOBUMEUBUZOBUBUGAZOGAGAGAMEUZOZOGAZOGAGABUGABUZOBUGAGABUBUGAGAMEUBUBUBUGABUGAMEUMEUBUBUGAZOBUGAZOBUBUGAGABUBUGAMEUGAGAZOGAGABUBUBUZOBUGAGABUBUGAMEUGABUBUBUBUBUGABUBU
 DUMP GA ; Display the help message

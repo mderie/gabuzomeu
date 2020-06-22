@@ -56,7 +56,7 @@ InfInt NibbleToNumber(const Base &base, const std::string &s); // TODO: replace 
 std::vector<BSII> CompositeStringToNumbers(const std::string &s);
 std::string NumbersToCompositeString(const std::vector<BSII> &v);
 std::vector<byte> NumberToByteStream(const InfInt &n);
-std::vector<byte> NumbersToByteStream(const std::vector<BSII> &v);
+std::vector<byte> NumbersToByteStream(const std::vector<BSII> &v, bool internal); // The internal flags tells that we are called from GBZM
 InfInt ByteStreamToNumber(const std::vector<byte> &v);
 //TODO: Needed ?
 //... ByteStreamToNumbers(...)
