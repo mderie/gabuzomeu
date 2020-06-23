@@ -11,7 +11,7 @@
 
 // Third party
 #include "cxxopts.hpp"
-#include "infint.hpp"
+#include "InfInt.hpp"
 
 // Home made
 #include "RuntimeExceptions.hpp"

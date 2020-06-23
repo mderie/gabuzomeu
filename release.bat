@@ -5,7 +5,7 @@ pause
 
 rem if [%1] == [] goto error
 
-xcopy x64\Release\gabuzomeu.exe material\
+xcopy /y x64\Release\gabuzomeu.exe material\
 
 rem make a real clean !
 del /s /q *.tlog 
@@ -14,8 +14,8 @@ del /s /q DataAsCodeGenerator\x64
 del /s /q NumberGenerator\x64
 del /s /q PhraseGenerator\x64
 del /s /q RuleOfThree\x64
-del /s /q SpaceGenerator\64
-del /s /q XXLengthGenerator\64
+del /s /q SpaceGenerator\x64
+del /s /q XXLengthGenerator\x64
 
 rem git add .
 rem git commit -m %1
