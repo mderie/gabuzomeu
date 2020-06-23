@@ -1,5 +1,6 @@
 
-#include "ConverterTools.hpp"
+#include "../Common/ConverterTools.hpp"
+#include "../Common/RuntimeExceptions.hpp"
 
 bool big = false; // Big number
 bool Quine = false; // No trailing # at for the nibble

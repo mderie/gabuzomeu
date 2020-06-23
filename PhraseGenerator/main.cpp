@@ -7,9 +7,14 @@
 #include <filesystem>
 #include <vector>
 
+// Third party
+#include "../Common/cxxopts.hpp"
+#include "../Common/infint.hpp"
+
 // Home made
-#include "..\Common\RuntimeExceptions.hpp"
-#include "..\Common\ConverterTools.hpp"
+#include "../Common/RuntimeExceptions.hpp"
+#include "../Common/ConverterTools.hpp"
+#include "../../Common/StringTools.hpp"
 
 std::vector<std::string> stringList;
 std::vector<std::string> playStringList;

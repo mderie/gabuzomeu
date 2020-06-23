@@ -5,8 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "infint.hpp"
-#include "RuntimeExceptions.hpp"
+#include "../Common/infint.hpp"
 
 typedef unsigned char byte;
 extern bool big; // No time do better, let's have a global...
