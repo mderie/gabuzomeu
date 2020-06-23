@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "../Common/infint.hpp"
+#include "infint.hpp"
 
 typedef unsigned char byte;
 extern bool big; // No time do better, let's have a global...

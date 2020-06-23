@@ -38,6 +38,7 @@
 *.VC.db
 x64/
 build/
+out/
 .vs/
 *.tlog
 *.user

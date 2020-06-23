@@ -15,16 +15,16 @@
 // #include <unistd.h>
 
 // Third party
-#include "../Common/bnflite.hpp"
-#include "../Common/cxxopts.hpp"
-#include "../Common/infint.hpp"
+#include "bnflite.hpp"
+#include "cxxopts.hpp"
+#include "infint.hpp"
 
 // Home made
-#include "../Common/RuntimeExceptions.hpp"
-#include "../Common/ConverterTools.hpp"
-#include "../../Common/StringTools.hpp"
+#include "RuntimeExceptions.hpp"
+#include "ConverterTools.hpp"
+#include "StringTools.hpp"
 
-//TODO: Create ../Common/Language.hpp ?
+//TODO: Create Common/Language.hpp ?
 #define INTERPRETER_VERSION 1.2 // Follow github versionning
 #define LANGUAGE_VERSION 1.1 // 1.0 was without BASE & GBZM
 

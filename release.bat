@@ -3,12 +3,12 @@
 echo "Are you sure to start the release process ? If not just break"
 pause
 
-if [%1] == [] goto error
+rem if [%1] == [] goto error
 
 xcopy x64\Release\gabuzomeu.exe material\
 
 rem make a real clean !
-del /s *.tlog 
+del /s /q *.tlog 
 del /s /q CharToCharGenerator\x64
 del /s /q DataAsCodeGenerator\x64
 del /s /q NumberGenerator\x64

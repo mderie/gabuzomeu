@@ -10,13 +10,13 @@
 #include <regex>
 
 // Third party
-#include "../Common/cxxopts.hpp"
-#include "../Common/infint.hpp"
+#include "cxxopts.hpp"
+#include "infint.hpp"
 
 // Home made
-#include "../Common/RuntimeExceptions.hpp"
-#include "../Common/ConverterTools.hpp"
-#include "../../Common/StringTools.hpp"
+#include "RuntimeExceptions.hpp"
+#include "ConverterTools.hpp"
+#include "StringTools.hpp"
 
 int main(int argc, char* argv[])
 {

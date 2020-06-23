@@ -5,13 +5,13 @@
 #include <array>
 
 // Third party
-#include "../Common/cxxopts.hpp"
-#include "../Common/infint.hpp"
+#include "cxxopts.hpp"
+#include "infint.hpp"
 
 // Home made
-#include "../Common/RuntimeExceptions.hpp"
-#include "../Common/ConverterTools.hpp"
-#include "../../Common/StringTools.hpp"
+#include "RuntimeExceptions.hpp"
+#include "ConverterTools.hpp"
+#include "StringTools.hpp"
 
 enum class OpCode { last, jump, pump, dump, free, bird, lift, calc, head, tail, zero, else_, gbzm, base, last_item }; // Care of the else keyword !
 const std::string OpCodes[(int) OpCode::last_item] = { "LAST", "JUMP", "PUMP", "DUMP", "FREE", "BIRD", "LIFT", "CALC", "HEAD", "TAIL", "ZERO", "ELSE", "GBZM", "BASE" };
