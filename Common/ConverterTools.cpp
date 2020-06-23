@@ -1,4 +1,6 @@
 
+#include <algorithm>
+
 #include "ConverterTools.hpp"
 #include "RuntimeExceptions.hpp"
 
