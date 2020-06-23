@@ -44,6 +44,16 @@ elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x86")
     )
 endif()
 ################################################################################
+# Include directories
+################################################################################
+if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../Common;"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../Common"
+    )
+endif()
+
+################################################################################
 # Compile definitions
 ################################################################################
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
