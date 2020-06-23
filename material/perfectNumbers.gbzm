@@ -1,0 +1,39 @@
+
+; Purpose : output the x first perfec numbers
+; The program expects one number as input ? x
+; A number is considered to be perfect when it is equal to the sum of its own divisors excluding itself
+; This one can be run using the command : gabuzomeu --file="perfectNumbers.gbzm" --data="#2#" --big --limit=1000
+; Returns 6 & 28 !-)
+
+LAST error
+BASE #ZOZO
+;PUMP BU
+
+CALC GA, #ZO
+:big_loop
+
+CALC ZO, #ZO
+CALC BU, #GA
+:small_loop
+
+CALC MEU, GA % ZO
+ZERO MEU, next
+
+CALC BU, BU + MEU
+
+:next
+CALC ZO, ZO + #BU
+
+;CALC BU, BU - #BU
+
+CALC 
+
+ELSE big_loop
+JUMP eof
+
+; Optional (computed with the NumberGenerator), for this to work correctly one need to add the -b | --big parameter (or use the SpaceGenerator...) !
+:error
+;CALC MEU, #...
+DUMP MEU ; Display the help message
+
+:eof

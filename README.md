@@ -25,9 +25,6 @@ https://www.dcode.fr/shadoks-numeral-system
 - The Turing machine implemenation
 https://rosettacode.org/wiki/Universal_Turing_machine
 
-- Esolang
-https://esolangs.org/wiki/Main_Page
-
 - The Pascal programming language (for the '\#' in string usage)
 
 - Brainfuck (a real gem :)
@@ -37,6 +34,16 @@ https://esolangs.org/wiki/Main_Page
 - Dos batch (for the label usage)
 
 - ...
+
+External references
+-------------------
+
+- Esolang : https://esolangs.org/wiki/Gabuzomeu (hold the unavoidable "Hello world" and Quine compact code samples)
+- Hello world collection : http://helloworldcollection.de/ (ongoing request)
+- 99 Bottles of Beer : http://www.99-bottles-of-beer.net/ (ongoing request)
+- Rosetta Code : https://rosettacode.org/wiki/Category:Programming_Languages (ongoing request)
+- ideone / Sphere Engine : https://ideone.com/ (ongoing request)
+- Wikipedida : not yet dare ! See https://en.wikipedia.org/wiki/List_of_programming_languages
 
 Solution folders
 ----------------
@@ -56,8 +63,8 @@ The interpreter itself (gabuzomeu.exe stand alone executable)
 
 Sample Gabuzomeu source codes
 
-- 99BottlesOfBeer.gbzm : see http://www.99-bottles-of-beer.net/
-- HelloWorld*.gbzm : see http://helloworldcollection.de/ (multiple implementations)
+- 99BottlesOfBeer.gbzm : Though !
+- HelloWorld*.gbzm : (multiple implementations)
 - Quine*.gbzm (the compact version is available) : Crazy ! See among others https://www.nyx.net/~gthompso/quine.htm
 - Factorial*.gbzm : (multiple implementations)
 - Reverse*.gbzm : (multiple implementations)
@@ -291,6 +298,11 @@ Future / Extentions
 -------------------
 
 TODO: See file ? in material folder ?
+
+Deprecated
+----------
+
+Nothing yet :)
 
 Charset (finally it is a platform concern)
 ------------------------------------------
@@ -709,9 +721,10 @@ Roadmap
 - Quine (ongoing, the compact version is done :)
 - Enhance the parsing error messages (it seems that tailProg is not meaningfull :(
 - Think about changing the label syntax in order to remove the surrounding spaces (in their definition and usage)
+- Think about changing the litteral syntax by adding a trailing '\#' (both syntax changes should be coupled with a new command line option)
 - Still a lot of debug prints... (See the numerous //TODO: "tags")
 - Code could / should be cleaned a little bit :)
-- Linux porting (and join this uroboros ? https://github.com/mame/quine-relay)
+- Linux porting (and join this uroboros ? https://github.com/mame/quine-relay), use CMake
 - Building a true IDE (with birds visualisations, line by line debugging and so on !)
 - Implement unit tests ! Deeply needed, fix a bug in v1.1 ...
 - Implement a BF cross stuff

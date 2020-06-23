@@ -37,6 +37,7 @@
 *.ipch
 *.VC.db
 x64/
+build/
 .vs/
 *.tlog
 *.user
