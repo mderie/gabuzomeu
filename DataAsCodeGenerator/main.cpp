@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 				ofs.write("CALC GA, ", 9);			
 			}
 			
-			s = NumberToNibble(Base::Four, line[i]);
+			s = NumberToNibble(Base::four, line[i]);
 			ofs.write(s.c_str(), s.size());
 
 			if (!stark)

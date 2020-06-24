@@ -48,7 +48,7 @@ External references
 Solution folders
 ----------------
 
-Developed in C++ using VS 2019, it stills need to be ported under Linux !
+Developed in C++ using VS 2019 (with the help of CMake for the Linux port !-)
 
 - Material : see below
 - Common : libraries (headers only !)
@@ -351,11 +351,12 @@ either as being in another known bases. But in thoses cases, the number represen
 Some sample nibbles below in each base : 
 
 ````
-#01110# in base #ZO (aka 2)
-#GABU# in base #BUGA (aka 4)
-#31# in base #ZOZO (aka 10)
-#C0FFEEBABE# in base #BUGAGA (aka 16)
-#ABba# in base #BUGAGAGA (aka 64)
+14 ==> #1110# in base #ZO (aka 2)
+49 ==> #MEUGABU# in base #BUGA (aka 4)
+27 ==> #33# in base #ZOGA (aka 8)
+31 ==> #31# in base #ZOZO (aka 10)
+828.927.556.286 ==> #C0FFEEBABE# in base #BUGAGA (aka 16)
+11.016.896 ==> #aBbA# in base #BUGAGAGA (aka 64)
 ````
 
 The BASE instruction takes either a cell either a litteral (so in base \#BUGA) and allows to change the current base
@@ -718,27 +719,35 @@ may be provided from / to file or from / to the console. See the GBZM "special" 
 Roadmap
 -------
 
-- Quine (ongoing, the compact version is done :)
-- Enhance the parsing error messages (it seems that tailProg is not meaningfull :(
-- Think about changing the label syntax in order to remove the surrounding spaces (in their definition and usage)
-- Think about changing the litteral syntax by adding a trailing '\#' (both syntax changes should be coupled with a new command line option)
+- Quine (ongoing, the compact version is done :) We could do even shorter by using extention 1 & 2 (see below)
+- Enhance the parsing error messages (it seems that tailProg is not meaningfull :( ==> Need to change the parser engine !
 - Still a lot of debug prints... (See the numerous //TODO: "tags")
 - Code could / should be cleaned a little bit :)
-- Linux porting (and join this uroboros ? https://github.com/mame/quine-relay), use CMake
-- Building a true IDE (with birds visualisations, line by line debugging and so on !)
+- Join this uroboros ? https://github.com/mame/quine-relay
+- Building a true IDE : projet Ni (with birds visualisations, line by line debugging and so on !) ==> In Delphi ?
 - Implement unit tests ! Deeply needed, fix a bug in v1.1 ...
 - Implement a BF cross stuff
-- Implement a compiler (it has already a name : project ni)
+- Implement a compiler : project Martine
 - Review this document title order and start by the TOC (missing feature in Markdown :(
 - Implement a perfect number generator ?
+- Enhance the logging
+- Add support for nibbles comming from data file !
 - ...
 
 Achievements
 ------------
 
 - 99 Bottles of beer
-- Versionning on the language itself, on the interpreter, on the future compiler
+- Versionning on the language itself, on the interpreter, on the IDE, on the future compiler if any
 - Implement a noprompt mode for the interpreter (so no message like "1 bird babbles : ") and no new line at end
+- Linux port
+- Base #ZOGA is now supported (so gabuzomeu.exe --file="BNC.gbzm" --data="#ZOGA##ZOZO##27#" returns #33# :)
+- Added an alternative line by line parsing in order to enhance the syntax error message (so it replace 
+  the program as block parsing but failed to parse instruction cut by a newline... Make use of the brand new extention (8) mechanism !
+- Added an alternative syntax for the label definition and usages : it can be now surrounded by bracket...
+  Make use of the brand new extention (1) mechanism !
+- Added alternative syntax for the literal : source code may now use #GA# as valid value
+  Make use of the brand new extention (2) mechanism !
 
 License
 -------

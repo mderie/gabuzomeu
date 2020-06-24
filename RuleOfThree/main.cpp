@@ -24,7 +24,7 @@ struct Instruction
 };
 std::vector<Instruction> instructions; // Not in the context :)
 
-enum class CellKind { Body, Head, Tail }; // the Body is optional :)
+enum class CellKind { body, head, tail }; // the Body is optional :)
 struct Cell
 {
     CellKind kind;
@@ -42,7 +42,7 @@ struct Bird
     {
         for (auto& it : cells)
         {
-            it.kind = CellKind::Body;
+            it.kind = CellKind::body;
             it.value = 0;
         }
         // But we still need to cast :(

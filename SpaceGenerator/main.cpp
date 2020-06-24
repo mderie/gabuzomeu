@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
 			std::cout << "CALC " << cell << ", ";
 		}
 
-		std::cout << NumberToNibble(Base::Four, InfInt(data[i]));
+		std::cout << NumberToNibble(Base::four, InfInt(data[i]));
 		if (!stark)
 		{
 			std::cout << std::endl;

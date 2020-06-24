@@ -1,0 +1,23 @@
+
+; Purpose : try the underlying platform support of ansi escape codes
+; This one can be run using the command : gabuzomeu --file="ansi.gbzm" --write
+; Returns [31mAhu
+
+CALC MEU, #BUZOMEU ; = 27 (ESC)
+DUMP MEU
+CALC MEU, #BUBUZOMEU ; = 91 ('[')
+DUMP MEU
+
+CALC MEU, #MEUGAMEU ; (31m set red as foreground color)
+DUMP MEU
+CALC MEU, #MEUGABU
+DUMP MEU
+CALC MEU, #BUZOMEUBU
+DUMP MEU
+
+CALC MEU, #BUGAGABU ; = 65 ('A')
+DUMP MEU
+CALC MEU, #BUZOZOGA ; = 72 ('h')
+DUMP MEU
+;CALC MEU, #MEUMEUMEUGA; = 252 ('ü')
+CALC MEU, #BUMEUBUBU; = 117 ('u')

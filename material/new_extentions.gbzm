@@ -1,0 +1,29 @@
+
+; OK
+;[toto]
+;DUMP GA
+
+[toto] DUMP GA
+
+; extention 2 (literal)
+
+CALC MEU, #ZOGABU# * #BU#
+DUMP MEU ; Ahu !-)
+;BASE #ZOZO#
+
+; extention 1 (label)
+
+JUMP[useless][useless]
+;JUMP[useless], broleku
+
+CALC MEU, #ZOMEUBU#
+
+; extention 8 (line)
+
+DUMP MEU DUMP MEU
+CALC MEU, #ZOZOBU#
+DUMP MEU
+
+[a][b]
+[c]
+[d] DUMP GA

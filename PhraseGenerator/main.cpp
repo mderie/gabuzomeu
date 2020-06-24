@@ -1,5 +1,5 @@
 
-// From open text to gabuzomeu data sets and strings (used for 99 bottles of beer)
+// From open text to gabuzomeu data sets and strings (planned to be used for 99 bottles of beer)
 
 #include <iostream>
 #include <fstream>
@@ -42,7 +42,7 @@ void RunString(const std::string& s)
 		
 	for (size_t i=1; i<=s.size(); i++)
 	{
-		result += " CALC " + CellIds[cellIdToNextChar] + ", " + NumberToNibble(Base::default_, InfInt(s[i]));
+		result += " CALC " + cellIds[cellIdToNextChar] + ", " + NumberToNibble(Base::default_, InfInt(s[i]));
 		play += "";
 		back += "";
 
@@ -52,7 +52,7 @@ void RunString(const std::string& s)
 		{
 			if (i < s.size())
 			{
-				result += " BIRD " + CellIds[cellIdToNextChar];
+				result += " BIRD " + cellIds[cellIdToNextChar];
 				cellIdToNextChar = NextCellId(cellIdToNextChar);
 
 				play += "";

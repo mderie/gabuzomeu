@@ -7,6 +7,7 @@
 bool big = false; // Big number
 bool Quine = false; // No trailing # at for the nibble
 bool write = false; // Force printing the non printable character (ASCII code < 32)
+size_t extention = 0;
 
 // Use a special version of Base64 ? https://en.wikipedia.org/wiki/Base64 A-Z, a-z, 0-9, + /
 // Where we replace '+' & '/' by ':' & ',' could help us achieving Quine exploration !
@@ -15,15 +16,15 @@ bool write = false; // Force printing the non printable character (ASCII code < 
 // No generic mapping from string "enum" array and enum value :(
 byte GetCellId(const std::string& value)
 {
-    const auto &it = std::find(std::begin(CellIds), std::end(CellIds), value);
-    if (it == std::end(CellIds))
+    const auto &it = std::find(std::begin(cellIds), std::end(cellIds), value);
+    if (it == std::end(cellIds))
     {
         throw AlienException(value); // Since the lexical analysis should have done its job
     }
-    return (byte) (it - std::begin(CellIds));
+    return (byte) (it - std::begin(cellIds)); // That is why there is no generic way back : not all enum starts at zero nor they are continuous...
 }
 
-// Not an half byte here but a base 4 number in GABUZOMEU style, so surrounded by # :)
+// Not an half byte here but a base 4 number in GABUZOMEU style
 std::string NumberToNibble4(const InfInt &n)
 {
     std::string result;
@@ -33,7 +34,7 @@ std::string NumberToNibble4(const InfInt &n)
     {
         index = (shift % 4).toInt(); // Get the two rightmost bits
         //std::cout << "shift = " << shift.toString() << " & index = " << index << std::endl;
-        result = CellIds[index] + result;
+        result = cellIds[index] + result;
         shift /= 4; // No bit operator support :(
     }
     return result;
@@ -94,6 +95,7 @@ std::string NumberToNibble64(const InfInt &n)
     return result;
 }
 
+// Eventually surrounded by a '#'
 std::string NumberToNibble(const Base &base, const InfInt &n)
 {
     if (base == Base::default_)
@@ -105,10 +107,10 @@ std::string NumberToNibble(const Base &base, const InfInt &n)
 
     switch (base)
     {
-    case Base::Four: { result = NumberToNibble4(n); break; }
-    case Base::SixTeen: { result = NumberToNibble16(n); break; }
-    case Base::SixtyFour: { result = NumberToNibble64(n); break; }
-    default: // Trad. algo for 2, 10 bases (no translation needed for 256 :)
+    case Base::four: { result = NumberToNibble4(n); break; }
+    case Base::sixteen: { result = NumberToNibble16(n); break; }
+    case Base::sixtyFour: { result = NumberToNibble64(n); break; }
+    default: // Trad. algo for 2, 8 & 10 bases (no translation needed for 256 :)
     {
         size_t index;
         InfInt shift = n;
@@ -167,7 +169,6 @@ std::string PowerOfPrime(const InfInt &value)
 // Expect an upper cased string without any #
 // Raise an exception in case of conversion failure
 // Called either from the input string parsing either indirectly from the interpreter
-//TODO: [future] Make use the CellIds array ?
 InfInt Nibble4ToNumber(const std::string &s)
 {
     if (s.size() < 2)
@@ -181,22 +182,22 @@ InfInt Nibble4ToNumber(const std::string &s)
 
     while (pos > 1)
     {
-        if (s.substr(pos - 2, 2) == "GA")
+        if (s.substr(pos - 2, 2) == cellIds[(size_t) CellId::ga])
         {
             // result += 0 * ((int) pow(4, power));
             pos -= 2;
         }
-        else if (s.substr(pos - 2, 2) == "BU")
+        else if (s.substr(pos - 2, 2) == cellIds[(size_t) CellId::bu])
         {
             result += InfInt(1) * pow(4, power);
             pos -= 2;
         }
-        else if (s.substr(pos - 2, 2) == "ZO")
+        else if (s.substr(pos - 2, 2) == cellIds[(size_t) CellId::zo])
         {
             result += InfInt(2) * pow(4, power);
             pos -= 2;
         }
-        else if (s.substr(pos - 3, 3) == "MEU")
+        else if (s.substr(pos - 3, 3) == cellIds[(size_t) CellId::meu])
         {
             result += InfInt(3) * pow(4, power);
             pos -= 3;
@@ -281,16 +282,17 @@ InfInt Nibble16ToNumber(const std::string &s)
     return result;
 }
 
+// s is "naked" here, so not surrounded by '#'
 InfInt NibbleToNumber(const Base &base, const std::string &s)
 {
     InfInt result;
     //std::cout << "NibbleToNumber ==> base = " << base << " & s = " << s << std::endl;
     switch (base)
     {
-    case Base::Four: { result = Nibble4ToNumber(s); break; }
-    case Base::SixTeen: { result = Nibble16ToNumber(s); break; }
-    case Base::SixtyFour: { result = Nibble64ToNumber(s); break; }
-    default: // Trad. algo for 2, 10 bases (no translation needed for 256 :)
+    case Base::four: { result = Nibble4ToNumber(s); break; }
+    case Base::sixteen: { result = Nibble16ToNumber(s); break; }
+    case Base::sixtyFour: { result = Nibble64ToNumber(s); break; }
+    default: // Trad. algo for 2, 8 & 10 bases (no translation needed for 256 :)
     {
         InfInt power = 0;
         for (int i = s.size() - 1; i >= 0; i--)
@@ -412,7 +414,7 @@ std::string NumbersToCompositeString(const std::vector<BSII> &v)
             if ((it.ii < 32) and (!write)) // ASCII limitation (avoid non printable characters)
             {
                 //std::cout << " < 32 " << std::endl;
-                result += NumberToNibble(Base::Four, (byte) it.ii.toInt());
+                result += NumberToNibble(Base::four, (byte) it.ii.toInt());
             }
             else if (it.ii > 255)
             {
@@ -423,7 +425,7 @@ std::string NumbersToCompositeString(const std::vector<BSII> &v)
                     if ((it2 < 32) and (!write))
                     {
                         //std::cout << " < 32 (2)" << std::endl;
-                        result += NumberToNibble(Base::Four, it2);
+                        result += NumberToNibble(Base::four, it2);
                     }
                     else
                     {
@@ -512,5 +514,12 @@ InfInt ByteStreamToNumber(const std::vector<byte> &v)
 
 InfInt LexerNibbleToNumber(const std::string& s)
 {
-    return NibbleToNumber(Base::Four, s); // +"#");
+    if (extention & (size_t) Extention::litteral)
+    {
+        return NibbleToNumber(Base::four, s.substr(1, s.size() - 2)); // Remove both '#'
+    }
+    else
+    {
+        return NibbleToNumber(Base::four, s.substr(1, s.size() - 1));
+    }    
 }

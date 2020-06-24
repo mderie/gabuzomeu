@@ -4,6 +4,13 @@ set(CMAKE_SYSTEM_VERSION 10.0 CACHE STRING "" FORCE)
 
 project(gabuzomeu CXX)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Required under Linux
+# https://stackoverflow.com/questions/53801547/why-does-link-librariesstdcfs-work-but-not-lstdcfs
+link_libraries(stdc++fs)
+
 ################################################################################
 # Set target arch type if empty. Visual studio solution generator provides it.
 ################################################################################

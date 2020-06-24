@@ -1,0 +1,11 @@
+
+; This failed... With extention = 8
+;DUMP
+; MEU  
+CALC MEU, #GA
+
+; This failed as well but it is on purpose
+groumpf ; ga
+
+;DUMP toto
+CALC MEU, #GA

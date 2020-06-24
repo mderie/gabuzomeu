@@ -16,7 +16,8 @@
 
 int main(int argc, char* argv[])
 {
-	//YAPLUKA
+	//YAPLUKA : Finally Martine, the compiler may never take place...
+	// And ni the IDE could be done easier and quicker in Delphi !
 
 	return 0;
 }
